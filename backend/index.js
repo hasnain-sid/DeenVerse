@@ -27,7 +27,7 @@ app.get("/",(req, res) => {
 })
 app.use(cors(corsOptions));
 // apis
-app.use("/api/v1/user",userRoute);
+app.use("/",userRoute);
 // app.use("/api/v1/tweet",tweetRoute);
 
  
