@@ -22,6 +22,9 @@ const corsOptions = {
   origin: 'http://localhost:3000',
   credentials: true
 }
+app.get("/",(req, res) => {
+  res.json('hello');
+})
 app.use(cors(corsOptions));
 // apis
 app.use("/api/v1/user",userRoute);
