@@ -5,6 +5,7 @@ import { IoSearch } from "react-icons/io5";
 import { CgProfile } from "react-icons/cg";
 import { FaRegBookmark } from "react-icons/fa";
 import { IoNewspaperOutline } from "react-icons/io5";
+import { MdVideoCall } from "react-icons/md";
 
 
 import { CiLogout } from "react-icons/ci";
@@ -55,6 +56,12 @@ const LeftSideBar = () => {
                             <FaRegBookmark size="24px" />
                         </div>
                         <h1 className="font-bold text-lg ml-2">Saved</h1>
+                    </div>
+                    <div className="flex items-ceter my-2 px-4 py-2 hover:bg-gray-200 rounded-full cursor-pointer">
+                        <div className="py-1">
+                        <MdVideoCall size="24px" />
+                        </div>
+                        <h1 className="font-bold text-lg ml-2">Video Call</h1>
                     </div>
                     <div className="flex items-ceter my-2 px-4 py-2 hover:bg-gray-200 rounded-full cursor-pointer">
                         <div className="py-1">
