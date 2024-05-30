@@ -11,28 +11,37 @@ import { TbMessageReport } from "react-icons/tb";
 
 import { FaRegBookmark } from "react-icons/fa";
 import { AiOutlineRetweet } from "react-icons/ai";
-import { arr } from "../utils/database_data.js";
+// import { arr } from "../utils/database_data.js";
 import lamp from "./lamp.png";
 import { useSelector, useDispatch } from "react-redux";
 import {getRefresh,getUser} from "../redux/userSlice";
 
 import useGetUser from '../hooks/useGetUser'
 
-const Daily = () => {
+const Saved = () => {
     // console.log(arr);
+    console.log('21')
     const { user ,refresh} = useSelector((store) => store.user);
+    var arr = user.saved;
+//     useEffect(() => {
+      
+      
+//       arr = user.saved;
+//  }, [0]);
+    console.log(arr)
     const [index, setIndex] = useState(0);
     const [click, setClick] = useState(false);
     const [info, setInfo] = useState([]);
     const [selected, setSelected] = useState("Choose One");
     const { title, hadeeth, explanation } = info;
     const [lang, setLang] = useState("en");
-    const { id } = arr[index];
+    const id  = arr[index];
     const dispatch = useDispatch();
     
 
     useEffect(() => {
         async function fetchData() {
+          // console.log('2')
             try {
                 const url = `https://hadeethenc.com/api/v1/hadeeths/one/?language=${lang}&id=${id}`;
                 const response = await fetch(url);
@@ -180,4 +189,6 @@ const Daily = () => {
     );
 };
 
-export default Daily;
+ 
+
+export default Saved;

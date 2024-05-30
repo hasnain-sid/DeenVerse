@@ -1,14 +1,20 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import LeftSideBar from './LeftSideBar'
 import Content from './Content'
 import RightSideBar from './RightSideBar'
 import {Outlet} from "react-router-dom"
-
+import { Toaster } from 'react-hot-toast'
+import { useSelector } from 'react-redux';
+// import useGetSaved from '../hooks/useGetSaved'
 const Home = () => {
+
+  const {user} = useSelector(store=>store.user)
+ 
+  // useGetSaved(user?._id)
+
   return (
     <div className='flex justify-between w-[93%] mx-auto '>
-      {/* {document.body.style.overflow = "hidden"} */}
-      {/* {document.body.classList.add("no-scroll")} */}
+      <Toaster/>
       <LeftSideBar/>
       {/* <Content/> */}
       <Outlet/>

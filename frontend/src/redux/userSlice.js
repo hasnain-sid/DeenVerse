@@ -5,8 +5,8 @@ const userSlice = createSlice({
   initialState:{
     user:null,
   
-    saved:null,
-    // tweets:null,
+    // saved:null,
+    logout:null,
     refresh:false,
   },
   reducers:{
@@ -15,14 +15,17 @@ const userSlice = createSlice({
       state.user = action.payload;
     },
     
-    getMySaved:(state, action) =>{
-      state.saved = action.payload;
-    },
+    // getMySaved:(state, action) =>{
+    //   state.saved = action.payload;
+    // },
     getRefresh:(state) =>{
       state.refresh = !state.refresh;
+    },
+    getLogout:(state, action) =>{
+      state.user = null;
     }
 
   }
 });
-export const {getUser,getMySaved,getRefresh} = userSlice.actions;
+export const {getUser,getRefresh,getLogout} = userSlice.actions;
 export default userSlice.reducer;

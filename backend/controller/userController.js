@@ -85,9 +85,7 @@ export const Login = async (req, res) => {
 
 export const Logout = (req, res) => {
   return res.cookie("token","",{expiresIn:new Date(Date.now()),
-    // httpOnly:true,
-    // secure:true,
-    // sameSite:"None",
+    
   }).json({
     message: "User logged out",
     success:true
@@ -117,6 +115,7 @@ export const saved = async (req, res) => {
       await User.findByIdAndUpdate(loggedInUser,{$pull:{saved:contentId}})
       return res.status(201).json({
         message:"Removed",
+        user,
         success: true
       })
     }
@@ -125,6 +124,7 @@ export const saved = async (req, res) => {
       await User.findByIdAndUpdate(loggedInUser,{$push:{saved:contentId}})
       return res.status(201).json({
         message:"Saved",
+        user,
         success: true
       })
     } 

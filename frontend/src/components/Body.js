@@ -2,8 +2,11 @@ import React from 'react'
 import {createBrowserRouter,RouterProvider} from 'react-router-dom'
 import Home from './Home'
 // import Profile from './Profile'
+
+import Saved from './Saved'
 import Login from './Login'
 import Content from './Content'
+import Daily from './Daily'
 const Body = () => {
     const appRouter = createBrowserRouter([
       {
@@ -12,12 +15,19 @@ const Body = () => {
         children: [
           {
             path:'/',
-            element: <Content/>
-          },
-          // {
-          //   path:'/profile',
-          //   element: <Profile/>
-          // }
+            element: <Content/>,
+            children:[
+              {
+                path:'/',
+              element: <Daily/>,
+              },
+              {
+                path:'/saved',
+                element: <Saved/>
+              }
+
+            ]
+          }
         ]
         
       },

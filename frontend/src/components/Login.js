@@ -4,7 +4,7 @@ import { USER_API_END_POINT } from "../utils/constant.js";
 import toast from "react-hot-toast"
 import { useNavigate } from "react-router-dom";
 import {useDispatch} from "react-redux"
-import { getUser } from "../redux/userSlice.js";
+import { getUser} from "../redux/userSlice.js";
 const Login = () => {
     const [isLogin, setIsLogin] = useState(true);
     const [name, setName] = useState("");
@@ -23,7 +23,7 @@ const Login = () => {
         if (isLogin) {
             // login
             try {
-                const res = await axios.post(
+              const res = await axios.post(
                     `${USER_API_END_POINT}/login`,
                     { email, password },
                     {
@@ -31,12 +31,15 @@ const Login = () => {
                         withCredentials: true,
                     }
                 );
+                console.log(res.data)
                 dispatch(getUser(res?.data?.user))
+                
+                
                 if(res.data.success) {
                     navigate("/")
                     toast.success(res.data.message);
                 }
-                 
+                
                 
             } catch (error) {
                 toast.success(error.response.data.message);
