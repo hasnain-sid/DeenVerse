@@ -1,4 +1,4 @@
 export let fonts = [ 
-  "areil" ,"sans" 
+  "Areil" ,"Sans" 
 
 ]

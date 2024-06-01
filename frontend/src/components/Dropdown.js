@@ -1,9 +1,11 @@
 import { fonts } from "./fonts";
 import React, { useState, useEffect, useRef } from "react";
 import { AiOutlineCaretDown, AiOutlineCaretUp } from "react-icons/ai";
+import { AiOutlineCheck } from "react-icons/ai"; // Import the check icon
 
-const Dropdown = ({ value }) => {
+const Dropdown = ({ value, fonts }) => {
     const [isOpen, setIsOpen] = useState(false);
+    const [selectedFont, setSelectedFont] = useState(null); // State to keep track of the selected font
     const dropdownRef = useRef(null);
 
     const handleClickOutside = (event) => {
@@ -31,7 +33,7 @@ const Dropdown = ({ value }) => {
         <div ref={dropdownRef}>
             <button
                 onClick={() => setIsOpen((prev) => !prev)}
-                className="flex w-34 font-bold text-lg rounded-lg tracking-wider border-2 border-transparent active:border-black duration-300 active:text-black items-center p-2 bg-red-300 items-center rounded-lg"
+                className="flex w-34 font-bold text-lg rounded-lg tracking-wider border-2 border-transparent active:border-black duration-300 active:text-black items-center p-1 bg-red-300 items-center rounded-lg"
             >
                 {value}
                 {!isOpen ? (
@@ -45,8 +47,10 @@ const Dropdown = ({ value }) => {
                     {fonts.map((font, i) => (
                         <div
                             key={i}
-                            className="flex justify-between hover:bg-red-400 w-full cursor-pointer rounded-r-lg border-l-transparent p-2 hover:border-l-black border-l-4"
+                            className="flex justify-between items-center hover:bg-red-400 w-full cursor-pointer rounded-r-lg border-l-transparent p-2 hover:border-l-black border-l-4"
+                            onClick={() => setSelectedFont(font)} // Set selected font on click
                         >
+                            {selectedFont === font && <AiOutlineCheck className="mr-2" />} {/* Conditionally render check icon */}
                             <h3 className="font-bold">{font}</h3>
                         </div>
                     ))}

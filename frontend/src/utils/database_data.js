@@ -1,4 +1,4 @@
-async function fetchData1(params) {
+ async function fetchData1(params) {
   try {
     console.log(params);
   
@@ -7,7 +7,7 @@ async function fetchData1(params) {
     const url = `https://hadeethenc.com/api/v1/hadeeths/list/?language=en&category_id=11&page=1&per_page=200`;
     const response = await fetch(url);
     const data = await response.json();
-    return data.data;
+     return data.data;
     // console.log(arr);
   } catch (err) {
       console.log(err);
@@ -15,5 +15,5 @@ async function fetchData1(params) {
 }
 // console.log(lang);
 var arr = await fetchData1();
-export    { arr};
+export    { arr };
 // console.log('hello');

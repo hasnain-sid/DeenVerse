@@ -1,5 +1,5 @@
 import React from 'react'
-import Daily from './Daily'
+// import Daily from './Daily'
 import {scrollbar} from "tailwind-scrollbar";
 import {Outlet} from "react-router-dom"
 const Content = () => {
