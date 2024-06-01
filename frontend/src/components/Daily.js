@@ -7,15 +7,17 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { useSelector, useDispatch } from "react-redux";
 import { getUser } from "../redux/userSlice";
-import { getContent, getLang } from "../redux/contentSlice.js";
+import { getContent, getTranslations} from "../redux/contentSlice.js";
 import { arr } from "../utils/database_data.js";
 
 const Daily = () => {
     const { user } = useSelector((store) => store.user);
+    const { lang } = useSelector((store) => store.content);
+
     const [index, setIndex] = useState(0);
     const [click, setClick] = useState(false);
     const [info, setInfo] = useState({});
-    const [lang, setLang] = useState("en");
+    // const [lang, setLang] = useState("en");
     const [isFullScreen, setIsFullScreen] = useState(false);
     const { title, hadeeth, explanation } = info;
     const dispatch = useDispatch();
@@ -31,8 +33,13 @@ const Daily = () => {
                 const url = `https://hadeethenc.com/api/v1/hadeeths/one/?language=${lang}&id=${id}`;
                 const response = await fetch(url);
                 const data = await response.json();
-                const transs = data.translations.filter(ele => ['hi', 'ar', 'en'].includes(ele));
-                dispatch(getLang(transs));
+                
+                const transs = data.translations.filter(ele => ['hi', 'ar', 'en'].includes(ele)).map(ele => {
+                    if(ele == 'hi')return 'Hindi';
+                    else if(ele == 'ar')return 'Arabic';
+                    else if(ele == 'en')return 'English'
+                });
+                dispatch(getTranslations(transs));
                 setInfo(data);
             } catch (err) {
                 console.log(err);
@@ -43,7 +50,7 @@ const Daily = () => {
 
     useEffect(() => {
         setClick(false);
-        if(user.saved.includes(id))
+        if(user?.saved.includes(id))
         {
             setClick(true);
         }
@@ -131,9 +138,9 @@ const Daily = () => {
 
             <div className="bg-gray-200 rounded-lg p-4 mt-4 shadow-inner">
                 <div className="text-center bg-grey-lighter p-2">
-                    <h4 className="text-black m-1 text-lg font-bold">{title}</h4>
+                    <h4 className="  text-black m-1 text-lg font-bold">{title}</h4>
                 </div>
-                <p className="text-blue-700 text-center text-sm font-semibold">{hadeeth}</p>
+                <p className="font-mono text-blue-700 text-center text-sm font-semibold">{hadeeth}</p>
                 <p className="text-black text-justify text-sm font-semibold">{explanation}</p>
             </div>
         </div>

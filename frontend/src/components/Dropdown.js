@@ -1,13 +1,24 @@
-import { fonts } from "./fonts";
 import React, { useState, useEffect, useRef } from "react";
 import { AiOutlineCaretDown, AiOutlineCaretUp } from "react-icons/ai";
 import { AiOutlineCheck } from "react-icons/ai"; // Import the check icon
-
-const Dropdown = ({ value, fonts }) => {
+import { useDispatch } from "react-redux";
+import { getLang } from "../redux/contentSlice";
+const Dropdown = ({ value, data , type}) => {
+    // console.log(value,data,type)
     const [isOpen, setIsOpen] = useState(false);
-    const [selectedFont, setSelectedFont] = useState(null); // State to keep track of the selected font
+    const [selectedEle, setSelectedEle] = useState(null); // State to keep track of the selected font
     const dropdownRef = useRef(null);
-
+    const dispatch = useDispatch();
+    
+    const setHandler =async (type,ele) => {
+        setSelectedEle(ele)
+        if(type === 'language')
+            if(ele == 'English')ele = "en";
+            else if(ele == 'Hindi')ele = 'hi';
+            else if(ele == 'Arabic')ele = 'ar';
+            dispatch(getLang(ele))
+        
+    }
     const handleClickOutside = (event) => {
         if (
             dropdownRef.current &&
@@ -44,14 +55,14 @@ const Dropdown = ({ value, fonts }) => {
             </button>
             {isOpen && (
                 <div className="bg-red-300 absolute mt-1 flex flex-col w-32 items-start rounded-lg p-2">
-                    {fonts.map((font, i) => (
+                    {data.map((ele, i) => (
                         <div
                             key={i}
                             className="flex justify-between items-center hover:bg-red-400 w-full cursor-pointer rounded-r-lg border-l-transparent p-2 hover:border-l-black border-l-4"
-                            onClick={() => setSelectedFont(font)} // Set selected font on click
+                            onClick={() => setHandler(type,ele)} // Set selected font on click
                         >
-                            {selectedFont === font && <AiOutlineCheck className="mr-2" />} {/* Conditionally render check icon */}
-                            <h3 className="font-bold">{font}</h3>
+                            {selectedEle === ele && <AiOutlineCheck className="mr-2" />} {/* Conditionally render check icon */}
+                            <h3 className="font-bold">{ele}</h3>
                         </div>
                     ))}
                 </div>

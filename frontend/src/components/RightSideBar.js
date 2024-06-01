@@ -4,9 +4,14 @@ import Dropdown from "./Dropdown.js"
 import { fonts } from "./fonts.js";
 // import transs from "./Daily.js"
 import { useSelector } from "react-redux";
+import { getLang } from "../redux/contentSlice.js";
+import { useDispatch } from "react-redux";
 const RightSideBar = () => {
-    const { lang} = useSelector((store) => store.content);
+    const { translations} = useSelector((store) => store.content);
     // console.log('heeol',lang)
+    console.log(translations)
+    
+    
 
     // console.log(transs);
     return (
@@ -22,10 +27,10 @@ const RightSideBar = () => {
             </div>
             <div className="p-4 h-44 bg-gray-100 rounded-2xl my-4  flex">
                 <div className="mr-2">
-                <Dropdown value = {"Style"} fonts =  {fonts} />
+                <Dropdown value = {"Style"} data=  {fonts} type = {"font"} />
                 </div>
                 <div>
-                <Dropdown value = "Language" fonts =  {lang}/>
+                <Dropdown value = {"Language"} data =  {translations} type = {"language"}/>
                 </div>
                  
                  

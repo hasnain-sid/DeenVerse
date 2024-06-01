@@ -4,7 +4,9 @@ const contentSlice = createSlice({
   name: 'content',
   initialState:{
     content:null,
-    lang:['en'],
+    translations:['English'],
+    lang:'en',
+
   
     // refresh:false,
   },
@@ -13,8 +15,11 @@ const contentSlice = createSlice({
     getContent:(state, action) =>{
       state.content = action.payload;
     },
-    getLang:(state,action) =>{
-      state.lang = action.payload;
+    getTranslations:(state,action) =>{
+      state.translations = action.payload;
+    },
+    getLang:(state, action) =>{
+      state.lang = action.payload
     }
     
     // // getMySaved:(state, action) =>{
@@ -29,5 +34,5 @@ const contentSlice = createSlice({
 
   }
 });
-export const {getContent,getLang} = contentSlice.actions;
+export const {getContent,getTranslations,getLang} = contentSlice.actions;
 export default contentSlice.reducer;

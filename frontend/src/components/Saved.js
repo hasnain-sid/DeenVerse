@@ -39,7 +39,7 @@ const Saved = () => {
 
     useEffect(() => {
         setClick(false);
-        if(user.saved.includes(id))
+        if(user?.saved.includes(id))
         {
             setClick(true);
         }
