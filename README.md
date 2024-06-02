@@ -23,8 +23,8 @@ This project is a web application that displays a "Hadith of the Day" with featu
 
 1. Clone the backend repository:
    ```sh
-   git clone <backend-repo-url>
-   cd <backend-repo-directory>
+   git clone [backend](https://github.com/hasnain-sid/DeenVerse.git)
+   cd backend
    ```
 
 2. Install dependencies:
@@ -53,8 +53,8 @@ This project is a web application that displays a "Hadith of the Day" with featu
 
 1. Clone the frontend repository:
    ```sh
-   git clone <frontend-repo-url>
-   cd <frontend-repo-directory>
+   git clone [<frontend-repo-url>](https://github.com/hasnain-sid/DeenVerse.git)
+   cd frontend
    ```
 
 2. Install dependencies:
