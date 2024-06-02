@@ -65,8 +65,9 @@ This project is a web application that displays a "Hadith of the Day" with featu
 3. Update `constant.js` file:
    - Open `constant.js` file located in the frontend directory.
    - Ensure the `USER_API_END_POINT` is pointing to your backend server.
+   - // export const USER_API_END_POINT = "http://localhost:8081/api/v1/user"
      ```javascript
-   // export const USER_API_END_POINT = "http://localhost:8081/api/v1/user"
+   
      ```
 
 4. Start the frontend server:
