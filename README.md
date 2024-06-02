@@ -32,14 +32,8 @@ This project is a web application that displays a "Hadith of the Day" with featu
    npm install
    ```
 
-3. Update `constant.js` file:
-   - Open `constant.js` file located in the backend directory.
-   - Update the `USER_API_END_POINT` and any other necessary constants with your local or production values.
-     ```javascript
-     export const USER_API_END_POINT = "http://localhost:5000/api"; // Example URL
-     ```
 
-4. Configure CORS in `index.js` file:
+3. Configure CORS in `index.js` file:
    - Open `index.js` file located in the backend directory.
    - Update the CORS configuration to allow requests from your frontend URL.
      ```javascript
@@ -50,9 +44,9 @@ This project is a web application that displays a "Hadith of the Day" with featu
      app.use(cors(corsOptions));
      ```
 
-5. Start the backend server:
+4. Start the backend server:
    ```sh
-   npm start
+   nodemon index.js
    ```
 
 ### Frontend Setup
@@ -72,7 +66,7 @@ This project is a web application that displays a "Hadith of the Day" with featu
    - Open `constant.js` file located in the frontend directory.
    - Ensure the `USER_API_END_POINT` is pointing to your backend server.
      ```javascript
-     export const USER_API_END_POINT = "http://localhost:5000/api"; // Example URL
+   // export const USER_API_END_POINT = "http://localhost:8081/api/v1/user"
      ```
 
 4. Start the frontend server:
@@ -83,7 +77,7 @@ This project is a web application that displays a "Hadith of the Day" with featu
 ## Usage
 
 - The application will be available at `http://localhost:3000`.
-- Interact with the Hadith of the day, like, save, and share it.
+- Interact with the Hadith of the day, save, and share it.
 
 ## Dependencies
 
@@ -106,4 +100,4 @@ Contributions are welcome! Please fork the repository and submit a pull request 
 This project is licensed under the MIT License.
 ```
 
-Replace the placeholder URLs (like `<backend-repo-url>` and `<frontend-repo-url>`) with the actual URLs of your repositories before pasting. This `README.md` file provides an overview of the project, setup instructions for both the backend and frontend, and basic usage information.
+ 
