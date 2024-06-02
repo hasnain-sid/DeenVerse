@@ -7,16 +7,17 @@ import toast from "react-hot-toast";
 import { useSelector, useDispatch } from "react-redux";
 import { USER_API_END_POINT } from "../utils/constant";
 import { getUser } from "../redux/userSlice";
-import useGetUser from "../hooks/useGetUser";
+import { toPng } from 'html-to-image';
+import download from 'downloadjs';
 
 const Saved = () => {
-    const { user, refresh } = useSelector((store) => store.user);
+    const { user } = useSelector((store) => store.user);
     const [index, setIndex] = useState(0);
     const [click, setClick] = useState(false);
     const [info, setInfo] = useState({});
     const [lang, setLang] = useState("en");
     const [isFullScreen, setIsFullScreen] = useState(false);
-    const [savedItems, setSavedItems] = useState(user.saved || []);
+    const [savedItems, setSavedItems] = useState(user?.saved || []);
     const dispatch = useDispatch();
     const { title, hadeeth, explanation } = info;
     const id = savedItems[index];
@@ -39,11 +40,9 @@ const Saved = () => {
 
     useEffect(() => {
         setClick(false);
-        if(user?.saved.includes(id))
-        {
+        if (user?.saved.includes(id)) {
             setClick(true);
         }
-        
     }, [id]);
 
     const savedHandler = async (e) => {
@@ -72,6 +71,17 @@ const Saved = () => {
         setIsFullScreen(!isFullScreen);
     };
 
+    const shareContent = () => {
+        const content = document.getElementById('saved-content');
+        toPng(content)
+            .then((dataUrl) => {
+                download(dataUrl, 'hadith-of-the-day.png');
+            })
+            .catch((err) => {
+                console.error('Error generating image:', err);
+            });
+    };
+
     return (
         <div className={`p-6 rounded-2xl m-3 shadow-lg ${isFullScreen ? 'fixed inset-0 bg-white z-50' : 'bg-gradient-to-r from-green-100 via-blue-100 to-purple-100'}`}>
             <div className="flex justify-between items-center">
@@ -97,7 +107,7 @@ const Saved = () => {
                 </div>
                 <div className="flex items-center mx-2">
                     <div className="p-2 hover:bg-gray-200 rounded-full cursor-pointer transition duration-300">
-                        <IoShareOutline size="21px" color="black" />
+                        <IoShareOutline size="21px" color="black" onClick={shareContent} />
                     </div>
                 </div>
                 <div className="flex items-center mx-2">
@@ -123,7 +133,7 @@ const Saved = () => {
                 </button>
             </div>
 
-            <div className="bg-gray-200 rounded-lg p-4 mt-4 shadow-inner">
+            <div id="saved-content" className="bg-gray-200 rounded-lg p-4 mt-4 shadow-inner">
                 <div className="text-center bg-grey-lighter p-2">
                     <h4 className="text-black m-1 text-lg font-bold">{title}</h4>
                 </div>
