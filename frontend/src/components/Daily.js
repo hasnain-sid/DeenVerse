@@ -93,12 +93,7 @@ const Daily = () => {
             
             {/* Like and Interaction Buttons */}
             <div className="flex justify-center mt-4 mb-4 bg-cyan-300 rounded-full p-2 space-x-4 shadow-md">
-                <div className="flex items-center mx-2">
-                    <div className="p-2 hover:bg-red-200 rounded-full cursor-pointer transition duration-300">
-                        <FaRegHeart color="black" />
-                    </div>
-                    <p className="ml-1">0</p>
-                </div>
+                 
                 <div className="flex items-center mx-2">
                     <div className="p-2 hover:bg-yellow-100 rounded-full cursor-pointer transition duration-300">
                         {click ? (
@@ -140,7 +135,7 @@ const Daily = () => {
                 <div className="text-center bg-grey-lighter p-2">
                     <h4 className="  text-black m-1 text-lg font-bold">{title}</h4>
                 </div>
-                <p className="font-mono text-blue-700 text-center text-sm font-semibold">{hadeeth}</p>
+                <p className="font-serif text-blue-700 text-center text-sm font-semibold">{hadeeth}</p>
                 <p className="text-black text-justify text-sm font-semibold">{explanation}</p>
             </div>
         </div>

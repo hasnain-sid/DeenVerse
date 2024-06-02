@@ -8,13 +8,8 @@ import { getLang } from "../redux/contentSlice.js";
 import { useDispatch } from "react-redux";
 const RightSideBar = () => {
     const { translations} = useSelector((store) => store.content);
-    // console.log('heeol',lang)
-    console.log(translations)
-    
-    
 
-    // console.log(transs);
-    return (
+     return (
         <div className="p-3 w-[30%]">
             <div className="flex text-gray-700 items-center p-2 bg-gray-100 rounded-full outline-none w-full">
                 <CiSearch />

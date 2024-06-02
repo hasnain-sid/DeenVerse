@@ -85,12 +85,7 @@ const Saved = () => {
             <hr className="my-4 h-1 w-24 mx-auto bg-cyan-400 border-0"></hr>
             
             <div className="flex justify-center mt-4 mb-4 bg-cyan-300 rounded-full p-2 space-x-4 shadow-md">
-                <div className="flex items-center mx-2">
-                    <div className="p-2 hover:bg-red-200 rounded-full cursor-pointer transition duration-300">
-                        <FaRegHeart color="black" />
-                    </div>
-                    <p className="ml-1">0</p>
-                </div>
+                 
                 <div className="flex items-center mx-2">
                     <div className="p-2 hover:bg-yellow-100 rounded-full cursor-pointer transition duration-300">
                         {click ? (
