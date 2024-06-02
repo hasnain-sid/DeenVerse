@@ -1,8 +1,18 @@
 
-```markdown
+ 
+
+
+
 # Hadith Of The Day
 
 This project is a web application that displays a "Hadith of the Day" with features for sharing, saving, and interacting with the Hadith. The application uses React for the frontend and `@material-tailwind/react` for UI components.
+
+# Deployed Application
+The application is also deployed and can be accessed at
+ ```sh
+   https://deen-verse-front.vercel.app/
+   ```
+
 
 ## Features
 
@@ -23,7 +33,7 @@ This project is a web application that displays a "Hadith of the Day" with featu
 
 1. Clone the backend repository:
    ```sh
-   git clone [backend](https://github.com/hasnain-sid/DeenVerse.git)
+   git clone https://github.com/hasnain-sid/DeenVerse.git
    cd backend
    ```
 
@@ -53,7 +63,7 @@ This project is a web application that displays a "Hadith of the Day" with featu
 
 1. Clone the frontend repository:
    ```sh
-   git clone [<frontend-repo-url>](https://github.com/hasnain-sid/DeenVerse.git)
+   git clone https://github.com/hasnain-sid/DeenVerse.git
    cd frontend
    ```
 
