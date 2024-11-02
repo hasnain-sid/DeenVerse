@@ -8,7 +8,7 @@
 This project is a web application that displays a "Hadith of the Day" with features for sharing, saving, and interacting with the Hadith. The application uses React for the frontend and `@material-tailwind/react` for UI components.
 
 # Deployed Application
-The application is also deployed and can be accessed at
+The application is also deployed and can be accessed at [Visit Deen Verse Frontend](https://deen-verse-front.vercel.app/)
  ```sh
    https://deen-verse-front.vercel.app/
    ```
