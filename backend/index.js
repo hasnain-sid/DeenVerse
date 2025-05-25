@@ -18,8 +18,8 @@ app.use(express.urlencoded({
 app.use(express.json());
 app.use(cookieParser());
 const corsOptions = {
-  origin: 'https://deen-verse-front.vercel.app',
-  // origin: 'http://localhost:3000',
+ origin: 'https://deen-verse-front.vercel.app',
+  //  origin: 'http://localhost:3000',
 
   credentials: true
 }
