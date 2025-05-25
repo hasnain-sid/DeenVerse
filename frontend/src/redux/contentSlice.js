@@ -6,7 +6,7 @@ const contentSlice = createSlice({
     content: null,
     translations: ["English"],
     lang: "en",
-    theme: 'Default',
+    theme: 'default', // Changed 'Default' to 'default'
     fontSize: 100,
     fontFamily: 'STIX Two Text',
   },
