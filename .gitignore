@@ -1,0 +1,21 @@
+# IDE specific
+.idea/
+.vscode/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+._*
+.Spotlight-V100
+.Trashes
+
+# Node.js backend specific
+backend/node_modules/
+backend/.env
+backend/npm-debug.log*
+backend/yarn-debug.log*
+backend/yarn-error.log*
+
+# General logs
+*.log
