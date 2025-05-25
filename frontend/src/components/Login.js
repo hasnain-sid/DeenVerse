@@ -3,8 +3,12 @@ import axios from "axios";
 import { USER_API_END_POINT } from "../utils/constant.js";
 import toast from "react-hot-toast"
 import { useNavigate } from "react-router-dom";
-import {useDispatch} from "react-redux"
+import { useDispatch} from "react-redux"
 import { getUser} from "../redux/userSlice.js";
+
+// Optional: Import an icon for the login page if you have one
+// import { BookOpen } from 'lucide-react'; 
+
 const Login = () => {
     const [isLogin, setIsLogin] = useState(true);
     const [name, setName] = useState("");
@@ -68,79 +72,96 @@ const Login = () => {
         }
     };
     return (
-        <div className="w-screen h-screen flex items-center justify-center">
-            <div className="flex items-center justify-evenly w-[80%]">
-                <div>
-                    <img
-                        className="ml-3"
-                        width={"400px"}
-                        src="https://cdn-icons-png.flaticon.com/128/2918/2918211.png"
-
-                        alt="DEENVERSE"
-                    />
-                </div>
-                <div>
-                    <div className="my-5">
-                        <h1 className="font-bold text-6xl">Learning now.</h1>
-                    </div>
-                    <h1 className="font-bold text-4xl mt-4 mb-2">
-                        {isLogin ? "Signup" : "Login"}
+        <div className="w-screen h-screen flex flex-col items-center justify-center bg-theme-primary-accent p-4">
+            {/* Optional: Logo or App Name */}
+            {/* <div className="mb-8 text-center">
+                <BookOpen size={48} className="mx-auto text-theme-text-primary" /> 
+                <h1 className="text-4xl font-bold text-theme-text-primary mt-2">DeenVerse</h1>
+            </div> */}
+            
+            <div className="w-full max-w-md bg-theme-card-bg p-8 rounded-xl shadow-2xl">
+                <div className="my-5 text-center">
+                    <h1 className="font-bold text-3xl sm:text-4xl text-theme-text-primary">
+                        {isLogin ? "Welcome Back" : "Join DeenVerse"}
                     </h1>
-                    <form
-                        onSubmit={submitHandler}
-                        className="flex flex-col w-[50%]"
-                    >
-                        {!isLogin && (
-                            <>
+                    <p className="text-theme-text-secondary mt-2">
+                        {isLogin ? "Login to continue your journey." : "Create an account to start exploring."}
+                    </p>
+                </div>
+                
+                <form
+                    onSubmit={submitHandler}
+                    className="space-y-6"
+                >
+                    {!isLogin && (
+                        <>
+                            <div>
+                                <label htmlFor="name" className="block text-sm font-medium text-theme-text-primary mb-1">Name</label>
                                 <input
+                                    id="name"
                                     type="text"
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
-                                    placeholder="Name"
-                                    className="outline-blue-500 border border-gray-800 px-3 py-1 rounded-full my-1 font-semibold text-black  "
+                                    placeholder="Your Full Name"
+                                    className="w-full outline-none border border-theme-border px-4 py-2 rounded-lg focus:ring-2 focus:ring-theme-primary-accent focus:border-theme-primary-accent transition-colors bg-theme-background text-theme-text-primary"
+                                    required={!isLogin}
                                 />
+                            </div>
+                            <div>
+                                <label htmlFor="username" className="block text-sm font-medium text-theme-text-primary mb-1">Username</label>
                                 <input
+                                    id="username"
                                     type="text"
                                     value={username}
-                                    onChange={(e) =>
-                                        setUsername(e.target.value)
-                                    }
-                                    placeholder="Username"
-                                    className="outline-blue-500 border border-gray-800 px-3 py-1 rounded-full my-1 font-semibold text-black"
+                                    onChange={(e) => setUsername(e.target.value)}
+                                    placeholder="Choose a Username"
+                                    className="w-full outline-none border border-theme-border px-4 py-2 rounded-lg focus:ring-2 focus:ring-theme-primary-accent focus:border-theme-primary-accent transition-colors bg-theme-background text-theme-text-primary"
+                                    required={!isLogin}
                                 />
-                            </>
-                        )}
-
+                            </div>
+                        </>
+                    )}
+                    <div>
+                        <label htmlFor="email" className="block text-sm font-medium text-theme-text-primary mb-1">Email</label>
                         <input
+                            id="email"
                             type="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            placeholder="E-mail"
-                            className="outline-blue-500 border border-gray-800 px-3 py-1 rounded-full my-1 font-semibold text-black"
+                            placeholder="your.email@example.com"
+                            className="w-full outline-none border border-theme-border px-4 py-2 rounded-lg focus:ring-2 focus:ring-theme-primary-accent focus:border-theme-primary-accent transition-colors bg-theme-background text-theme-text-primary"
+                            required
                         />
+                    </div>
+                    <div>
+                        <label htmlFor="password" className="block text-sm font-medium text-theme-text-primary mb-1">Password</label>
                         <input
+                            id="password"
                             type="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            placeholder="Password"
-                            className="outline-blue-500 border border-gray-800 px-3 py-1 rounded-full my-1 font-semibold text-black"
+                            placeholder="Enter Your Password"
+                            className="w-full outline-none border border-theme-border px-4 py-2 rounded-lg focus:ring-2 focus:ring-theme-primary-accent focus:border-theme-primary-accent transition-colors bg-theme-background text-theme-text-primary"
+                            required
                         />
-                        <button className="border-none rounded-full text-lg py-2 my-3 text-white bg-[#1D9BF0]">
-                            {!isLogin ? "Create Account" : "Login"}
-                        </button>
-                        <h1>
-                            {isLogin
-                                ? "Do not have an account?"
-                                : "Already have an account?"}{" "}
-                            <span
-                                onClick={loginHandler}
-                                className="blue cursor-pointer text-blue-700 font-semibold  "
-                            >
-                                {isLogin ? "Signup" : "Login"}
-                            </span>
-                        </h1>
-                    </form>
-                </div>
+                    </div>
+                    
+                    <button
+                        type="submit"
+                        className="w-full bg-theme-button-primary-bg text-theme-button-primary-text font-semibold py-3 px-4 rounded-lg hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-theme-button-primary-bg focus:ring-offset-2 focus:ring-offset-theme-card-bg transition-colors"
+                    >
+                        {isLogin ? "Login" : "Create Account"}
+                    </button>
+                </form>
+                <p className="text-center text-sm text-theme-text-secondary mt-8">
+                    {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
+                    <span
+                        onClick={loginHandler}
+                        className="font-semibold text-theme-hyperlink hover:underline cursor-pointer"
+                    >
+                        {isLogin ? "Sign up" : "Login"}
+                    </span>
+                </p>
             </div>
         </div>
     );

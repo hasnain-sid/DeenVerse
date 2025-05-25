@@ -1,42 +1,50 @@
-import { useState } from 'react';
+import { useState, useCallback, useRef } from 'react';
 
 /**
- * Custom hook for managing sidebar visibility and content width
- * @param {boolean} initialLeftState - Initial state of left sidebar visibility
- * @param {boolean} initialRightState - Initial state of right sidebar visibility
- * @returns {Object} Sidebar state and functions to manage it
+ * Custom hook to manage sidebar visibility states
  */
-const useSidebar = (initialLeftState = true, initialRightState = true) => {
-  const [showLeftSidebar, setShowLeftSidebar] = useState(initialLeftState);
-  const [showRightSidebar, setShowRightSidebar] = useState(initialRightState);
-
-  // Toggle individual sidebars
-  const toggleLeftSidebar = () => setShowLeftSidebar(!showLeftSidebar);
-  const toggleRightSidebar = () => setShowRightSidebar(!showRightSidebar);
+const useSidebar = (initialLeftState = false, initialRightState = false) => {
+  // Use refs to store initial states to avoid re-renders during initialization
+  const initialLeftRef = useRef(initialLeftState);
+  const initialRightRef = useRef(initialRightState);
   
-  // Toggle both sidebars together
-  const toggleBothSidebars = () => {
-    // If both are showing, hide both. If either is hidden, show both
-    const bothVisible = showLeftSidebar && showRightSidebar;
-    setShowLeftSidebar(!bothVisible);
-    setShowRightSidebar(!bothVisible);
+  // Initialize state only once using the refs
+  const [showLeftSidebar, setShowLeftSidebar] = useState(initialLeftRef.current);
+  const [showRightSidebar, setShowRightSidebar] = useState(initialRightRef.current);
+  
+  // Throttle updates to prevent rapid consecutive state changes
+  const lastToggleTime = useRef(0);
+  const THROTTLE_MS = 300;
+  
+  const isThrottled = () => {
+    const now = Date.now();
+    if (now - lastToggleTime.current < THROTTLE_MS) return true;
+    lastToggleTime.current = now;
+    return false;
   };
+  
+  const toggleLeftSidebar = useCallback(() => {
+    if (isThrottled()) return;
+    setShowLeftSidebar(prev => !prev);
+  }, []);
 
-  // Calculate the content class based on sidebar visibility
-  const getContentClass = () => {
-    if (!showLeftSidebar && !showRightSidebar) return 'w-full';
-    if (!showLeftSidebar) return 'w-[80%]';
-    if (!showRightSidebar) return 'w-[80%]';
-    return 'w-[60%]'; // Default with both sidebars visible
-  };
+  const toggleRightSidebar = useCallback(() => {
+    if (isThrottled()) return;
+    setShowRightSidebar(prev => !prev);
+  }, []);
+
+  const toggleBothSidebars = useCallback(() => {
+    if (isThrottled()) return;
+    setShowLeftSidebar(prev => !prev);
+    setShowRightSidebar(prev => !prev);
+  }, []);
 
   return {
     showLeftSidebar,
     showRightSidebar,
     toggleLeftSidebar,
     toggleRightSidebar,
-    toggleBothSidebars,
-    getContentClass
+    toggleBothSidebars
   };
 };
 

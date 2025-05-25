@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { ChevronLeft, ChevronRight, Bookmark, Share2, MessageSquare, Expand, Minimize } from 'lucide-react';
+import React, { useEffect, useState, useCallback } from "react";
+import { ChevronLeft, ChevronRight, Bookmark, Share2, MessageSquare } from 'lucide-react';
 import { useSelector, useDispatch } from "react-redux";
-import { getContent, getTranslations } from "../redux/contentSlice";
+import { getContent, getTranslations, getLang } from "../redux/contentSlice";
 import { arr } from "../utils/database_data.js";
 import toast from "react-hot-toast";
 import DownloadConfirmationDialog from "./DownloadConfirmationDialog";
@@ -9,7 +9,6 @@ import HadithControls from "./HadithControls";
 import useTheme from "../hooks/useTheme";
 import useBookmark from "../hooks/useBookmark";
 import { shareContent } from "../utils/helpers";
-import { themes } from "../utils/themes";
 
 const Daily = () => {
     // Redux
@@ -24,12 +23,9 @@ const Daily = () => {
         handleThemeChange,
         handleFontFamilyChange,
         toggleThemeMenu
-    } = useTheme();
-
-    // State
+    } = useTheme();    // State
     const [index, setIndex] = useState(0);
     const [info, setInfo] = useState({});
-    const [isFullScreen, setIsFullScreen] = useState(false);
     const [isShareDialogOpen, setIsShareDialogOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
@@ -70,22 +66,19 @@ const Daily = () => {
             }
         }
         fetchData();
-    }, [index, lang, id, dispatch]);
-
-    // Handlers
+    }, [index, lang, id, dispatch]);    // Handlers
     const handleShareContent = async () => {
         await shareContent("daily-content", "hadith-of-the-day.png");
     };
-
-    const toggleFullScreen = () => {
-        setIsFullScreen(!isFullScreen);
-    };
+    
+    // Language change handler
+    const handleLanguageChange = useCallback((langCode) => {
+        dispatch(getLang(langCode));
+    }, [dispatch]);
 
     return (
-        <div className={`min-h-screen ${themes[currentTheme].background} transition-colors duration-300 p-4`}>
-            <div className={`max-w-4xl mx-auto ${themes[currentTheme].card} rounded-lg shadow-lg transition-all duration-300 ${
-                isFullScreen ? 'fixed inset-0 z-50 rounded-none' : ''
-            }`}>
+        <div className="min-h-screen bg-theme-background transition-colors duration-300 p-4">
+            <div className="max-w-4xl mx-auto bg-theme-card rounded-lg shadow-lg transition-all duration-300">
                 {/* Controls Bar */}
                 <HadithControls 
                     currentTheme={currentTheme}
@@ -96,55 +89,46 @@ const Daily = () => {
                     onIncreaseFontSize={() => handleFontSizeChange(10)}
                     onToggleThemeMenu={toggleThemeMenu}
                     onThemeChange={handleThemeChange}
+                    onLanguageChange={handleLanguageChange}
                 />
 
                 <div className="p-6">
-                    <div className="flex items-center justify-between">
-                        <h1 className={`text-3xl font-bold ${themes[currentTheme].accent} text-center flex-grow`}>
+                    <div className="flex items-center justify-center">
+                        <h1 className="text-3xl font-bold text-theme-accent text-center">
                             Hadith Of The Day
                         </h1>
-                        <button
-                            className={`p-2 ${themes[currentTheme].hover} rounded-md ${themes[currentTheme].text}`}
-                            onClick={toggleFullScreen}
-                        >
-                            {isFullScreen ? (
-                                <Minimize className="h-5 w-5" />
-                            ) : (
-                                <Expand className="h-5 w-5" />
-                            )}
-                        </button>
                     </div>
-                    <div className="w-24 h-0.5 bg-cyan-400 mx-auto my-4" />
+                    <div className="w-24 h-0.5 bg-theme-accent mx-auto my-4" />
                 </div>
                 <div className="flex justify-center gap-6 py-4">
                     <button
-                        className={`p-2 ${themes[currentTheme].hover} rounded-md ${themes[currentTheme].text}`}
+                        className="p-2 hover:bg-theme-hover rounded-md text-theme-text-primary"
                         onClick={toggleBookmark}
                     >
-                        <Bookmark className={`h-5 w-5 ${isBookmarked ? 'fill-yellow-400' : ''}`} />
+                        <Bookmark className={`h-5 w-5 ${isBookmarked ? 'fill-yellow-400 text-yellow-400' : 'text-theme-icon'}`} />
                     </button>
                     <button
-                        className={`p-2 ${themes[currentTheme].hover} rounded-md ${themes[currentTheme].text}`}
+                        className="p-2 hover:bg-theme-hover rounded-md text-theme-text-primary"
                         onClick={() => setIsShareDialogOpen(true)}
                     >
-                        <Share2 className="h-5 w-5" />
+                        <Share2 className="h-5 w-5 text-theme-icon" />
                     </button>
                     <button
-                        className={`p-2 ${themes[currentTheme].hover} rounded-md ${themes[currentTheme].text}`}
+                        className="p-2 hover:bg-theme-hover rounded-md text-theme-text-primary"
                     >
-                        <MessageSquare className="h-5 w-5" />
+                        <MessageSquare className="h-5 w-5 text-theme-icon" />
                     </button>
                 </div>
 
                 <div className="flex justify-between px-4 py-2">
                     <button
-                        className={`p-2 border rounded-md ${themes[currentTheme].hover} ${themes[currentTheme].border} ${themes[currentTheme].text}`}
+                        className="p-2 border border-theme-border rounded-md hover:bg-theme-hover text-theme-text-primary"
                         onClick={() => setIndex((index - 1 + arr.length) % arr.length)}
                     >
                         <ChevronLeft className="h-5 w-5" />
                     </button>
                     <button
-                        className={`p-2 border rounded-md ${themes[currentTheme].hover} ${themes[currentTheme].border} ${themes[currentTheme].text}`}
+                        className="p-2 border border-theme-border rounded-md hover:bg-theme-hover text-theme-text-primary"
                         onClick={() => setIndex((index + 1) % arr.length)}
                     >
                         <ChevronRight className="h-5 w-5" />
@@ -154,24 +138,24 @@ const Daily = () => {
                 <div className="p-6">
                     {isLoading ? (
                         <div className="flex justify-center items-center h-48">
-                            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+                            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-theme-accent"></div>
                         </div>
                     ) : (
                         <div 
                             id="daily-content"
-                            className={`rounded-lg p-6 ${themes[currentTheme].card} ${themes[currentTheme].text}`}
+                            className="rounded-lg p-6 bg-theme-card text-theme-text-primary"
                             style={{ 
                                 fontSize: `${reduxFontSize}%`,
                                 fontFamily: reduxFontFamily
                             }}
                         >
-                            <h2 className="text-xl font-bold mb-4 text-center">
+                            <h2 className="text-xl font-bold mb-4 text-center text-theme-text-primary">
                                 {title}
                             </h2>
-                            <p className={`${themes[currentTheme].hadith} text-center mb-4 font-mono`}>
+                            <p className="text-theme-hadith text-center mb-4 font-mono">
                                 {hadeeth}
                             </p>
-                            <p className={themes[currentTheme].text}>
+                            <p className="text-theme-text-secondary">
                                 {explanation}
                             </p>
                         </div>

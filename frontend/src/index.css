@@ -2,11 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
-
 body {
+  background-color: theme('colors.brand-off-white');
+  color: theme('colors.brand-charcoal');
   margin: 0;
-  background: black;
-  color: white;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;

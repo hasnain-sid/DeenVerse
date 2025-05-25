@@ -18,12 +18,11 @@ const SidebarToggle = ({
   toggleBothSidebars
 }) => {
   return (
-    <>
-      {/* Left sidebar toggle */}
+    <>      {/* Left sidebar toggle */}
       <div className="fixed top-4 left-4 z-50">
         <button 
           onClick={toggleLeftSidebar} 
-          className="p-2 bg-white rounded-full shadow-lg hover:bg-gray-100"
+          className="p-2 bg-theme-card-background text-theme-text-primary rounded-full shadow-lg hover:bg-theme-hover"
         >
           {showLeftSidebar ? <PanelLeftClose size={20} /> : <SidebarOpen size={20} />}
         </button>
@@ -33,7 +32,7 @@ const SidebarToggle = ({
       <div className="fixed top-4 right-4 z-50">
         <button 
           onClick={toggleRightSidebar}
-          className="p-2 bg-white rounded-full shadow-lg hover:bg-gray-100"
+          className="p-2 bg-theme-card-background text-theme-text-primary rounded-full shadow-lg hover:bg-theme-hover"
         >
           {showRightSidebar ? <PanelRightClose size={20} /> : <SidebarOpen size={20} />}
         </button>
@@ -43,7 +42,7 @@ const SidebarToggle = ({
       <div className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50">
         <button 
           onClick={toggleBothSidebars}
-          className="p-2 bg-white rounded-full shadow-lg hover:bg-gray-100"
+          className="p-2 bg-theme-card-background text-theme-text-primary rounded-full shadow-lg hover:bg-theme-hover"
         >
           {showLeftSidebar && showRightSidebar ? <Minimize2 size={20} /> : <Maximize2 size={20} />}
         </button>

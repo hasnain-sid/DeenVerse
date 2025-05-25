@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { setTheme, setFontSize, setFontFamily } from '../redux/contentSlice';
+import { setTheme as setReduxTheme, setFontSize, setFontFamily } from '../redux/contentSlice';
+import { themes } from '../utils/themes';
 
 /**
  * Custom hook for managing theme, font size, and font family
@@ -8,55 +9,121 @@ import { setTheme, setFontSize, setFontFamily } from '../redux/contentSlice';
  */
 export const useTheme = () => {
   const dispatch = useDispatch();
-  const { theme: storeTheme, fontSize: storeFontSize, fontFamily: storeFontFamily } = 
-    useSelector((state) => state.content);
+  const { 
+    theme: reduxThemeName, 
+    fontSize: reduxFontSize, 
+    fontFamily: reduxFontFamily 
+  } = useSelector((state) => state.content);
   
-  const [isThemeMenuOpen, setIsThemeMenuOpen] = useState(false);
-  const [currentTheme, setCurrentTheme] = useState(storeTheme || 'default');
+  // Use ref to track if we've already synced Redux with localStorage
+  const hasInitializedRef = useRef(false);
 
+  // Initialize currentThemeName from localStorage first, then Redux
+  const [currentThemeName, setCurrentThemeName] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const savedTheme = localStorage.getItem('selectedTheme');
+      if (savedTheme) return savedTheme;
+    }
+    return reduxThemeName || 'default';
+  });
+
+  const [isThemeMenuOpen, setIsThemeMenuOpen] = useState(false);
+
+  // Only run once on mount to sync initial theme state
+  useEffect(() => {
+    if (!hasInitializedRef.current) {
+      const themeToApply = themes[currentThemeName] || themes.default;
+      const root = document.documentElement;
+      
+      // Apply CSS custom properties
+      Object.keys(themeToApply).forEach(key => {
+        root.style.setProperty(key, themeToApply[key]);
+      });
+      
+      // Save to localStorage if needed
+      if (typeof window !== 'undefined' && !localStorage.getItem('selectedTheme')) {
+        localStorage.setItem('selectedTheme', currentThemeName);
+      }
+      
+      // Sync Redux if needed, but only once
+      if (reduxThemeName !== currentThemeName) {
+        dispatch(setReduxTheme(currentThemeName));
+      }
+      
+      hasInitializedRef.current = true;
+    }
+  }, []); // Empty dependency array = run once on mount
+  
+  // Effect to apply theme when it changes via user action
+  useEffect(() => {
+    // Skip the first render, which is handled by the initialization effect
+    if (hasInitializedRef.current) {
+      const themeToApply = themes[currentThemeName] || themes.default;
+      const root = document.documentElement;
+      
+      // Apply CSS custom properties
+      Object.keys(themeToApply).forEach(key => {
+        root.style.setProperty(key, themeToApply[key]);
+      });
+      
+      // Persist to localStorage
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('selectedTheme', currentThemeName);
+      }
+      
+      // Update Redux
+      if (reduxThemeName !== currentThemeName) {
+        dispatch(setReduxTheme(currentThemeName));
+      }
+    }
+  }, [currentThemeName]); // Only depends on currentThemeName changes
   /**
    * Handle font size change
    * @param {number} increment - Amount to increase/decrease font size
    */
-  const handleFontSizeChange = (increment) => {
-    const newSize = storeFontSize + increment;
+  const handleFontSizeChange = useCallback((increment) => {
+    const newSize = reduxFontSize + increment;
     if (newSize >= 70 && newSize <= 130) {
       dispatch(setFontSize(newSize));
     }
-  };
+  }, [reduxFontSize, dispatch]);
 
   /**
-   * Handle theme change
+   * Handle theme change - this is the primary function to call to change themes.
    * @param {string} themeName - Name of the theme to switch to
    */
-  const handleThemeChange = (themeName) => {
-    setCurrentTheme(themeName);
-    dispatch(setTheme(themeName));
+  const handleThemeChange = useCallback((themeName) => {
+    if (themes[themeName]) {
+      setCurrentThemeName(themeName);
+    }
     setIsThemeMenuOpen(false);
-  };
+  }, []);
 
   /**
    * Handle font family change
    * @param {Event} event - Change event from select element
    */
-  const handleFontFamilyChange = (event) => {
+  const handleFontFamilyChange = useCallback((event) => {
     dispatch(setFontFamily(event.target.value));
-  };
+  }, [dispatch]);
 
   /**
    * Toggle theme menu open/closed
    */
-  const toggleThemeMenu = () => setIsThemeMenuOpen(!isThemeMenuOpen);
+  const toggleThemeMenu = useCallback(() => {
+    setIsThemeMenuOpen(prev => !prev);
+  }, []);
 
   return {
-    currentTheme,
-    fontSize: storeFontSize,
-    fontFamily: storeFontFamily,
+    currentThemeName, // This is the theme name (e.g., 'default', 'dark')
+    fontSize: reduxFontSize,
+    fontFamily: reduxFontFamily,
     isThemeMenuOpen,
-    handleFontSizeChange,
     handleThemeChange,
+    handleFontSizeChange,
     handleFontFamilyChange,
-    toggleThemeMenu
+    toggleThemeMenu,
+    availableThemes: Object.keys(themes), // Used for populating theme switcher UI
   };
 };
 
