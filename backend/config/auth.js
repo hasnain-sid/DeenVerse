@@ -1,26 +1,25 @@
 import jwt from "jsonwebtoken";
-import dotenv from "dotenv";
-dotenv.config({
-  path:"../config/.env"
-})
+import { AppError } from '../utils/AppError.js'; // Updated path
 
- const isAuthenticated = async (req, res, next) =>{
+const isAuthenticated = async (req, res, next) =>{
   try {
-    const token= req.cookies.token;
-    console.log(token);
+    const token = req.cookies.token;
 
     if(!token){
-      return await res.status(401).json({message:"User not authenticated",
-    success:false});
+      return next(new AppError("User not authenticated. Please login.", 401));
     }
-    const decode = jwt.verify(token, process.env.TOKEN_SECRET);
-    console.log(decode);
-    req.user = decode.userId;
-    // console.log(req.user)
-    next();
+    
+    const decoded = jwt.verify(token, process.env.TOKEN_SECRET);
+    req.user = decoded.userId; 
+    next(); 
     
   } catch (error) {
-    console.error(error)
+    if (error instanceof jwt.JsonWebTokenError) {
+        return next(new AppError("Invalid token. Please login again.", 401));
+    } else if (error instanceof jwt.TokenExpiredError) {
+        return next(new AppError("Session expired. Please login again.", 401));
+    }
+    return next(new AppError("Authentication failed. Please try again later.", 500));
   }
 }
 export default isAuthenticated;

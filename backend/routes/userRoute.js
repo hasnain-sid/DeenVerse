@@ -1,19 +1,37 @@
 import express from "express";
-// import { Login, Register, Logout, bookmarks, getProfile, getOtherUsers, Follow, Unfollow } from "../controllers/userController.js";
-import { Login, Register, Logout,saved } from "../controller/userController.js";
-
+import {
+    Login,
+    Register,
+    Logout,
+    saved,
+    getProfile,
+    getOtherUsers,
+    Follow,
+    Unfollow
+} from "../controller/userController.js";
 import isAuthenticated from "../config/auth.js";
+import {
+    registerValidationRules,
+    loginValidationRules,
+    followUnfollowValidationRules,
+    mongoIdParamValidationRules // Added for param validation
+} from "../middlewares/validators.js";
+
 const router = express.Router();
 
-router.route("/register").post(Register);
-router.route("/login").post(Login);
+router.route("/register").post(registerValidationRules(), Register);
+router.route("/login").post(loginValidationRules(), Login);
 router.route("/logout").get(Logout);
-router.route("/saved/:id").put(isAuthenticated, saved);
-// router.route("/getprofile/:id").get(isAuthenticated, getProfile);
-// router.route("/getotherprofiles/:id").get(isAuthenticated, getOtherUsers);
-// router.route("/follow/:id").post(isAuthenticated, Follow);
-// router.route("/unfollow/:id").post(isAuthenticated, Unfollow);
 
+// Using mongoIdParamValidationRules to validate MongoDB ID in the URL parameter
+router.route("/saved/:id").put(isAuthenticated, mongoIdParamValidationRules('id'), saved);
+router.route("/profile/:id").get(isAuthenticated, mongoIdParamValidationRules('id'), getProfile);
 
+// getOtherUsers does not take an ID param, it uses req.user from isAuthenticated
+router.route("/users").get(isAuthenticated, getOtherUsers);
 
-export default router;  
+// followUnfollowValidationRules already checks for body('id').isMongoId()
+router.route("/follow").post(isAuthenticated, followUnfollowValidationRules(), Follow);
+router.route("/unfollow").post(isAuthenticated, followUnfollowValidationRules(), Unfollow);
+
+export default router;
