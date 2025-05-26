@@ -44,7 +44,9 @@ const useSidebar = (initialLeftState = false, initialRightState = false) => {
     showRightSidebar,
     toggleLeftSidebar,
     toggleRightSidebar,
-    toggleBothSidebars
+    toggleBothSidebars,
+    setShowLeftSidebar, // Export setShowLeftSidebar
+    setShowRightSidebar, // Export setShowRightSidebar
   };
 };
 

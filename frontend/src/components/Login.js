@@ -79,7 +79,7 @@ const Login = () => {
                 <h1 className="text-4xl font-bold text-theme-text-primary mt-2">DeenVerse</h1>
             </div> */}
             
-            <div className="w-full max-w-md bg-theme-card-bg p-8 rounded-xl shadow-2xl">
+            <div className="w-full max-w-md bg-theme-card-background p-8 rounded-xl shadow-2xl">
                 <div className="my-5 text-center">
                     <h1 className="font-bold text-3xl sm:text-4xl text-theme-text-primary">
                         {isLogin ? "Welcome Back" : "Join DeenVerse"}
@@ -148,7 +148,7 @@ const Login = () => {
                     
                     <button
                         type="submit"
-                        className="w-full bg-theme-button-primary-bg text-theme-button-primary-text font-semibold py-3 px-4 rounded-lg hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-theme-button-primary-bg focus:ring-offset-2 focus:ring-offset-theme-card-bg transition-colors"
+                        className="w-full bg-theme-button-primary-bg text-theme-button-primary-text font-semibold py-3 px-4 rounded-lg hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-theme-button-primary-bg focus:ring-offset-2 focus:ring-offset-theme-card-background transition-colors"
                     >
                         {isLogin ? "Login" : "Create Account"}
                     </button>

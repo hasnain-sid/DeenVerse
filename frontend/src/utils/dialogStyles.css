@@ -1,0 +1,86 @@
+/* Dialog Animation Styles */
+
+/* Dialog backdrop overlay */
+.dialog-overlay {
+  animation: overlayShow 150ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Dialog content animation */
+.dialog-content {
+  animation: contentShow 300ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Dialog content enter animation */
+@keyframes contentShow {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Dialog overlay enter animation */
+@keyframes overlayShow {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Custom styling for the dialog backdrop */
+.backdrop-blur {
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* Prevent scrolling when dialog is open */
+.overflow-hidden {
+  overflow: hidden !important;
+  touch-action: none;
+  -ms-touch-action: none;
+  position: fixed;
+  width: 100%;
+}
+
+/* Dialog Content Styling */
+.dialog-animation-enter {
+  opacity: 0;
+  transform: scale(0.95);
+}
+
+.dialog-animation-enter-active {
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity 200ms, transform 200ms;
+}
+
+.dialog-animation-exit {
+  opacity: 1;
+}
+
+.dialog-animation-exit-active {
+  opacity: 0;
+  transform: scale(0.95);
+  transition: opacity 200ms, transform 200ms;
+}
+
+/* Mobile-specific styling */
+@media (max-width: 640px) {
+  .dialog-content {
+    max-width: calc(100vw - 2rem) !important;
+    margin: 0 auto;
+    padding: 1.5rem !important;
+  }
+}
+
+/* Handle iOS Safari issues with position:fixed */
+@supports (-webkit-touch-callout: none) {
+  .overflow-hidden {
+    height: -webkit-fill-available;
+  }
+}

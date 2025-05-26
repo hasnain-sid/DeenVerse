@@ -1,0 +1,120 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  background-color: theme('colors.brand-off-white');
+  color: theme('colors.brand-charcoal');
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* Add smooth transitions for theme changes */
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Apply transitions to all themed elements for smooth theme switching */
+.App, button, div, span, p, h1, h2, h3, h4, h5, h6 {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+/* Global dropdown and dialog styles */
+.dropdown-menu,
+.dialog-content {
+  background-color: #2a2a2a !important;
+  color: white !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  overflow: hidden;
+  border-radius: 0.5rem;
+  backdrop-filter: none !important;
+  --tw-bg-opacity: 1 !important;
+  z-index: 50;
+  padding: 0.5rem 0;
+}
+
+/* Theme-aware dropdown styles */
+.theme-default .dropdown-menu {
+  background-color: #ffffff !important;
+  color: #1F2937 !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+.theme-sepia .dropdown-menu {
+  background-color: #FCF9F0 !important;
+  color: #3C2415 !important;
+  border: 1px solid rgba(60, 36, 21, 0.1) !important;
+}
+
+/* Dropdown item styling */
+.dropdown-menu button,
+.dropdown-menu div[role="button"] {
+  color: white !important;
+  background-color: transparent;
+  transition: background-color 0.2s;
+  width: 100%;
+  text-align: left;
+  padding: 0.5rem 1rem;
+}
+
+/* Theme-aware dropdown button styles */
+.theme-default .dropdown-menu button,
+.theme-default .dropdown-menu div[role="button"] {
+  color: #1F2937 !important;
+}
+
+.theme-sepia .dropdown-menu button,
+.theme-sepia .dropdown-menu div[role="button"] {
+  color: #3C2415 !important;
+}
+
+.dropdown-menu button:hover,
+.dropdown-menu div[role="button"]:hover {
+  background-color: #3a3a3a !important;
+}
+
+/* Theme-aware dropdown hover styles */
+.theme-default .dropdown-menu button:hover,
+.theme-default .dropdown-menu div[role="button"]:hover {
+  background-color: #F3F4F6 !important;
+}
+
+.theme-sepia .dropdown-menu button:hover,
+.theme-sepia .dropdown-menu div[role="button"]:hover {
+  background-color: #F2EBDB !important;
+}
+
+.dropdown-menu button.active,
+.dropdown-menu button[aria-selected="true"],
+.dropdown-menu div[role="button"].active {
+  background-color: #3a3a3a !important;
+}
+
+/* Theme-aware dropdown active styles */
+.theme-default .dropdown-menu button.active,
+.theme-default .dropdown-menu button[aria-selected="true"],
+.theme-default .dropdown-menu div[role="button"].active {
+  background-color: #F3F4F6 !important;
+}
+
+.theme-sepia .dropdown-menu button.active,
+.theme-sepia .dropdown-menu button[aria-selected="true"],
+.theme-sepia .dropdown-menu div[role="button"].active {
+  background-color: #F2EBDB !important;
+}
+
+/* Backdrop styling for dialogs/dropdowns */
+.backdrop-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(2px);
+  z-index: 40;
+}

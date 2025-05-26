@@ -1,0 +1,258 @@
+/* 
+ * Dropdown styling for the application
+ * Responsive design for all screen sizes with smart positioning
+ */
+
+/* Base dropdown container */
+.dropdown-menu {
+  position: absolute;
+  z-index: 9999;
+  margin-top: 0.5rem;
+  background-color: rgba(var(--color-card-background-rgb), 1);
+  border: 1px solid rgba(var(--color-border-rgb), 0.5);
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  min-width: 180px;
+  max-width: min(300px, 100vw - 32px); /* Responsive width, never wider than viewport minus margins */
+  transform-origin: top center;
+  animation: dropdown-in 0.2s ease-out;
+  will-change: transform, opacity; /* Performance optimization */
+  backface-visibility: hidden; /* Reduce flickering */
+}
+
+/* Dropdown positioning classes with intelligent edge detection */
+.dropdown-menu.position-right {
+  right: 0;
+}
+
+.dropdown-menu.position-left {
+  left: 0;
+}
+
+.dropdown-menu.position-bottom {
+  top: 100%;
+}
+
+.dropdown-menu.position-top {
+  bottom: 100%;
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  transform-origin: bottom center;
+  animation: dropdown-in-top 0.2s ease-out;
+}
+
+/* Dropdown header */
+.dropdown-header {
+  padding: 0.75rem 1rem;
+  font-weight: 600;
+  font-size: 0.875rem;
+  border-bottom: 1px solid rgba(var(--color-border-rgb), 0.5);
+  color: rgba(var(--color-text-primary-rgb), 0.8);
+}
+
+/* Dropdown items */
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  text-align: left;
+  font-size: 0.875rem;
+  color: rgba(var(--color-text-primary-rgb), 1);
+  transition: background-color 0.15s ease;
+  user-select: none;
+  min-height: 44px; /* Minimum touch target size for accessibility */
+}
+
+/* Active state for dropdown items */
+.dropdown-item.active {
+  background-color: rgba(var(--color-active-rgb), 1);
+  font-weight: 500;
+}
+
+/* Hover state for dropdown items */
+.dropdown-item:hover {
+  background-color: rgba(var(--color-hover-rgb), 1);
+}
+
+/* Color swatch for theme selection */
+.dropdown-item .color-swatch {
+  width: 1rem;
+  height: 1rem;
+  margin-right: 0.75rem;
+  border-radius: 50%;
+  border: 1px solid rgba(var(--color-border-rgb), 0.7);
+  flex-shrink: 0;
+}
+
+/* Dropdown animations with optimized performance */
+@keyframes dropdown-in {
+  from {
+    opacity: 0;
+    transform: translateY(-0.5rem) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes dropdown-in-top {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Transition group classes for enter/exit animations */
+.dropdown-menu-enter {
+  opacity: 0;
+  transform: translateY(-0.5rem) scale(0.97);
+}
+
+.dropdown-menu-enter-active {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  transition: opacity 200ms, transform 200ms;
+}
+
+.dropdown-menu-exit {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.dropdown-menu-exit-active {
+  opacity: 0;
+  transform: translateY(-0.5rem) scale(0.97);
+  transition: opacity 200ms, transform 200ms;
+}
+
+/* Font list specific styling for long lists */
+.font-dropdown-content {
+  max-height: min(300px, 70vh); /* Responsive height based on viewport */
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(var(--color-border-rgb), 0.7) transparent;
+  overscroll-behavior: contain; /* Prevent scroll chaining */
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+}
+
+.font-dropdown-content::-webkit-scrollbar {
+  width: 5px;
+}
+
+.font-dropdown-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.font-dropdown-content::-webkit-scrollbar-thumb {
+  background-color: rgba(var(--color-border-rgb), 0.7);
+  border-radius: 10px;
+}
+
+/* Responsive adjustments for different screen sizes */
+@media (max-width: 640px) {
+  .dropdown-menu {
+    min-width: 150px;
+    max-width: calc(100vw - 2rem);
+    width: max-content;
+  }
+  
+  .dropdown-item {
+    padding: 0.875rem 1rem;
+    min-height: 44px; /* Touch-friendly size */
+  }
+  
+  .font-dropdown-content {
+    max-height: 60vh; /* More viewport-relative on small screens */
+  }
+}
+
+/* Extra adjustments for very small screens */
+@media (max-width: 380px) {
+  .dropdown-menu {
+    width: calc(100vw - 2rem);
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%) !important;
+  }
+  
+  .dropdown-menu.position-top {
+    bottom: 100%;
+    top: auto !important;
+  }
+  
+  .dropdown-menu.position-bottom {
+    top: 100%;
+    bottom: auto !important;
+  }
+}
+
+/* Landscape mode optimizations */
+@media (max-height: 500px) and (orientation: landscape) {
+  .font-dropdown-content {
+    max-height: 80vh;
+  }
+  
+  .dropdown-item {
+    padding-top: 0.625rem;
+    padding-bottom: 0.625rem;
+    min-height: 36px;
+  }
+}
+
+/* Prevent body scroll when dropdown is open on mobile */
+body.dropdown-open {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+}
+
+/* Fix for mobile safari and chrome */
+@supports (-webkit-touch-callout: none) {
+  body.dropdown-open {
+    position: fixed;
+    width: 100%;
+    height: 100vh;
+    height: -webkit-fill-available;
+  }
+}
+
+/* Focus state for accessibility */
+.dropdown-item:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 2px rgba(var(--color-focus-ring-rgb, 59, 130, 246), 0.5);
+}
+
+/* Support for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .dropdown-menu {
+    animation: none !important;
+  }
+  
+  .dropdown-menu-enter,
+  .dropdown-menu-enter-active,
+  .dropdown-menu-exit,
+  .dropdown-menu-exit-active {
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* High contrast adjustments */
+@media (prefers-contrast: high) {
+  .dropdown-menu {
+    border: 2px solid #000;
+    box-shadow: none;
+  }
+  
+  .dropdown-item.active {
+    outline: 2px solid #000;
+  }
+}

@@ -1,0 +1,36 @@
+/* Theme-specific styles */
+
+/* Dialog content theme-aware styles */
+.theme-default .dialog-content {
+  background-color: #ffffff !important;
+  color: #1F2937 !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+.theme-sepia .dialog-content {
+  background-color: #FCF9F0 !important;
+  color: #3C2415 !important;
+  border: 1px solid rgba(60, 36, 21, 0.1) !important;
+}
+
+/* Theme-specific backdrop styles */
+.theme-default .backdrop-overlay {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.theme-sepia .backdrop-overlay {
+  background-color: rgba(60, 36, 21, 0.15);
+}
+
+/* Add custom transition durations for smooth theme switching */
+.theme-transition-fast {
+  transition-duration: 0.2s;
+}
+
+.theme-transition-medium {
+  transition-duration: 0.3s;
+}
+
+.theme-transition-slow {
+  transition-duration: 0.5s;
+}

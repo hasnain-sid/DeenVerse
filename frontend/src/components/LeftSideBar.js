@@ -86,8 +86,7 @@ const LeftSideBar = () => {
                         <Link to="/profile">
                             <h1 className="font-bold text-lg ml-2">Profile</h1>
                         </Link>
-                    </div> */}
-          <div className="flex items-ceter my-2 px-4 py-2 hover:bg-gray-200 rounded-full cursor-pointer">
+                    </div> */}          <div className="flex items-ceter my-2 px-4 py-2 hover:bg-gray-200 rounded-full cursor-pointer">
             <div className="py-1">
               <FaRegBookmark size="24px" />
             </div>
@@ -95,11 +94,13 @@ const LeftSideBar = () => {
               <h1 className="font-bold text-lg ml-2">Saved</h1>
             </Link>
           </div>
-          <div className="flex  h-12 w-auto my-2 px-4 py-2 hover:bg-gray-200 rounded-full cursor-pointer">
+          <div className="flex items-ceter my-2 px-4 py-2 hover:bg-gray-200 rounded-full cursor-pointer">
             <div className="py-1 ">
               <MdVideoCall size="24px" />
             </div>
-            <h1 className="font-bold text-md mt-[-10px] ml-2">Learn Quran</h1>
+            <Link to={`/quran-learning`}>
+              <h1 className="font-bold text-md mt-[-2px] ml-2">Learn Quran</h1>
+            </Link>
           </div>
           <Link to={`${linkk}`}>
             <div className="flex items-ceter my-2 px-4 py-2 hover:bg-gray-200 rounded-full cursor-pointer">

@@ -15,68 +15,84 @@ export const useTheme = () => {
     fontFamily: reduxFontFamily 
   } = useSelector((state) => state.content);
   
-  // Use ref to track if we've already synced Redux with localStorage
-  const hasInitializedRef = useRef(false);
-
-  // Initialize currentThemeName from localStorage first, then Redux
-  const [currentThemeName, setCurrentThemeName] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const savedTheme = localStorage.getItem('selectedTheme');
-      if (savedTheme) return savedTheme;
-    }
-    return reduxThemeName || 'default';
-  });
-
+  // Initialize theme state from localStorage or Redux
+  const [currentThemeName, setCurrentThemeName] = useState('default');
   const [isThemeMenuOpen, setIsThemeMenuOpen] = useState(false);
+  const themeMenuRef = useRef(null);
+  const isInitialMount = useRef(true);
 
-  // Only run once on mount to sync initial theme state
+  // Initialize theme on mount
   useEffect(() => {
-    if (!hasInitializedRef.current) {
-      const themeToApply = themes[currentThemeName] || themes.default;
-      const root = document.documentElement;
+    if (isInitialMount.current) {
+      let initialTheme = 'default';
       
-      // Apply CSS custom properties
-      Object.keys(themeToApply).forEach(key => {
-        root.style.setProperty(key, themeToApply[key]);
-      });
-      
-      // Save to localStorage if needed
-      if (typeof window !== 'undefined' && !localStorage.getItem('selectedTheme')) {
-        localStorage.setItem('selectedTheme', currentThemeName);
+      if (typeof window !== 'undefined') {
+        const savedTheme = localStorage.getItem('selectedTheme');
+        if (savedTheme && themes[savedTheme]) {
+          initialTheme = savedTheme;
+        } else if (reduxThemeName && themes[reduxThemeName]) {
+          initialTheme = reduxThemeName;
+        }
       }
-      
-      // Sync Redux if needed, but only once
-      if (reduxThemeName !== currentThemeName) {
-        dispatch(setReduxTheme(currentThemeName));
-      }
-      
-      hasInitializedRef.current = true;
+
+      setCurrentThemeName(initialTheme);
+      isInitialMount.current = false;
     }
-  }, []); // Empty dependency array = run once on mount
-  
-  // Effect to apply theme when it changes via user action
+  }, [reduxThemeName]);
+
+  // Effect to apply theme to DOM and save to localStorage
   useEffect(() => {
-    // Skip the first render, which is handled by the initialization effect
-    if (hasInitializedRef.current) {
+    if (!isInitialMount.current) {
+      // Apply theme to DOM
       const themeToApply = themes[currentThemeName] || themes.default;
       const root = document.documentElement;
       
-      // Apply CSS custom properties
       Object.keys(themeToApply).forEach(key => {
         root.style.setProperty(key, themeToApply[key]);
       });
-      
-      // Persist to localStorage
+
+      // Update body classes
+      const body = document.body;
+      Object.keys(themes).forEach(themeKey => {
+        body.classList.remove(`theme-${themeKey}`);
+      });
+      body.classList.add(`theme-${currentThemeName}`);
+
+      // Save to localStorage
       if (typeof window !== 'undefined') {
         localStorage.setItem('selectedTheme', currentThemeName);
       }
-      
-      // Update Redux
-      if (reduxThemeName !== currentThemeName) {
-        dispatch(setReduxTheme(currentThemeName));
-      }
     }
-  }, [currentThemeName]); // Only depends on currentThemeName changes
+  }, [currentThemeName]);
+
+  // Handle theme change
+  const handleThemeChange = useCallback((themeName) => {
+    if (!themes[themeName] || themeName === currentThemeName) {
+      return;
+    }
+
+    setCurrentThemeName(themeName);
+    // Dispatch Redux action separately from the effect
+    if (themeName !== reduxThemeName) {
+      dispatch(setReduxTheme(themeName));
+    }
+    setIsThemeMenuOpen(false);
+  }, [currentThemeName, reduxThemeName, dispatch]);
+
+  // Effect to handle clicks outside theme menu
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (isThemeMenuOpen && themeMenuRef.current && !themeMenuRef.current.contains(event.target)) {
+        setIsThemeMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isThemeMenuOpen]);
+
   /**
    * Handle font size change
    * @param {number} increment - Amount to increase/decrease font size
@@ -87,18 +103,6 @@ export const useTheme = () => {
       dispatch(setFontSize(newSize));
     }
   }, [reduxFontSize, dispatch]);
-
-  /**
-   * Handle theme change - this is the primary function to call to change themes.
-   * @param {string} themeName - Name of the theme to switch to
-   */
-  const handleThemeChange = useCallback((themeName) => {
-    if (themes[themeName]) {
-      setCurrentThemeName(themeName);
-    }
-    setIsThemeMenuOpen(false);
-  }, []);
-
   /**
    * Handle font family change
    * @param {Event} event - Change event from select element
@@ -106,24 +110,29 @@ export const useTheme = () => {
   const handleFontFamilyChange = useCallback((event) => {
     dispatch(setFontFamily(event.target.value));
   }, [dispatch]);
-
   /**
    * Toggle theme menu open/closed
    */
-  const toggleThemeMenu = useCallback(() => {
-    setIsThemeMenuOpen(prev => !prev);
+  const toggleThemeMenu = useCallback((forceState) => {
+    if (typeof forceState === 'boolean') {
+      setIsThemeMenuOpen(forceState);
+    } else {
+      setIsThemeMenuOpen(prev => !prev);
+    }
   }, []);
 
   return {
-    currentThemeName, // This is the theme name (e.g., 'default', 'dark')
+    currentTheme: currentThemeName, // Renamed to match component expectations
     fontSize: reduxFontSize,
     fontFamily: reduxFontFamily,
     isThemeMenuOpen,
+    themeMenuRef,
     handleThemeChange,
     handleFontSizeChange,
     handleFontFamilyChange,
     toggleThemeMenu,
-    availableThemes: Object.keys(themes), // Used for populating theme switcher UI
+    setIsThemeMenuOpen,
+    availableThemes: Object.keys(themes)
   };
 };
 

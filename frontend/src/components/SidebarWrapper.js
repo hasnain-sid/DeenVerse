@@ -14,9 +14,8 @@ const SidebarWrapper = ({ isVisible, children, position = 'left' }) => {
       setShouldRender(true);
     }
   }, [isVisible]);
-
   return (
-    <div className={`sidebar-wrapper sidebar-${position}`}>
+    <div className={`sidebar-wrapper sidebar-${position} overflow-y-auto h-full`}>
       {shouldRender ? children : null}
     </div>
   );

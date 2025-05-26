@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react'; // Added useRef
 import { Outlet } from "react-router-dom";
 import { Toaster } from 'react-hot-toast';
 import SidebarToggle from '../layout/SidebarToggle';
@@ -7,6 +7,7 @@ import { Menu, X, User } from 'lucide-react';
 import LeftSideBar from './LeftSideBar';
 import RightSideBar from './RightSideBar';
 import SidebarWrapper from './SidebarWrapper';
+import useClickOutside from '../hooks/useClickOutside'; // Import the hook
 
 // Static initial value outside component
 const initialDesktopOpenValue = typeof window !== 'undefined' ? window.innerWidth >= 1024 : false;
@@ -18,7 +19,21 @@ const Home = () => {
     toggleLeftSidebar: originalToggleLeft,
     toggleRightSidebar: originalToggleRight,
     toggleBothSidebars,
+    setShowLeftSidebar, // Added for useClickOutside
+    setShowRightSidebar, // Added for useClickOutside
   } = useSidebar(initialDesktopOpenValue, initialDesktopOpenValue);
+
+  const leftSidebarRef = useClickOutside(() => {
+    if (window.innerWidth < 1024 && showLeftSidebar) { // Only for mobile and if open
+      setShowLeftSidebar(false);
+    }
+  }, showLeftSidebar);
+
+  const rightSidebarRef = useClickOutside(() => {
+    if (window.innerWidth < 1024 && showRightSidebar) { // Only for mobile and if open
+      setShowRightSidebar(false);
+    }
+  }, showRightSidebar);
 
   const handleMobileToggleLeft = useCallback(() => {
     if (showRightSidebar) {
@@ -52,7 +67,7 @@ const Home = () => {
         <button
           onClick={handleMobileToggleLeft}
           aria-label="Toggle Left Sidebar"
-          className="fixed top-4 left-4 z-50 p-2 bg-theme-card-bg text-theme-text-primary rounded-full shadow-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-theme-primary-accent"
+          className="fixed top-4 left-4 z-50 p-2 bg-theme-card-background text-theme-text-primary rounded-full shadow-lg hover:bg-theme-hover focus:outline-none focus:ring-2 focus:ring-theme-primary-accent"
         >
           {showLeftSidebar ? <X size={24} /> : <Menu size={24} />}
         </button>
@@ -60,7 +75,7 @@ const Home = () => {
         <button
           onClick={handleMobileToggleRight}
           aria-label="Toggle Right Sidebar"
-          className="fixed top-4 right-4 z-50 p-2 bg-theme-card-bg text-theme-text-primary rounded-full shadow-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-theme-primary-accent"
+          className="fixed top-4 right-4 z-50 p-2 bg-theme-card-background text-theme-text-primary rounded-full shadow-lg hover:bg-theme-hover focus:outline-none focus:ring-2 focus:ring-theme-primary-accent"
         >
           {showRightSidebar ? <X size={24} /> : <User size={24} />}
         </button>
@@ -91,8 +106,8 @@ const Home = () => {
         <Toaster />
         
         {/* Left Sidebar - Now with wrapper */}
-        <aside className={[
-          "fixed top-0 left-0 h-full z-40 bg-theme-card-bg shadow-xl transition-transform duration-300 ease-in-out",
+        <aside ref={leftSidebarRef} className={[
+          "fixed top-0 left-0 h-full z-40 bg-theme-card-background shadow-xl transition-transform duration-300 ease-in-out",
           "w-4/5 max-w-xs sm:w-1/2 md:w-1/3",
           showLeftSidebar ? "translate-x-0" : "-translate-x-full",
           "lg:relative lg:translate-x-0 lg:h-auto lg:z-auto lg:bg-transparent lg:shadow-none",
@@ -111,8 +126,8 @@ const Home = () => {
         </main>
         
         {/* Right Sidebar - Now with wrapper */}
-        <aside className={[
-          "fixed top-0 right-0 h-full z-40 bg-theme-card-bg shadow-xl transition-transform duration-300 ease-in-out",
+        <aside ref={rightSidebarRef} className={[
+          "fixed top-0 right-0 h-full z-40 bg-theme-card-background shadow-xl transition-transform duration-300 ease-in-out",
           "w-4/5 max-w-xs sm:w-1/2 md:w-1/3",
           showRightSidebar ? "translate-x-0" : "translate-x-full",
           "lg:relative lg:translate-x-0 lg:h-auto lg:z-auto lg:bg-transparent lg:shadow-none",

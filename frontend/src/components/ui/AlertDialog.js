@@ -1,12 +1,21 @@
 // src/components/ui/AlertDialog.js
-import React from 'react';
+import React, { useRef, forwardRef } from 'react';
 
 const AlertDialogContainer = ({ open, onOpenChange, children }) => {
   if (!open) return null;
-
+  const handleBackdropClick = (e) => {
+    // Only close if clicking the backdrop, not the dialog content
+    if (e.target === e.currentTarget) {
+      onOpenChange(false);
+    }
+  };
+  
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white p-6 rounded-lg shadow-lg">{children}</div>
+    <div 
+      className="fixed inset-0 z-50 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4 dialog-overlay"
+      onClick={handleBackdropClick}
+    >
+      {children}
     </div>
   );
 };
@@ -15,9 +24,9 @@ export const AlertDialogTrigger = ({ children, onClick }) => (
   <button onClick={onClick}>{children}</button>
 );
 
-export const AlertDialogContent = ({ children }) => (
-  <div>{children}</div>
-);
+export const AlertDialogContent = forwardRef(({ children, className, ...props }, ref) => (
+  <div ref={ref} className={className} {...props}>{children}</div>
+));
 
 export const AlertDialogHeader = ({ children }) => (
   <div className="mb-4">{children}</div>

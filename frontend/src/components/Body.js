@@ -7,6 +7,12 @@ import Saved from "./Saved";
 import Login from "./Login";
 import Content from "./Content";
 import Daily from "./Daily";
+import QuranLearningHome from "./QuranLearningHome";
+import QuranLearning from "./QuranLearning";
+import QuranLearningSession from "./QuranLearningSession";
+import QuranLearningMinimalist from "./QuranLearningMinimalist";
+import QuranExplorer from "./QuranExplorer";
+
 const Body = () => {
   const appRouter = createBrowserRouter([
     {
@@ -25,6 +31,10 @@ const Body = () => {
               path: "/saved",
               element: <Saved />,
             },
+            {
+              path: "/quran-learning",
+              element: <QuranLearningHome />,
+            },
           ],
         },
       ],
@@ -32,6 +42,17 @@ const Body = () => {
     {
       path: "/login",
       element: <Login />,
+    },    {
+      path: "/quran-learning/session",
+      element: <QuranLearningSession />,
+    },
+    {
+      path: "/quran-learning/minimalist",
+      element: <QuranLearningMinimalist />,
+    },
+    {
+      path: "/quran-learning/explorer",
+      element: <QuranExplorer />,
     },
   ]);
   return (

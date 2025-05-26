@@ -2,10 +2,94 @@
 @tailwind components;
 @tailwind utilities;
 
+/* 
+ * Base CSS Custom Properties for Theme System
+ * Supports light, dark, and sepia themes
+ */
+
+:root {
+  /* Mobile-first approach - set base font size */
+  font-size: 16px;
+  
+  /* Safe area insets for modern devices */
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  
+  /* Fluid spacing scales */
+  --space-1: clamp(0.25rem, 0.2rem + 0.25vw, 0.5rem);
+  --space-2: clamp(0.5rem, 0.4rem + 0.5vw, 0.75rem);
+  --space-3: clamp(0.75rem, 0.65rem + 0.5vw, 1rem);
+  --space-4: clamp(1rem, 0.85rem + 0.75vw, 1.5rem);
+  --space-6: clamp(1.5rem, 1.3rem + 1vw, 2rem);
+  --space-8: clamp(2rem, 1.7rem + 1.5vw, 3rem);
+  --space-12: clamp(3rem, 2.5rem + 2.5vw, 5rem);
+  
+  /* Fluid typography scales */
+  --text-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
+  --text-sm: clamp(0.875rem, 0.8rem + 0.375vw, 1rem);
+  --text-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+  --text-lg: clamp(1.125rem, 1.05rem + 0.375vw, 1.25rem);
+  --text-xl: clamp(1.25rem, 1.15rem + 0.5vw, 1.5rem);
+  --text-2xl: clamp(1.5rem, 1.3rem + 1vw, 1.875rem);
+  --text-3xl: clamp(1.875rem, 1.65rem + 1.125vw, 2.25rem);
+  --text-4xl: clamp(2.25rem, 1.95rem + 1.5vw, 3rem);
+  --text-5xl: clamp(3rem, 2.5rem + 2.5vw, 4rem);
+  
+  /* Container max-widths */
+  --container-sm: 640px;
+  --container-md: 768px;
+  --container-lg: 1024px;
+  --container-xl: 1280px;
+  
+  /* Interactive element sizes */
+  --touch-target-size: 44px; /* Minimum touch target size for accessibility */
+  
+  /* z-index scale */
+  --z-dropdown: 1000;
+  --z-sticky: 1020;
+  --z-fixed: 1030;
+  --z-modal-backdrop: 1040;
+  --z-modal: 1050;
+  --z-popover: 1060;
+  --z-tooltip: 1070;
+  
+  /* Transitions */
+  --transition-fast: 150ms ease;
+  --transition-normal: 250ms ease;
+  --transition-slow: 350ms ease;
+}
+
+/* Prefers reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Base element styles with responsive considerations */
+html {
+  height: 100%;
+  box-sizing: border-box;
+  touch-action: manipulation; /* Improve touch behavior */
+  text-size-adjust: 100%; /* Prevent text size adjustment on orientation change */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  line-height: 1.5;
+  font-size: var(--text-base);
+  overflow-x: hidden;
   background-color: theme('colors.brand-off-white');
   color: theme('colors.brand-charcoal');
-  margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
@@ -13,7 +97,232 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Ensure scrollbar is always present to prevent layout shifts */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
+}
+
+/* Accessible focus styles */
+:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+  outline-offset: 2px;
+}
+
+/* Images */
+img, svg, video {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Visually hidden but accessible to screen readers */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* Skip to content link for keyboard users */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: #000;
+  color: white;
+  padding: 8px;
+  z-index: var(--z-tooltip);
+  transition: top 0.2s;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* Code block formatting */
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+/* Add these dropdown styles to your existing CSS */
+.dropdown-menu {
+  position: absolute;
+  z-index: var(--z-dropdown);
+  min-width: 180px;
+  max-width: 250px;
+  padding: 0.5rem 0;
+  margin-top: 0.25rem;
+  border-radius: 0.375rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(var(--color-border-rgb), 1);
+  background-color: rgba(var(--color-card-background-rgb), 1);
+  color: rgba(var(--color-text-primary-rgb), 1);
+  transform-origin: top center;
+  transition: all var(--transition-normal);
+}
+
+/* Animation classes for CSSTransition */
+.dropdown-menu-enter {
+  opacity: 0;
+  transform: scale(0.95);
+}
+
+.dropdown-menu-enter-active {
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity 200ms, transform 200ms;
+}
+
+.dropdown-menu-exit {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.dropdown-menu-exit-active {
+  opacity: 0;
+  transform: scale(0.95);
+  transition: opacity 200ms, transform 200ms;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 0.625rem 1rem;
+  text-align: left;
+  font-size: 0.875rem;
+  color: rgba(var(--color-text-primary-rgb), 1);
+  transition: background-color 150ms ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-height: var(--touch-target-size); /* Accessible touch target */
+}
+
+.dropdown-item:hover {
+  background-color: rgba(var(--color-hover-rgb), 1);
+}
+
+.dropdown-item.active {
+  background-color: rgba(var(--color-hover-rgb), 1);
+  font-weight: 500;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  :root {
+    /* Slightly smaller text on very small screens */
+    --text-base: clamp(0.9375rem, 0.9rem + 0.1875vw, 1rem);
+  }
+  
+  .dropdown-item {
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+  }
+}
+
+/* Media query for notched devices */
+@supports (padding: max(0px)) {
+  .safe-padding-bottom {
+    padding-bottom: max(1.5rem, var(--safe-bottom));
+  }
+  
+  .safe-padding-top {
+    padding-top: max(1.5rem, var(--safe-top));
+  }
+}
+
+/* Responsive utility classes */
+.touch-target {
+  min-height: var(--touch-target-size);
+  min-width: var(--touch-target-size);
+}
+
+/* Support for RTL text direction in Arabic content */
+.rtl-content {
+  direction: rtl;
+  text-align: right;
+}
+
+/* Print styles for better printing experience */
+@media print {
+  body {
+    background-color: #fff !important;
+    color: #000 !important;
+  }
+  
+  .no-print {
+    display: none !important;
+  }
+  
+  a {
+    text-decoration: underline;
+  }
+  
+  .container {
+    max-width: 100% !important;
+    padding: 0 !important;
+  }
+}
+
+/* Mobile optimizations */
+@media (max-width: 380px) {
+  .dropdown-menu {
+    width: calc(100vw - 2rem);
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%) !important;
+  }
+  
+  .dropdown-menu.position-top {
+    bottom: 100%;
+    top: auto !important;
+  }
+  
+  .dropdown-menu.position-bottom {
+    top: 100%;
+    bottom: auto !important;
+  }
+}
+
+.dropdown-header {
+  padding: 0.5rem 1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: rgba(var(--color-text-secondary-rgb), 1);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.dropdown-divider {
+  margin: 0.25rem 0;
+  border-bottom: 1px solid rgba(var(--color-border-rgb), 1);
+}
+
+/* Improve focus styles for accessibility */
+.dropdown-item:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(var(--color-focus-ring-rgb), 0.5);
+}
+
+/* Mobile optimizations */
+@media (max-width: 640px) {
+  .dropdown-menu {
+    min-width: 160px;
+    max-width: 200px;
+    padding: 0.375rem 0;
+  }
+  
+  .dropdown-item {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8125rem;
+  }
 }
