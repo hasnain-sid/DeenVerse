@@ -3,6 +3,7 @@ import {
     Login,
     Register,
     Logout,
+    getMe,
     saved,
     getProfile,
     getOtherUsers,
@@ -21,10 +22,13 @@ const router = express.Router();
 
 router.route("/register").post(registerValidationRules(), Register);
 router.route("/login").post(loginValidationRules(), Login);
-router.route("/logout").get(Logout);
+router.route("/logout").post(Logout);
 
-// Using mongoIdParamValidationRules to validate MongoDB ID in the URL parameter
-router.route("/saved/:id").put(isAuthenticated, mongoIdParamValidationRules('id'), saved);
+// Session check - restore user from cookie
+router.route("/me").get(isAuthenticated, getMe);
+
+// Hadith IDs are integers from the external API, not MongoDB ObjectIds
+router.route("/saved/:id").put(isAuthenticated, saved);
 router.route("/profile/:id").get(isAuthenticated, mongoIdParamValidationRules('id'), getProfile);
 
 // getOtherUsers does not take an ID param, it uses req.user from isAuthenticated

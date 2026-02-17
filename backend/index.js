@@ -49,5 +49,5 @@ app.use("/api/v1/user",userRoute);
 app.use(errorHandler);
 
 app.listen(process.env.PORT,()=>{
-  console.log(`Server is listning at port ${process.env.PORT}`);
+  console.log(`Server is listening at port ${process.env.PORT}`);
 })

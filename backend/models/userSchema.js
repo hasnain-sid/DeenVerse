@@ -23,5 +23,21 @@ const userSchema = new mongoose.Schema({
     type:Array,
     default:[]
   },
+  bio:{
+    type:String,
+    default:''
+  },
+  avatar:{
+    type:String,
+    default:''
+  },
+  followers:[{
+    type:mongoose.Schema.Types.ObjectId,
+    ref:'User'
+  }],
+  following:[{
+    type:mongoose.Schema.Types.ObjectId,
+    ref:'User'
+  }],
 },{timestamps:true});
 export const User = mongoose.model("User",userSchema);

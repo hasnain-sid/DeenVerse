@@ -49,12 +49,15 @@ export const loginUser = async (credentials) => {
     };
     const token = jwt.sign(tokenData, process.env.TOKEN_SECRET, { expiresIn: "1d" });
 
+    // Exclude password from response
+    const userWithoutPassword = await User.findById(user._id).select("-password");
+
     return {
         success: true,
         message: `Welcome back ${user.name}`,
-        user,
+        user: userWithoutPassword,
         token,
-        statusCode: 200, // Corrected to 200 for successful login
+        statusCode: 200,
     };
 };
 
@@ -112,7 +115,7 @@ export const followUser = async (loggedInUserId, userIdToFollow) => {
 
     if (!userToFollowObj.followers.includes(loggedInUserId)) {
         await userToFollowObj.updateOne({ $push: { followers: loggedInUserId } });
-        await loggedInUser.updateOne({ $push: { followings: userIdToFollow } });
+        await loggedInUser.updateOne({ $push: { following: userIdToFollow } });
     } else {
         throw new AppError(`Already following ${userToFollowObj.name}`, 400);
     }
@@ -134,7 +137,7 @@ export const unfollowUser = async (loggedInUserId, userIdToUnfollow) => {
 
     if (userToUnfollowObj.followers.includes(loggedInUserId)) {
         await userToUnfollowObj.updateOne({ $pull: { followers: loggedInUserId } });
-        await loggedInUser.updateOne({ $pull: { followings: userIdToUnfollow } });
+        await loggedInUser.updateOne({ $pull: { following: userIdToUnfollow } });
     } else {
         throw new AppError(`You are not following ${userToUnfollowObj.name}`, 400);
     }

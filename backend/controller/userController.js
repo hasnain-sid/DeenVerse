@@ -73,6 +73,19 @@ export const saved = async (req, res, next) => {
   }
 };
 
+export const getMe = async (req, res, next) => {
+  try {
+    const userId = req.user; // From isAuthenticated middleware (JWT)
+    const result = await getUserProfile(userId);
+    return res.status(result.statusCode).json({
+      user: result.user,
+      success: true
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const getProfile = async (req, res, next) => {
   try {
     const userId = req.params.id;
