@@ -24,11 +24,12 @@ export const Register = async (req, res, next) => {
 export const Login = async (req, res, next) => {
   try {
     const result = await loginUser(req.body);
+    const isProduction = process.env.NODE_ENV === 'production';
     return res.status(result.statusCode).cookie("token", result.token, {
       maxAge: 24 * 60 * 60 * 1000, 
       httpOnly: true, 
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'None'
+      secure: isProduction,
+      sameSite: isProduction ? 'None' : 'Lax'
     }).json({
       message: result.message,
       user: result.user,
@@ -42,11 +43,12 @@ export const Login = async (req, res, next) => {
 export const Logout = (req, res, next) => {
   try {
     const result = logoutUser(); // Service function for logout
+    const isProduction = process.env.NODE_ENV === 'production';
     return res.status(result.statusCode).cookie("token","", { 
       expires: new Date(Date.now()), 
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'None'
+      secure: isProduction,
+      sameSite: isProduction ? 'None' : 'Lax'
     }).json({
       message: result.message,
       success:true

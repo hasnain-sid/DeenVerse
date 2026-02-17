@@ -1,4 +1,3 @@
-import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import {
   BookOpen,
@@ -51,7 +50,7 @@ export function Sidebar() {
 
   const handleLogout = async () => {
     try {
-      await api.post('/auth/logout');
+      await api.post('/user/logout');
     } catch {
       // Logout locally even if API fails
     }

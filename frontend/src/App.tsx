@@ -4,6 +4,8 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { AuthGuard } from '@/features/auth/AuthGuard';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { useSession } from '@/features/auth/useAuth';
 
 // Lazy-load route-level pages for code splitting
 const HomePage = lazy(() =>
@@ -23,6 +25,9 @@ const ProfilePage = lazy(() =>
 );
 const LoginPage = lazy(() =>
   import('@/features/auth/LoginPage').then((m) => ({ default: m.LoginPage }))
+);
+const NotFoundPage = lazy(() =>
+  import('@/features/not-found/NotFoundPage').then((m) => ({ default: m.NotFoundPage }))
 );
 
 // Query client with sensible defaults for a read-heavy app
@@ -46,51 +51,62 @@ function PageLoader() {
   );
 }
 
+// Restores session from httpOnly cookie on app load
+function SessionRestorer({ children }: { children: React.ReactNode }) {
+  useSession();
+  return <>{children}</>;
+}
+
 export default function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <Suspense fallback={<PageLoader />}>
-          <Routes>
-            <Route element={<MainLayout />}>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/explore" element={<ExplorePage />} />
-              <Route path="/hadith" element={<HadithPage />} />
-              <Route
-                path="/saved"
-                element={
-                  <AuthGuard>
-                    <SavedPage />
-                  </AuthGuard>
-                }
-              />
-              <Route
-                path="/profile"
-                element={
-                  <AuthGuard>
-                    <ProfilePage />
-                  </AuthGuard>
-                }
-              />
-              <Route path="/login" element={<LoginPage />} />
-            </Route>
-          </Routes>
-        </Suspense>
+    <ErrorBoundary label="App">
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <SessionRestorer>
+            <Suspense fallback={<PageLoader />}>
+              <Routes>
+                <Route element={<MainLayout />}>
+                  <Route path="/" element={<HomePage />} />
+                  <Route path="/explore" element={<ExplorePage />} />
+                  <Route path="/hadith" element={<HadithPage />} />
+                  <Route
+                    path="/saved"
+                    element={
+                      <AuthGuard>
+                        <SavedPage />
+                      </AuthGuard>
+                    }
+                  />
+                  <Route
+                    path="/profile"
+                    element={
+                      <AuthGuard>
+                        <ProfilePage />
+                      </AuthGuard>
+                    }
+                  />
+                  <Route path="/login" element={<LoginPage />} />
+                  <Route path="*" element={<NotFoundPage />} />
+                </Route>
+              </Routes>
+            </Suspense>
+          </SessionRestorer>
 
-        <Toaster
-          position="bottom-right"
-          toastOptions={{
-            duration: 3000,
-            style: {
-              borderRadius: '8px',
-              background: 'hsl(var(--card))',
-              color: 'hsl(var(--foreground))',
-              border: '1px solid hsl(var(--border))',
-              fontSize: '14px',
-            },
-          }}
-        />
-      </BrowserRouter>
-    </QueryClientProvider>
+          <Toaster
+            position="bottom-right"
+            toastOptions={{
+              duration: 3000,
+              style: {
+                borderRadius: '8px',
+                background: 'hsl(var(--card))',
+                color: 'hsl(var(--foreground))',
+                border: '1px solid hsl(var(--border))',
+                fontSize: '14px',
+              },
+            }}
+          />
+        </BrowserRouter>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 }

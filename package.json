@@ -1,10 +1,10 @@
 {
-  "dependencies": {
-    "@radix-ui/react-alert-dialog": "^1.1.2",
-    "class-variance-authority": "^0.7.0",
-    "clsx": "^2.1.1",
-    "express-validator": "^7.2.1",
-    "lucide-react": "^0.454.0",
-    "tailwind-merge": "^2.5.4"
+  "name": "deenverse",
+  "private": true,
+  "description": "Islamic Social Media Platform",
+  "scripts": {
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && npm run dev",
+    "install:all": "cd backend && npm install && cd ../frontend && npm install"
   }
 }

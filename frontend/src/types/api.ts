@@ -15,9 +15,15 @@ export interface PaginatedResponse<T> {
   };
 }
 
-export interface AuthResponse {
+export interface LoginResponse {
+  success: boolean;
+  message: string;
   user: import('./user').User;
-  accessToken: string;
+}
+
+export interface RegisterResponse {
+  success: boolean;
+  message: string;
 }
 
 export interface ApiError {

@@ -10,6 +10,7 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
     "@radix-ui/react-slot": "^1.1.0",
     "@tanstack/react-query": "^5.60.0",
     "axios": "^1.7.7",
@@ -21,14 +22,17 @@
     "lucide-react": "^0.454.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-hook-form": "^7.71.1",
     "react-hot-toast": "^2.4.1",
     "react-router-dom": "^6.28.0",
     "tailwind-merge": "^2.5.4",
+    "zod": "^4.3.6",
     "zustand": "^5.0.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.18",
     "@types/downloadjs": "^1.4.6",
+    "@types/node": "^25.2.3",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.3",
