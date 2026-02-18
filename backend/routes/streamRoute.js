@@ -1,5 +1,5 @@
 import express from "express";
-import isAuthenticated from "../config/auth.js";
+import isAuthenticated, { optionalAuth } from "../config/auth.js";
 import {
   createStreamHandler,
   getLiveStreamsHandler,
@@ -25,7 +25,7 @@ router.post("/", isAuthenticated, createStreamHandler);
 router.patch("/:id/start", isAuthenticated, startStreamHandler);
 router.patch("/:id/end", isAuthenticated, endStreamHandler);
 
-// ── This catch-all param route must be LAST ──────────
-router.get("/:id", getStreamHandler);
+// ── Semi-public: optionalAuth to strip streamKey for non-owners ──
+router.get("/:id", optionalAuth, getStreamHandler);
 
 export default router;

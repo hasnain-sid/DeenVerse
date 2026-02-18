@@ -14,7 +14,7 @@ const subscribePush = async (req, res, next) => {
     }
 
     const doc = await pushService.subscribe(
-      req.user._id,
+      req.user,
       subscription,
       req.headers["user-agent"]
     );
@@ -31,7 +31,7 @@ const unsubscribePush = async (req, res, next) => {
     if (!endpoint) {
       return res.status(400).json({ error: "endpoint is required" });
     }
-    await pushService.unsubscribe(req.user._id, endpoint);
+    await pushService.unsubscribe(req.user, endpoint);
     res.json({ message: "Unsubscribed" });
   } catch (err) {
     next(err);

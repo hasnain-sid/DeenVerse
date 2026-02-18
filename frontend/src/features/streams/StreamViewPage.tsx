@@ -47,12 +47,12 @@ export function StreamViewPage() {
     socket.emit('stream:join', id);
     setViewerCount(stream?.viewerCount ?? 0);
 
-    socket.on('stream:chat:message', (msg: StreamChatMessage) => {
+    socket.on('stream:chat', (msg: StreamChatMessage) => {
       setChatMessages((prev) => [...prev, msg]);
     });
 
-    socket.on('stream:viewer:count', (count: number) => {
-      setViewerCount(count);
+    socket.on('stream:viewers', (data: { streamId: string; viewerCount: number }) => {
+      setViewerCount(data.viewerCount);
     });
 
     socket.on('stream:ended', () => {
@@ -61,8 +61,8 @@ export function StreamViewPage() {
 
     return () => {
       socket.emit('stream:leave', id);
-      socket.off('stream:chat:message');
-      socket.off('stream:viewer:count');
+      socket.off('stream:chat');
+      socket.off('stream:viewers');
       socket.off('stream:ended');
     };
   }, [id, stream?.viewerCount]);
@@ -111,7 +111,7 @@ export function StreamViewPage() {
     const socket = getSocket();
     if (!socket) return;
 
-    socket.emit('stream:chat:send', { streamId: id, content: chatInput.trim() });
+    socket.emit('stream:chat', { streamId: id, content: chatInput.trim() });
     setChatInput('');
   }, [chatInput, id]);
 

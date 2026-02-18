@@ -16,12 +16,11 @@ import type { Notification } from '@/types/post';
  */
 export function useSocket() {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
-  const accessToken = useAuthStore((s) => s.accessToken);
   const { setConnected, setUserOnline, setUserOffline } = useSocketStore();
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    if (!isAuthenticated || !accessToken) {
+    if (!isAuthenticated) {
       disconnectSocket();
       setConnected(false);
       return;
@@ -108,5 +107,5 @@ export function useSocket() {
       socket.off('chat:new-message');
       socket.off('stream:live');
     };
-  }, [isAuthenticated, accessToken, setConnected, setUserOnline, setUserOffline, queryClient]);
+  }, [isAuthenticated, setConnected, setUserOnline, setUserOffline, queryClient]);
 }

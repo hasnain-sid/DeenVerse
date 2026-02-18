@@ -8,6 +8,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useAuthStore } from '@/stores/authStore';
 import { useSocketStore } from '@/stores/socketStore';
 import { getSocket } from '@/lib/socket';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   useConversations,
   useMessages,
@@ -26,6 +27,7 @@ export function MessagesPage() {
   const { data: convData, isLoading: convsLoading } = useConversations();
   const { data: msgData, isLoading: msgsLoading } = useMessages(activeConversation);
   const sendMessage = useSendMessage();
+  const queryClient = useQueryClient();
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -43,8 +45,7 @@ export function MessagesPage() {
 
     // Listen for new messages in this conversation
     const handleMessage = (_message: MessageData) => {
-      // Invalidate messages query to refetch
-      // (handled by useSocket's global handler)
+      queryClient.invalidateQueries({ queryKey: ['messages', activeConversation] });
     };
     socket.on('chat:message', handleMessage);
 

@@ -23,7 +23,8 @@ export function connectSocket(): Socket {
   const { accessToken } = useAuthStore.getState();
 
   socket = io(SOCKET_URL, {
-    auth: { token: accessToken },
+    // Send access token if available; backend falls back to cookie-based auth
+    auth: accessToken ? { token: accessToken } : {},
     withCredentials: true, // sends cookies (refresh token) as fallback
     transports: ['websocket', 'polling'],
     reconnection: true,

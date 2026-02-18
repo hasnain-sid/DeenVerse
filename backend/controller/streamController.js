@@ -35,7 +35,8 @@ export const getLiveStreamsHandler = async (req, res, next) => {
 
 export const getStreamHandler = async (req, res, next) => {
   try {
-    const stream = await getStreamById(req.params.id);
+    // req.user may be undefined on public routes (no auth middleware)
+    const stream = await getStreamById(req.params.id, req.user || null);
     return res.status(200).json({ success: true, stream });
   } catch (error) {
     next(error);

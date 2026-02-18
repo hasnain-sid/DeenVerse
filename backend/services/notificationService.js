@@ -1,5 +1,6 @@
 import { Notification } from "../models/notificationSchema.js";
 import { AppError } from "../utils/AppError.js";
+import { pushNotification } from "./pushService.js";
 
 /**
  * Emit a real-time notification via Socket.IO and send a web push.
@@ -19,9 +20,7 @@ async function emitNotification(recipientId, notification) {
     io.to(`user:${recipientId}`).emit("notification:new", populated);
 
     // Send web push notification (fire-and-forget)
-    import("./pushService.js")
-      .then(({ pushNotification }) => pushNotification(populated))
-      .catch(() => {});
+    pushNotification(populated).catch(() => {});
   } catch {
     // Socket not initialised or other error — skip silently
   }

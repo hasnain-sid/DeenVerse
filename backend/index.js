@@ -1,6 +1,8 @@
 import express from "express";
 import { createServer } from "http";
 import dotenv from "dotenv";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
 import databaseConnection from "./config/database.js";
 import cookieParser from "cookie-parser";
 import userRoute from "./routes/userRoute.js";
@@ -14,8 +16,10 @@ import cors from "cors";
 import errorHandler from "./middlewares/errorHandler.js";
 import { initSocket } from "./socket/index.js";
 
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
 dotenv.config({
-  path: ".env",
+  path: join(__dirname, ".env"),
 });
 databaseConnection();
 const app = express();

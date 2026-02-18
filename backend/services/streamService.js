@@ -29,7 +29,7 @@ export async function createStream(
     category: category || "other",
     streamKey,
     playbackUrl,
-    status: scheduledFor ? "scheduled" : "scheduled",
+    status: "scheduled",
     scheduledFor: scheduledFor || null,
     chatEnabled: chatEnabled !== false,
   });
@@ -52,6 +52,7 @@ export async function getLiveStreams({ page = 1, limit = 20, category } = {}) {
     .skip(skip)
     .limit(limit)
     .populate("host", "name username avatar")
+    .select("-streamKey")
     .lean();
 
   const total = await Stream.countDocuments(filter);
@@ -62,12 +63,18 @@ export async function getLiveStreams({ page = 1, limit = 20, category } = {}) {
 /**
  * Get a single stream by ID.
  */
-export async function getStreamById(streamId) {
+export async function getStreamById(streamId, requesterId = null) {
   const stream = await Stream.findById(streamId)
     .populate("host", "name username avatar")
     .lean();
 
   if (!stream) throw new AppError("Stream not found", 404);
+
+  // Only expose streamKey to the host — never to public viewers
+  if (!requesterId || stream.host._id.toString() !== requesterId) {
+    delete stream.streamKey;
+  }
+
   return stream;
 }
 
@@ -124,6 +131,7 @@ export async function getScheduledStreams({ page = 1, limit = 20 } = {}) {
     .skip(skip)
     .limit(limit)
     .populate("host", "name username avatar")
+    .select("-streamKey")
     .lean();
 
   const total = await Stream.countDocuments({
@@ -145,6 +153,7 @@ export async function getRecordings({ page = 1, limit = 20 } = {}) {
     .skip(skip)
     .limit(limit)
     .populate("host", "name username avatar")
+    .select("-streamKey")
     .lean();
 
   const total = await Stream.countDocuments({ status: "ended" });
