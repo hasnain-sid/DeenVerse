@@ -1,7 +1,9 @@
 import { io, Socket } from 'socket.io-client';
 import { useAuthStore } from '@/stores/authStore';
 
-const SOCKET_URL = import.meta.env.VITE_API_URL || 'http://localhost:8081';
+// In dev, use relative URL so WebSocket goes through the Vite proxy (no CORS).
+// In production, use the full backend URL.
+const SOCKET_URL = import.meta.env.VITE_API_URL || '';
 
 let socket: Socket | null = null;
 

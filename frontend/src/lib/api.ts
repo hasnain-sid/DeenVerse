@@ -1,7 +1,9 @@
 import axios from 'axios';
 import { useAuthStore } from '@/stores/authStore';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8081';
+// In dev, use relative URLs so requests go through Vite's proxy (no CORS).
+// In production, use the full backend URL.
+const API_URL = import.meta.env.VITE_API_URL || '';
 
 export const api = axios.create({
   baseURL: `${API_URL}/api/v1`,
