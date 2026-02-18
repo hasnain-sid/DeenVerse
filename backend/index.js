@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import databaseConnection from "./config/database.js";
 import cookieParser from "cookie-parser";
 import  userRoute from "./routes/userRoute.js";
+import collectionRoute from "./routes/collectionRoute.js";
  import cors from "cors";
 import errorHandler from "./middlewares/errorHandler.js";
 
@@ -43,6 +44,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 // apis
 app.use("/api/v1/user",userRoute);
+app.use("/api/v1/collections",collectionRoute);
 
 // Centralized Error Handler
 // This should be defined AFTER all other app.use() and routes calls

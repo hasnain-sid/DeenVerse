@@ -149,6 +149,11 @@ export function CommandPalette() {
         if (filtered[selectedIndex]) {
           if (query.trim()) addRecentSearch(query.trim());
           filtered[selectedIndex].action();
+        } else if (query.trim()) {
+          // No exact match — navigate to full search page
+          addRecentSearch(query.trim());
+          navigate(`/search?q=${encodeURIComponent(query.trim())}`);
+          setOpen(false);
         }
       }
     },

@@ -36,6 +36,9 @@ const ResetPasswordPage = lazy(() =>
 const SettingsPage = lazy(() =>
   import('@/features/settings/SettingsPage').then((m) => ({ default: m.SettingsPage }))
 );
+const SearchPage = lazy(() =>
+  import('@/features/search/SearchPage').then((m) => ({ default: m.SearchPage }))
+);
 const CommunityPage = lazy(() =>
   import('@/features/community/CommunityPage').then((m) => ({ default: m.CommunityPage }))
 );
@@ -81,6 +84,7 @@ export default function App() {
                 <Route element={<MainLayout />}>
                   <Route path="/" element={<HomePage />} />
                   <Route path="/explore" element={<ExplorePage />} />
+                  <Route path="/search" element={<SearchPage />} />
                   <Route path="/hadith" element={<HadithPage />} />
                   <Route
                     path="/saved"

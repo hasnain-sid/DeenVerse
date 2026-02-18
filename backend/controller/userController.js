@@ -5,6 +5,7 @@ import {
     toggleSavedContent,
     getUserProfile,
     getOtherUsersProfiles,
+    searchUsers,
     followUser,
     unfollowUser,
     updateUserProfile,
@@ -177,6 +178,19 @@ export const changePassword = async (req, res, next) => {
     return res.status(result.statusCode).json({
       message: result.message,
       success: true
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const searchUsersHandler = async (req, res, next) => {
+  try {
+    const { q } = req.query;
+    const result = await searchUsers(q);
+    return res.status(result.statusCode).json({
+      users: result.users,
+      success: true,
     });
   } catch (error) {
     next(error);

@@ -98,7 +98,7 @@
 - [x] **Step 8**: Add hadith category/collection browser
   - Sidebar shows: Sahih Bukhari, Sahih Muslim, Tirmidhi, etc.
   - Click to browse chapters → specific hadiths
-- [ ] **Step 9**: Implement full-text search for hadiths
+- [x] **Step 9**: Implement full-text search for hadiths
   - Frontend: Debounced search input with suggestions dropdown
   - Backend: MongoDB text index on hadith content fields
   - Highlight matching terms in results
@@ -116,7 +116,7 @@
   - `POST /api/bookmarks/:hadithId` — save
   - `DELETE /api/bookmarks/:hadithId` — unsave
   - `GET /api/bookmarks` — list saved (paginated)
-- [ ] **Step 13**: Add bookmark collections/folders
+- [x] **Step 13**: Add bookmark collections/folders
   - Users can create named collections: "Morning Duas", "Patience", etc.
   - Drag and drop hadiths between collections
 - [x] **Step 14**: Implement optimistic updates for bookmark toggle
@@ -129,7 +129,7 @@
   - Bio, location, website link
   - Stats: posts, followers, following, saved count
   - Activity timeline (recent shares, saves)
-- [ ] **Step 16**: Implement "Edit Profile" modal
+- [x] **Step 16**: Implement "Edit Profile" modal
   - Update name, bio, avatar, cover photo
   - Form validation with Zod
   - Image crop/resize before upload
@@ -160,7 +160,7 @@
   - Command palette overlay (like Notion/VS Code)
   - Search hadiths, users, collections
   - Recent searches history (localStorage)
-- [ ] **Step 23**: Add search results page
+- [x] **Step 23**: Add search results page
   - Tabbed results: Hadiths | Users | Collections
   - Filters: language, hadith book, date range
   - Infinite scroll for results

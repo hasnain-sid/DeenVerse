@@ -101,6 +101,24 @@ export const getOtherUsersProfiles = async (currentUserId) => {
     return { success: true, otherUsers, statusCode: 200 };
 };
 
+export const searchUsers = async (query) => {
+    if (!query || query.trim().length < 2) {
+        return { success: true, users: [], statusCode: 200 };
+    }
+
+    const regex = new RegExp(query.trim(), 'i');
+    const users = await User.find({
+        $or: [
+            { name: regex },
+            { username: regex },
+        ],
+    })
+        .select('name username avatar bio followers')
+        .limit(20);
+
+    return { success: true, users, statusCode: 200 };
+};
+
 export const followUser = async (loggedInUserId, userIdToFollow) => {
     if (loggedInUserId === userIdToFollow) {
         throw new AppError("You cannot follow yourself.", 400);

@@ -1,13 +1,16 @@
+import { useState } from 'react';
 import { useAuthStore } from '@/stores/authStore';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Settings, BookOpen, Bookmark, Calendar, Users, ChevronRight } from 'lucide-react';
+import { Settings, BookOpen, Bookmark, Calendar, Users, ChevronRight, Pencil } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
 import { Link } from 'react-router-dom';
+import { EditProfileModal } from './EditProfileModal';
 
 export function ProfilePage() {
   const { user } = useAuthStore();
+  const [editModalOpen, setEditModalOpen] = useState(false);
 
   if (!user) {
     return (
@@ -61,11 +64,9 @@ export function ProfilePage() {
               </div>
             </div>
 
-            <Button variant="outline" size="sm" asChild>
-              <Link to="/settings">
-                <Settings className="h-4 w-4 mr-2" />
-                Edit Profile
-              </Link>
+            <Button variant="outline" size="sm" onClick={() => setEditModalOpen(true)}>
+              <Pencil className="h-4 w-4 mr-2" />
+              Edit Profile
             </Button>
           </div>
         </CardContent>
@@ -134,6 +135,8 @@ export function ProfilePage() {
           <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
         </Link>
       </div>
+
+      <EditProfileModal open={editModalOpen} onClose={() => setEditModalOpen(false)} />
     </div>
   );
 }

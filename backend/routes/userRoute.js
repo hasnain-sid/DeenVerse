@@ -7,6 +7,7 @@ import {
     saved,
     getProfile,
     getOtherUsers,
+    searchUsersHandler,
     Follow,
     Unfollow,
     updateProfile,
@@ -39,6 +40,9 @@ router.route("/me").get(isAuthenticated, getMe);
 // Hadith IDs are integers from the external API, not MongoDB ObjectIds
 router.route("/saved/:id").put(isAuthenticated, saved);
 router.route("/profile/:id").get(isAuthenticated, mongoIdParamValidationRules('id'), getProfile);
+
+// Search users (public — no auth required)
+router.route("/search").get(searchUsersHandler);
 
 // getOtherUsers does not take an ID param, it uses req.user from isAuthenticated
 router.route("/users").get(isAuthenticated, getOtherUsers);
