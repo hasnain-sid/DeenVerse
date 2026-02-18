@@ -41,17 +41,19 @@ export function initSocket(httpServer, corsOptions) {
         return next(new Error("Authentication required"));
       }
 
-      const secret = process.env.TOKEN_SECRET;
-      if (!secret) return next(new Error("Server configuration error"));
+      if (!process.env.TOKEN_SECRET) return next(new Error("Server configuration error"));
 
       let decoded;
+      const isFromCookie = !socket.handshake.auth?.token && !socket.handshake.headers?.authorization;
       try {
+        // Cookie tokens are refresh tokens — use refresh secret
+        // Auth header/handshake tokens are access tokens — use access secret
+        const secret = isFromCookie
+          ? (process.env.REFRESH_TOKEN_SECRET || process.env.TOKEN_SECRET)
+          : process.env.TOKEN_SECRET;
         decoded = jwt.verify(token, secret);
       } catch {
-        // Try refresh secret as fallback
-        const refreshSecret =
-          process.env.REFRESH_TOKEN_SECRET || process.env.TOKEN_SECRET;
-        decoded = jwt.verify(token, refreshSecret);
+        return next(new Error("Invalid or expired token"));
       }
 
       // Attach userId to the socket for later use

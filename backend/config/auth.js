@@ -12,50 +12,62 @@ function getSecrets() {
 }
 
 /**
- * Try to verify a token against access secret first, then refresh secret.
+ * Verify an access token (uses TOKEN_SECRET only).
  * Returns decoded payload or throws.
  */
 function verifyToken(token) {
-  const { accessSecret, refreshSecret } = getSecrets();
-
+  const { accessSecret } = getSecrets();
   if (!accessSecret) {
     throw new Error("JWT secret is not configured");
   }
-
-  try {
-    return jwt.verify(token, accessSecret);
-  } catch {
-    // If access token verification fails, try refresh secret
-    if (refreshSecret !== accessSecret) {
-      return jwt.verify(token, refreshSecret);
-    }
-    throw new Error("Token verification failed");
-  }
+  return jwt.verify(token, accessSecret);
 }
 
 /**
- * Extract bearer token from Authorization header or cookie.
+ * Verify a refresh token (uses REFRESH_TOKEN_SECRET).
+ * Returns decoded payload or throws.
+ */
+function verifyRefreshToken(token) {
+  const { refreshSecret } = getSecrets();
+  if (!refreshSecret) {
+    throw new Error("JWT secret is not configured");
+  }
+  return jwt.verify(token, refreshSecret);
+}
+
+/**
+ * Extract token from the request.
+ * Returns { token, source } where source is 'header' or 'cookie'.
  */
 function extractToken(req) {
   const authHeader = req.headers.authorization;
   if (authHeader && authHeader.startsWith('Bearer ')) {
-    return authHeader.split(' ')[1];
+    return { token: authHeader.split(' ')[1], source: 'header' };
   }
-  return req.cookies?.token || req.cookies?.refreshToken || null;
+  const cookieToken = req.cookies?.token || req.cookies?.refreshToken;
+  if (cookieToken) {
+    return { token: cookieToken, source: 'cookie' };
+  }
+  return { token: null, source: null };
 }
 
 /**
  * Required auth — rejects with 401 if no valid token.
+ * Uses access secret for header tokens, refresh secret for cookie tokens.
  */
 const isAuthenticated = async (req, res, next) => {
   try {
-    const token = extractToken(req);
+    const { token, source } = extractToken(req);
 
     if (!token) {
       return next(new AppError("User not authenticated. Please login.", 401));
     }
 
-    const decoded = verifyToken(token);
+    // Cookie tokens are refresh tokens — verify with refresh secret
+    // Header Bearer tokens are access tokens — verify with access secret
+    const decoded = source === 'cookie'
+      ? verifyRefreshToken(token)
+      : verifyToken(token);
     req.user = decoded.userId;
     next();
   } catch (error) {
@@ -77,9 +89,11 @@ const isAuthenticated = async (req, res, next) => {
  */
 export const optionalAuth = async (req, _res, next) => {
   try {
-    const token = extractToken(req);
+    const { token, source } = extractToken(req);
     if (token) {
-      const decoded = verifyToken(token);
+      const decoded = source === 'cookie'
+        ? verifyRefreshToken(token)
+        : verifyToken(token);
       req.user = decoded.userId;
     } else {
       req.user = null;

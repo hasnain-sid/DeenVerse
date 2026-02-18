@@ -19,10 +19,9 @@ const userSchema = new mongoose.Schema({
     type:String,
     required:true
   },
-  saved:{
-    type:Array,
-    default:[]
-  },
+  saved:[{
+    type:String
+  }],
   bio:{
     type:String,
     default:''

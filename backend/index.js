@@ -34,13 +34,13 @@ app.use(express.json({ limit: "1mb" }));
 app.use(cookieParser());
 
 // Determine CORS origin based on environment
-const allowedOrigins = ["http://localhost:3000"]; // Default for dev
 const productionFrontendURL =
-  process.env.FRONTEND_URL_PROD || "https://deen-verse-front.vercel.app"; // Fallback if not set
+  process.env.FRONTEND_URL_PROD || "https://deen-verse-front.vercel.app";
 
-if (process.env.NODE_ENV === "production") {
-  allowedOrigins.push(productionFrontendURL);
-}
+const allowedOrigins =
+  process.env.NODE_ENV === "production"
+    ? [productionFrontendURL]
+    : ["http://localhost:3000", "http://localhost:3001", productionFrontendURL];
 
 const corsOptions = {
   origin: function (origin, callback) {

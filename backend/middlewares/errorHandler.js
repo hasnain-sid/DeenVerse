@@ -21,12 +21,13 @@ const errorHandler = (err, req, res, next) => {
     //     });
     // }
 
-    return res.status(statusCode).json({
+    const response = {
         success: false,
         message: message,
-        // Optionally, in development, you might want to send the stack trace
-        // stack: process.env.NODE_ENV === 'development' ? err.stack : undefined,
-    });
+    };
+    if (err.errors) response.errors = err.errors;
+    if (process.env.NODE_ENV === 'development') response.stack = err.stack;
+    return res.status(statusCode).json(response);
 };
 
 export default errorHandler;

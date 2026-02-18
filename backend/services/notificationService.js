@@ -107,7 +107,7 @@ export async function createFollowNotification(recipientId, senderId) {
  * Used by other services (post likes, replies, mentions, reposts).
  */
 export async function createAndEmitNotification({ recipientId, senderId, type, postId }) {
-  if (recipientId === senderId) return; // Don't notify yourself
+  if (recipientId.toString() === senderId.toString()) return; // Don't notify yourself
 
   const notification = await Notification.create({
     recipient: recipientId,

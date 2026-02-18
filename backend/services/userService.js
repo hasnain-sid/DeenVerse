@@ -109,7 +109,8 @@ export const searchUsers = async (query) => {
         return { success: true, users: [], statusCode: 200 };
     }
 
-    const regex = new RegExp(query.trim(), 'i');
+    const escaped = query.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const regex = new RegExp(escaped, 'i');
     const users = await User.find({
         $or: [
             { name: regex },
@@ -156,7 +157,7 @@ export const unfollowUser = async (loggedInUserId, userIdToUnfollow) => {
         throw new AppError("User not found.", 404);
     }
 
-    if (userToUnfollowObj.followers.includes(loggedInUserId)) {
+    if (userToUnfollowObj.followers.some((id) => id.toString() === loggedInUserId)) {
         await userToUnfollowObj.updateOne({ $pull: { followers: loggedInUserId } });
         await loggedInUser.updateOne({ $pull: { following: userIdToUnfollow } });
     } else {
@@ -195,6 +196,10 @@ export const updateUserProfile = async (userId, updates) => {
 };
 
 export const changeUserPassword = async (userId, currentPassword, newPassword) => {
+    if (!newPassword || newPassword.length < 6) {
+        throw new AppError("New password must be at least 6 characters", 400);
+    }
+
     const user = await User.findById(userId);
     if (!user) {
         throw new AppError("User not found", 404);
@@ -203,6 +208,10 @@ export const changeUserPassword = async (userId, currentPassword, newPassword) =
     const isMatch = await bcryptjs.compare(currentPassword, user.password);
     if (!isMatch) {
         throw new AppError("Current password is incorrect", 401);
+    }
+
+    if (currentPassword === newPassword) {
+        throw new AppError("New password must be different from current password", 400);
     }
 
     user.password = await bcryptjs.hash(newPassword, 10);

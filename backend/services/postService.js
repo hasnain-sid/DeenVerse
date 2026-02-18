@@ -169,7 +169,7 @@ export async function toggleLike(postId, userId) {
   const post = await Post.findById(postId);
   if (!post) throw new AppError("Post not found", 404);
 
-  const alreadyLiked = post.likes.includes(userId);
+  const alreadyLiked = post.likes.some((id) => id.toString() === userId);
 
   if (alreadyLiked) {
     post.likes.pull(userId);
@@ -210,7 +210,7 @@ export async function toggleRepost(postId, userId) {
   const post = await Post.findById(postId);
   if (!post) throw new AppError("Post not found", 404);
 
-  const alreadyReposted = post.reposts.includes(userId);
+  const alreadyReposted = post.reposts.some((id) => id.toString() === userId);
 
   if (alreadyReposted) {
     post.reposts.pull(userId);
