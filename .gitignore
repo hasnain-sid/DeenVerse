@@ -19,7 +19,8 @@ backend/npm-debug.log*
 backend/yarn-debug.log*
 backend/yarn-error.log*
 
-# Frontend build artifacts
+# Build artifacts
+dist/
 frontend/build/
 frontend/dist/
 frontend/.env.local
