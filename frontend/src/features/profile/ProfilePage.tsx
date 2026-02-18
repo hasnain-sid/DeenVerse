@@ -1,9 +1,8 @@
-import React from 'react';
 import { useAuthStore } from '@/stores/authStore';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { Settings, BookOpen, Bookmark, Calendar } from 'lucide-react';
+import { Settings, BookOpen, Bookmark, Calendar, Users, ChevronRight } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
 import { Link } from 'react-router-dom';
 
@@ -48,10 +47,6 @@ export function ProfilePage() {
                   <Calendar className="h-3.5 w-3.5" />
                   Joined {formatDate(user.createdAt)}
                 </div>
-                <div className="flex items-center gap-1.5">
-                  <Bookmark className="h-3.5 w-3.5" />
-                  {user.saved.length} saved
-                </div>
               </div>
 
               <div className="mt-3 flex gap-4 text-sm">
@@ -76,15 +71,69 @@ export function ProfilePage() {
         </CardContent>
       </Card>
 
-      {/* Activity Section (placeholder) */}
-      <Card>
-        <CardContent className="py-8 text-center">
-          <BookOpen className="h-10 w-10 text-muted-foreground/30 mx-auto mb-3" />
-          <p className="text-sm text-muted-foreground">
-            Your activity will appear here soon.
-          </p>
-        </CardContent>
-      </Card>
+      {/* Stats cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        <Card>
+          <CardContent className="p-4 text-center">
+            <Bookmark className="h-5 w-5 mx-auto mb-1.5 text-primary" />
+            <p className="text-2xl font-semibold">{user.saved.length}</p>
+            <p className="text-xs text-muted-foreground">Saved Hadiths</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 text-center">
+            <Users className="h-5 w-5 mx-auto mb-1.5 text-primary" />
+            <p className="text-2xl font-semibold">{user.followers?.length ?? 0}</p>
+            <p className="text-xs text-muted-foreground">Followers</p>
+          </CardContent>
+        </Card>
+        <Card className="col-span-2 sm:col-span-1">
+          <CardContent className="p-4 text-center">
+            <BookOpen className="h-5 w-5 mx-auto mb-1.5 text-primary" />
+            <p className="text-2xl font-semibold">{user.following?.length ?? 0}</p>
+            <p className="text-xs text-muted-foreground">Following</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Quick links */}
+      <div className="space-y-2">
+        <Link
+          to="/saved"
+          className="flex items-center justify-between rounded-lg border p-4 hover:bg-secondary/50 transition-colors group"
+        >
+          <div className="flex items-center gap-3">
+            <Bookmark className="h-4 w-4 text-muted-foreground" />
+            <span className="text-sm font-medium">Saved Hadiths</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-muted-foreground">{user.saved.length}</span>
+            <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+          </div>
+        </Link>
+
+        <Link
+          to="/explore"
+          className="flex items-center justify-between rounded-lg border p-4 hover:bg-secondary/50 transition-colors group"
+        >
+          <div className="flex items-center gap-3">
+            <BookOpen className="h-4 w-4 text-muted-foreground" />
+            <span className="text-sm font-medium">Explore Topics</span>
+          </div>
+          <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+        </Link>
+
+        <Link
+          to="/settings"
+          className="flex items-center justify-between rounded-lg border p-4 hover:bg-secondary/50 transition-colors group"
+        >
+          <div className="flex items-center gap-3">
+            <Settings className="h-4 w-4 text-muted-foreground" />
+            <span className="text-sm font-medium">Settings</span>
+          </div>
+          <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
+        </Link>
+      </div>
     </div>
   );
 }

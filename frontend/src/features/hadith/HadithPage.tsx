@@ -1,23 +1,33 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
+import { useSearchParams, Link } from 'react-router-dom';
 import { HadithCard } from './HadithCard';
 import { useHadithList, useHadithDetail } from './useHadith';
 import { useAuthStore } from '@/stores/authStore';
 import { useThemeStore } from '@/stores/themeStore';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Languages, Type, Minus, Plus } from 'lucide-react';
+import { Languages, Type, Minus, Plus, ArrowLeft } from 'lucide-react';
 import api from '@/lib/api';
 import toast from 'react-hot-toast';
 import { toPng } from 'html-to-image';
 import download from 'downloadjs';
 
 export function HadithPage() {
+  const [searchParams] = useSearchParams();
+  const categoryId = searchParams.get('category') ?? '11';
+  const categoryTitle = searchParams.get('title') ?? 'General Qur\'anic Topics';
+
   const [index, setIndex] = useState(0);
   const { user, isAuthenticated, updateSaved } = useAuthStore();
   const { hadithLanguage, setHadithLanguage, fontSize, setFontSize } = useThemeStore();
 
+  // Reset index when category changes
+  useEffect(() => {
+    setIndex(0);
+  }, [categoryId]);
+
   // Fetch hadith list
-  const { data: hadithList, isLoading: isListLoading } = useHadithList();
+  const { data: hadithList, isLoading: isListLoading } = useHadithList(categoryId);
   const currentHadith = hadithList?.[index];
 
   // Fetch individual hadith detail
@@ -85,6 +95,16 @@ export function HadithPage() {
 
   return (
     <div className="space-y-6 animate-fade-in">
+      {/* Category header */}
+      <div className="flex items-center gap-3">
+        <Button variant="ghost" size="icon" asChild className="h-8 w-8">
+          <Link to="/explore">
+            <ArrowLeft className="h-4 w-4" />
+          </Link>
+        </Button>
+        <h2 className="text-base font-semibold truncate">{categoryTitle}</h2>
+      </div>
+
       {/* Controls Bar */}
       <div className="flex flex-wrap items-center gap-3">
         {/* Language selector */}

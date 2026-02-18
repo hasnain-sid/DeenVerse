@@ -8,7 +8,9 @@ import {
     getProfile,
     getOtherUsers,
     Follow,
-    Unfollow
+    Unfollow,
+    updateProfile,
+    changePassword
 } from "../controller/userController.js";
 import isAuthenticated from "../config/auth.js";
 import {
@@ -37,5 +39,9 @@ router.route("/users").get(isAuthenticated, getOtherUsers);
 // followUnfollowValidationRules already checks for body('id').isMongoId()
 router.route("/follow").post(isAuthenticated, followUnfollowValidationRules(), Follow);
 router.route("/unfollow").post(isAuthenticated, followUnfollowValidationRules(), Unfollow);
+
+// Profile management
+router.route("/profile").put(isAuthenticated, updateProfile);
+router.route("/change-password").put(isAuthenticated, changePassword);
 
 export default router;

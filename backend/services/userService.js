@@ -143,3 +143,49 @@ export const unfollowUser = async (loggedInUserId, userIdToUnfollow) => {
     }
     return { success: true, message: `${loggedInUser.name} unfollowed ${userToUnfollowObj.name}`, statusCode: 200 };
 };
+
+export const updateUserProfile = async (userId, updates) => {
+    const allowedFields = ['name', 'username', 'bio', 'avatar'];
+    const sanitized = {};
+    for (const key of allowedFields) {
+        if (updates[key] !== undefined) {
+            sanitized[key] = updates[key];
+        }
+    }
+
+    if (Object.keys(sanitized).length === 0) {
+        throw new AppError("No valid fields to update", 400);
+    }
+
+    // Check username uniqueness if changing it
+    if (sanitized.username) {
+        const existing = await User.findOne({ username: sanitized.username, _id: { $ne: userId } });
+        if (existing) {
+            throw new AppError("Username is already taken", 409);
+        }
+    }
+
+    const user = await User.findByIdAndUpdate(userId, sanitized, { new: true, runValidators: true }).select("-password");
+    if (!user) {
+        throw new AppError("User not found", 404);
+    }
+
+    return { success: true, message: "Profile updated successfully", user, statusCode: 200 };
+};
+
+export const changeUserPassword = async (userId, currentPassword, newPassword) => {
+    const user = await User.findById(userId);
+    if (!user) {
+        throw new AppError("User not found", 404);
+    }
+
+    const isMatch = await bcryptjs.compare(currentPassword, user.password);
+    if (!isMatch) {
+        throw new AppError("Current password is incorrect", 401);
+    }
+
+    user.password = await bcryptjs.hash(newPassword, 16);
+    await user.save();
+
+    return { success: true, message: "Password changed successfully", statusCode: 200 };
+};

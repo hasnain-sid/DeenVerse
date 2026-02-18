@@ -26,6 +26,9 @@ const ProfilePage = lazy(() =>
 const LoginPage = lazy(() =>
   import('@/features/auth/LoginPage').then((m) => ({ default: m.LoginPage }))
 );
+const SettingsPage = lazy(() =>
+  import('@/features/settings/SettingsPage').then((m) => ({ default: m.SettingsPage }))
+);
 const NotFoundPage = lazy(() =>
   import('@/features/not-found/NotFoundPage').then((m) => ({ default: m.NotFoundPage }))
 );
@@ -82,6 +85,14 @@ export default function App() {
                     element={
                       <AuthGuard>
                         <ProfilePage />
+                      </AuthGuard>
+                    }
+                  />
+                  <Route
+                    path="/settings"
+                    element={
+                      <AuthGuard>
+                        <SettingsPage />
                       </AuthGuard>
                     }
                   />

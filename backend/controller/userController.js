@@ -6,7 +6,9 @@ import {
     getUserProfile,
     getOtherUsersProfiles,
     followUser,
-    unfollowUser
+    unfollowUser,
+    updateUserProfile,
+    changeUserPassword
 } from "../services/userService.js";
 
 export const Register = async (req, res, next) => {
@@ -137,6 +139,34 @@ export const Unfollow = async (req, res, next) => {
     
     const result = await unfollowUser(loggedInUserId, userIdToUnfollow);
 
+    return res.status(result.statusCode).json({
+      message: result.message,
+      success: true
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateProfile = async (req, res, next) => {
+  try {
+    const userId = req.user;
+    const result = await updateUserProfile(userId, req.body);
+    return res.status(result.statusCode).json({
+      message: result.message,
+      user: result.user,
+      success: true
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const changePassword = async (req, res, next) => {
+  try {
+    const userId = req.user;
+    const { currentPassword, newPassword } = req.body;
+    const result = await changeUserPassword(userId, currentPassword, newPassword);
     return res.status(result.statusCode).json({
       message: result.message,
       success: true
