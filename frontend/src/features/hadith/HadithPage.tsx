@@ -44,13 +44,18 @@ export function HadithPage() {
       return;
     }
 
+    // Optimistic update — instant UI feedback
+    const hadithId = String(currentHadith.id);
+    const wasBookmarked = isBookmarked;
+    updateSaved(hadithId);
+
     try {
       const res = await api.put(`/user/saved/${currentHadith.id}`);
-      if (res.data.success) {
-        updateSaved(String(currentHadith.id));
-        toast.success(isBookmarked ? 'Removed from saved' : 'Saved!');
-      }
+      if (!res.data.success) throw new Error();
+      toast.success(wasBookmarked ? 'Removed from saved' : 'Saved!');
     } catch {
+      // Rollback on failure
+      updateSaved(hadithId);
       toast.error('Failed to update bookmark');
     }
   }, [isAuthenticated, currentHadith, isBookmarked, updateSaved]);

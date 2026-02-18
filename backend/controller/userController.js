@@ -8,8 +8,13 @@ import {
     followUser,
     unfollowUser,
     updateUserProfile,
-    changeUserPassword
+    changeUserPassword,
+    refreshSession,
+    createPasswordResetToken,
+    resetPasswordWithToken
 } from "../services/userService.js";
+import { getRefreshCookieOptions } from "../utils/tokenUtils.js";
+import { verifyRefreshToken } from "../utils/tokenUtils.js";
 
 export const Register = async (req, res, next) => {
   try {
@@ -26,17 +31,15 @@ export const Register = async (req, res, next) => {
 export const Login = async (req, res, next) => {
   try {
     const result = await loginUser(req.body);
-    const isProduction = process.env.NODE_ENV === 'production';
-    return res.status(result.statusCode).cookie("token", result.token, {
-      maxAge: 24 * 60 * 60 * 1000, 
-      httpOnly: true, 
-      secure: isProduction,
-      sameSite: isProduction ? 'None' : 'Lax'
-    }).json({
-      message: result.message,
-      user: result.user,
-      success: true,
-    });
+    return res
+      .status(result.statusCode)
+      .cookie("refreshToken", result.refreshToken, getRefreshCookieOptions())
+      .json({
+        message: result.message,
+        user: result.user,
+        accessToken: result.accessToken,
+        success: true,
+      });
   } catch (error) {
     next(error);
   }
@@ -44,17 +47,21 @@ export const Login = async (req, res, next) => {
 
 export const Logout = (req, res, next) => {
   try {
-    const result = logoutUser(); // Service function for logout
+    const result = logoutUser();
     const isProduction = process.env.NODE_ENV === 'production';
-    return res.status(result.statusCode).cookie("token","", { 
-      expires: new Date(Date.now()), 
-      httpOnly: true,
-      secure: isProduction,
-      sameSite: isProduction ? 'None' : 'Lax'
-    }).json({
-      message: result.message,
-      success:true
-    });
+    return res
+      .status(result.statusCode)
+      .cookie("refreshToken", "", {
+        expires: new Date(0),
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: isProduction ? 'None' : 'Lax',
+        path: '/',
+      })
+      .json({
+        message: result.message,
+        success: true,
+      });
   } catch (error) {
     next(error);
   }
@@ -176,6 +183,76 @@ export const changePassword = async (req, res, next) => {
   }
 };
 
+export const refresh = async (req, res, next) => {
+  try {
+    const token = req.cookies.refreshToken;
+    if (!token) {
+      return res.status(401).json({ success: false, message: "No refresh token" });
+    }
 
+    let decoded;
+    try {
+      decoded = verifyRefreshToken(token);
+    } catch {
+      return res.status(401).json({ success: false, message: "Invalid refresh token" });
+    }
 
+    const result = await refreshSession(decoded.userId);
+    return res
+      .status(result.statusCode)
+      .cookie("refreshToken", result.refreshToken, getRefreshCookieOptions())
+      .json({
+        user: result.user,
+        accessToken: result.accessToken,
+        success: true,
+      });
+  } catch (error) {
+    next(error);
+  }
+};
 
+export const forgotPassword = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ success: false, message: "Email is required" });
+    }
+
+    const result = await createPasswordResetToken(email);
+
+    // In production, send email with reset link instead of returning token
+    // For now, return token for development/testing
+    return res.status(result.statusCode).json({
+      message: result.message,
+      success: true,
+      // DEV ONLY — remove in production when email service is set up
+      ...(process.env.NODE_ENV !== 'production' && result.resetToken
+        ? { resetToken: result.resetToken }
+        : {}),
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const resetPassword = async (req, res, next) => {
+  try {
+    const { token } = req.params;
+    const { password } = req.body;
+
+    if (!password || password.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: "Password must be at least 6 characters",
+      });
+    }
+
+    const result = await resetPasswordWithToken(token, password);
+    return res.status(result.statusCode).json({
+      message: result.message,
+      success: true,
+    });
+  } catch (error) {
+    next(error);
+  }
+};

@@ -10,21 +10,28 @@ import {
     Follow,
     Unfollow,
     updateProfile,
-    changePassword
+    changePassword,
+    refresh,
+    forgotPassword,
+    resetPassword
 } from "../controller/userController.js";
 import isAuthenticated from "../config/auth.js";
 import {
     registerValidationRules,
     loginValidationRules,
     followUnfollowValidationRules,
-    mongoIdParamValidationRules // Added for param validation
+    mongoIdParamValidationRules
 } from "../middlewares/validators.js";
 
 const router = express.Router();
 
+// ── Auth ─────────────────────────────────────────────
 router.route("/register").post(registerValidationRules(), Register);
 router.route("/login").post(loginValidationRules(), Login);
 router.route("/logout").post(Logout);
+router.route("/refresh").post(refresh);
+router.route("/forgot-password").post(forgotPassword);
+router.route("/reset-password/:token").post(resetPassword);
 
 // Session check - restore user from cookie
 router.route("/me").get(isAuthenticated, getMe);

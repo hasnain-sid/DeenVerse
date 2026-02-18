@@ -35,13 +35,16 @@ export function SavedPage() {
       return;
     }
 
+    // Optimistic update — instant UI feedback
+    updateSaved(currentId);
+
     try {
       const res = await api.put(`/user/saved/${currentId}`);
-      if (res.data.success) {
-        updateSaved(currentId);
-        toast.success('Bookmark updated');
-      }
+      if (!res.data.success) throw new Error();
+      toast.success('Bookmark updated');
     } catch {
+      // Rollback on failure
+      updateSaved(currentId);
       toast.error('Failed to update bookmark');
     }
   }, [isAuthenticated, currentId, updateSaved]);

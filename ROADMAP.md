@@ -67,22 +67,22 @@
 > **Goal**: Make every existing feature production-quality with proper UX.
 
 ### 2.1 Authentication System Overhaul
-- [ ] **Step 1**: Implement JWT Access + Refresh Token strategy
+- [x] **Step 1**: Implement JWT Access + Refresh Token strategy
   - Access token: 15 min expiry, stored in memory (Zustand)
   - Refresh token: 7 day expiry, stored in httpOnly cookie
   - Auto-refresh via Axios interceptor on 401 responses
-- [ ] **Step 2**: Add registration page with form validation (React Hook Form + Zod)
+- [x] **Step 2**: Add registration page with form validation (React Hook Form + Zod)
   - Fields: fullName, username, email, password, confirmPassword
   - Real-time validation feedback
   - Password strength indicator
-- [ ] **Step 3**: Add "Forgot Password" flow
+- [x] **Step 3**: Add "Forgot Password" flow
   - Email input → backend sends reset link → token-based reset page
   - Backend: `/auth/forgot-password` & `/auth/reset-password/:token`
 - [ ] **Step 4**: Add email verification flow
   - On register → send verification email with token
   - Backend: `/auth/verify-email/:token`
   - Frontend: Show "Check your email" screen after registration
-- [ ] **Step 5**: Implement persistent sessions
+- [x] **Step 5**: Implement persistent sessions
   - On app load: call `/api/auth/me` with refresh token cookie
   - If valid: populate auth store; if expired: redirect to login
 - [ ] **Step 6**: Add Google OAuth login (future: Apple, GitHub)
@@ -90,19 +90,19 @@
   - Frontend: "Continue with Google" button on login page
 
 ### 2.2 Hadith Feature — Full Rebuild
-- [ ] **Step 7**: Redesign HadithCard with Notion-clean styling
+- [x] **Step 7**: Redesign HadithCard with Notion-clean styling
   - Arabic text with Amiri font (RTL)
   - Translation below with configurable font & size
   - Source/reference line (hadith book, chapter, number)
   - Swipe gestures for mobile (next/prev)
-- [ ] **Step 8**: Add hadith category/collection browser
+- [x] **Step 8**: Add hadith category/collection browser
   - Sidebar shows: Sahih Bukhari, Sahih Muslim, Tirmidhi, etc.
   - Click to browse chapters → specific hadiths
 - [ ] **Step 9**: Implement full-text search for hadiths
   - Frontend: Debounced search input with suggestions dropdown
   - Backend: MongoDB text index on hadith content fields
   - Highlight matching terms in results
-- [ ] **Step 10**: Add "Share as Image" upgraded feature
+- [x] **Step 10**: Add "Share as Image" upgraded feature
   - Multiple card templates (minimal, ornate, dark mode)
   - Custom watermark/branding
   - Download as PNG/JPG
@@ -112,19 +112,19 @@
   - Play/pause controls integrated into HadithCard
 
 ### 2.3 Saved/Bookmarks
-- [ ] **Step 12**: Rebuild bookmarks with proper backend integration
+- [x] **Step 12**: Rebuild bookmarks with proper backend integration
   - `POST /api/bookmarks/:hadithId` — save
   - `DELETE /api/bookmarks/:hadithId` — unsave
   - `GET /api/bookmarks` — list saved (paginated)
 - [ ] **Step 13**: Add bookmark collections/folders
   - Users can create named collections: "Morning Duas", "Patience", etc.
   - Drag and drop hadiths between collections
-- [ ] **Step 14**: Implement optimistic updates for bookmark toggle
+- [x] **Step 14**: Implement optimistic updates for bookmark toggle
   - Instant UI feedback before server confirms
   - Rollback on error
 
 ### 2.4 Profile Page
-- [ ] **Step 15**: Build full profile page
+- [x] **Step 15**: Build full profile page
   - Avatar (with upload), cover photo
   - Bio, location, website link
   - Stats: posts, followers, following, saved count
@@ -133,30 +133,30 @@
   - Update name, bio, avatar, cover photo
   - Form validation with Zod
   - Image crop/resize before upload
-- [ ] **Step 17**: Build public profile view
+- [x] **Step 17**: Build public profile view
   - `/user/:username` route
   - Show user's shared hadiths, stats
   - Follow/unfollow button
 
 ### 2.5 Error Handling & Loading States
-- [ ] **Step 18**: Add React Error Boundaries with fallback UI
+- [x] **Step 18**: Add React Error Boundaries with fallback UI
   - Global error boundary wrapping the app
   - Feature-level error boundaries for isolated failures
   - "Something went wrong" page with retry button
-- [ ] **Step 19**: Add skeleton loading screens for every page
+- [x] **Step 19**: Add skeleton loading screens for every page
   - HadithPage skeleton, SavedPage skeleton, ProfilePage skeleton
   - Shimmer animation consistent with design system
-- [ ] **Step 20**: Add empty states for every list
+- [x] **Step 20**: Add empty states for every list
   - "No saved hadiths yet" with illustration
   - "No results found" for search
   - "No posts yet" for feed
-- [ ] **Step 21**: Add toast notifications for all actions
+- [x] **Step 21**: Add toast notifications for all actions
   - Success: "Hadith saved!", "Profile updated!"
   - Error: "Failed to save, please try again"
   - Info: "You're now following @user"
 
 ### 2.6 Search Feature
-- [ ] **Step 22**: Implement global search (Cmd+K / Ctrl+K)
+- [x] **Step 22**: Implement global search (Cmd+K / Ctrl+K)
   - Command palette overlay (like Notion/VS Code)
   - Search hadiths, users, collections
   - Recent searches history (localStorage)

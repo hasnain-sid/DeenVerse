@@ -24,7 +24,7 @@ export function useLogin() {
     },
     onSuccess: (data) => {
       if (data.user) {
-        login(data.user, ''); // Token is in httpOnly cookie
+        login(data.user, data.accessToken ?? '');
       }
     },
   });
@@ -39,29 +39,57 @@ export function useRegister() {
   });
 }
 
+export function useForgotPassword() {
+  return useMutation({
+    mutationFn: async (email: string) => {
+      const { data } = await api.post('/user/forgot-password', { email });
+      return data;
+    },
+  });
+}
+
+export function useResetPassword() {
+  return useMutation({
+    mutationFn: async ({ token, password }: { token: string; password: string }) => {
+      const { data } = await api.post(`/user/reset-password/${token}`, { password });
+      return data;
+    },
+  });
+}
+
 export function useSession() {
-  const { setUser, logout, setLoading } = useAuthStore();
+  const { setUser, setAccessToken, logout, setLoading } = useAuthStore();
 
   return useQuery({
     queryKey: ['session'],
     queryFn: async () => {
       try {
-        const { data } = await api.get('/user/me');
-        setUser(data.user);
+        // Try to refresh the session using the refresh token cookie
+        const { data } = await api.post('/user/refresh');
+        if (data.accessToken) {
+          setAccessToken(data.accessToken);
+        }
+        if (data.user) {
+          setUser(data.user);
+        }
         return data.user;
       } catch {
-        // Don't call logout() here — a 401 on first visit is expected.
-        // Just clear loading so the app renders for unauthenticated visitors.
-        // If the user *was* authenticated (stale persisted state), clear it.
-        const { isAuthenticated } = useAuthStore.getState();
-        if (isAuthenticated) logout();
-        return null;
+        // Refresh failed — try the old /me endpoint as fallback
+        try {
+          const { data } = await api.get('/user/me');
+          setUser(data.user);
+          return data.user;
+        } catch {
+          const { isAuthenticated } = useAuthStore.getState();
+          if (isAuthenticated) logout();
+          return null;
+        }
       } finally {
         setLoading(false);
       }
     },
     retry: false,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
   });
 }

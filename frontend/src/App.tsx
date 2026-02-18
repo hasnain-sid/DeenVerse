@@ -6,6 +6,7 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { AuthGuard } from '@/features/auth/AuthGuard';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { useSession } from '@/features/auth/useAuth';
+import { CommandPalette } from '@/components/CommandPalette';
 
 // Lazy-load route-level pages for code splitting
 const HomePage = lazy(() =>
@@ -25,6 +26,12 @@ const ProfilePage = lazy(() =>
 );
 const LoginPage = lazy(() =>
   import('@/features/auth/LoginPage').then((m) => ({ default: m.LoginPage }))
+);
+const ForgotPasswordPage = lazy(() =>
+  import('@/features/auth/ForgotPasswordPage').then((m) => ({ default: m.ForgotPasswordPage }))
+);
+const ResetPasswordPage = lazy(() =>
+  import('@/features/auth/ResetPasswordPage').then((m) => ({ default: m.ResetPasswordPage }))
 );
 const SettingsPage = lazy(() =>
   import('@/features/settings/SettingsPage').then((m) => ({ default: m.SettingsPage }))
@@ -108,11 +115,15 @@ export default function App() {
                     }
                   />
                   <Route path="/login" element={<LoginPage />} />
+                  <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                  <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
                   <Route path="*" element={<NotFoundPage />} />
                 </Route>
               </Routes>
             </Suspense>
           </SessionRestorer>
+
+          <CommandPalette />
 
           <Toaster
             position="bottom-right"

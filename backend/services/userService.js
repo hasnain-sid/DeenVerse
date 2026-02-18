@@ -1,7 +1,8 @@
-import jwt from "jsonwebtoken";
 import { User } from "../models/userSchema.js";
 import bcryptjs from "bcryptjs";
-import { AppError } from '../utils/AppError.js'; // Updated path
+import crypto from 'crypto';
+import { AppError } from '../utils/AppError.js';
+import { generateAccessToken, generateRefreshToken } from '../utils/tokenUtils.js';
 
 export const registerUser = async (userData) => {
     const { name, username, email, password } = userData;
@@ -44,10 +45,8 @@ export const loginUser = async (credentials) => {
         throw new AppError("Invalid email or password", 401);
     }
 
-    const tokenData = {
-        userId: user._id,
-    };
-    const token = jwt.sign(tokenData, process.env.TOKEN_SECRET, { expiresIn: "1d" });
+    const accessToken = generateAccessToken(user._id);
+    const refreshToken = generateRefreshToken(user._id);
 
     // Exclude password from response
     const userWithoutPassword = await User.findById(user._id).select("-password");
@@ -56,7 +55,8 @@ export const loginUser = async (credentials) => {
         success: true,
         message: `Welcome back ${user.name}`,
         user: userWithoutPassword,
-        token,
+        accessToken,
+        refreshToken,
         statusCode: 200,
     };
 };
@@ -188,4 +188,78 @@ export const changeUserPassword = async (userId, currentPassword, newPassword) =
     await user.save();
 
     return { success: true, message: "Password changed successfully", statusCode: 200 };
+};
+
+/**
+ * Refresh session — validate refresh token, return new access + refresh tokens
+ */
+export const refreshSession = async (userId) => {
+    const user = await User.findById(userId).select("-password");
+    if (!user) {
+        throw new AppError("User not found", 404);
+    }
+
+    const accessToken = generateAccessToken(user._id);
+    const refreshToken = generateRefreshToken(user._id);
+
+    return {
+        success: true,
+        user,
+        accessToken,
+        refreshToken,
+        statusCode: 200,
+    };
+};
+
+/**
+ * Generate a password reset token, store hash + expiry on user
+ */
+export const createPasswordResetToken = async (email) => {
+    const user = await User.findOne({ email });
+    if (!user) {
+        // Don't reveal if user exists — always return success message
+        return {
+            success: true,
+            message: "If an account with that email exists, a reset link has been sent.",
+            statusCode: 200,
+        };
+    }
+
+    // Generate random token
+    const resetToken = crypto.randomBytes(32).toString('hex');
+    const hashedToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+
+    user.passwordResetToken = hashedToken;
+    user.passwordResetExpires = Date.now() + 60 * 60 * 1000; // 1 hour
+    await user.save({ validateBeforeSave: false });
+
+    return {
+        success: true,
+        message: "If an account with that email exists, a reset link has been sent.",
+        resetToken, // In production, this would be sent via email, not returned
+        statusCode: 200,
+    };
+};
+
+/**
+ * Reset password using token
+ */
+export const resetPasswordWithToken = async (token, newPassword) => {
+    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+
+    const user = await User.findOne({
+        passwordResetToken: hashedToken,
+        passwordResetExpires: { $gt: Date.now() },
+    });
+
+    if (!user) {
+        throw new AppError("Invalid or expired reset token", 400);
+    }
+
+    user.password = await bcryptjs.hash(newPassword, 16);
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
+    await user.save();
+
+    return { success: true, message: "Password reset successfully. Please log in.", statusCode: 200 };
 };
