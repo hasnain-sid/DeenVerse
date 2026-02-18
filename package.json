@@ -2,9 +2,17 @@
   "name": "deenverse",
   "private": true,
   "description": "Islamic Social Media Platform",
+  "workspaces": [
+    "packages/shared",
+    "frontend",
+    "backend",
+    "packages/mobile"
+  ],
   "scripts": {
-    "dev:frontend": "cd frontend && npm run dev",
+    "dev:web": "cd frontend && npm run dev",
     "dev:backend": "cd backend && npm run dev",
-    "install:all": "cd backend && npm install && cd ../frontend && npm install"
+    "dev:mobile": "cd packages/mobile && npx expo start",
+    "install:all": "npm install",
+    "build:web": "cd frontend && npm run build"
   }
 }
