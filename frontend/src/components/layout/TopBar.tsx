@@ -1,8 +1,9 @@
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { Menu, Search, Bell } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useUIStore } from '@/stores/uiStore';
 import { useAuthStore } from '@/stores/authStore';
+import { useUnreadCount } from '@/features/notifications/useNotifications';
 import { Avatar } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 
@@ -61,18 +62,13 @@ export function TopBar() {
       </Button>
 
       {/* Notifications */}
-      {isAuthenticated && (
-        <Button variant="ghost" size="icon" className="h-8 w-8 relative">
-          <Bell className="h-4 w-4" />
-          {/* Notification dot (future) */}
-        </Button>
-      )}
+      {isAuthenticated && <NotificationBell />}
 
       {/* Mobile avatar */}
       {isAuthenticated && user ? (
         <Avatar
           src={user.avatar}
-          fallback={user.name}
+          fallback={user.name?.[0] || '?'}
           size="sm"
           className="md:hidden cursor-pointer"
           onClick={() => navigate('/profile')}
@@ -88,5 +84,23 @@ export function TopBar() {
         </Button>
       )}
     </header>
+  );
+}
+
+function NotificationBell() {
+  const { data } = useUnreadCount();
+  const count = data?.count ?? 0;
+
+  return (
+    <Link to="/notifications" className="relative">
+      <Button variant="ghost" size="icon" className="h-8 w-8">
+        <Bell className="h-4 w-4" />
+      </Button>
+      {count > 0 && (
+        <span className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center pointer-events-none">
+          {count > 9 ? '9+' : count}
+        </span>
+      )}
+    </Link>
   );
 }

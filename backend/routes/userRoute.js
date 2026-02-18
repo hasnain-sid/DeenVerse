@@ -21,6 +21,7 @@ import {
     getPublicProfileHandler
 } from "../controller/userController.js";
 import isAuthenticated from "../config/auth.js";
+import { optionalAuth } from "../config/auth.js";
 import {
     registerValidationRules,
     loginValidationRules,
@@ -60,11 +61,11 @@ router.route("/profile").put(isAuthenticated, updateProfile);
 router.route("/change-password").put(isAuthenticated, changePassword);
 
 // Followers / Following / Suggestions
-router.route("/followers/:id").get(getFollowersHandler);
-router.route("/following/:id").get(getFollowingHandler);
+router.route("/followers/:id").get(optionalAuth, getFollowersHandler);
+router.route("/following/:id").get(optionalAuth, getFollowingHandler);
 router.route("/suggestions").get(isAuthenticated, getSuggestionsHandler);
 
 // Public profile by username
-router.route("/username/:username").get(getPublicProfileHandler);
+router.route("/username/:username").get(optionalAuth, getPublicProfileHandler);
 
 export default router;

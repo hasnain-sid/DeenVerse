@@ -92,7 +92,7 @@ export function PostCard({ post, compact = false }: PostCardProps) {
           onClick={(e) => e.stopPropagation()}
           className="shrink-0"
         >
-          <Avatar src={post.author.avatar} fallback={post.author.name[0]} size="md" />
+          <Avatar src={post.author.avatar} fallback={post.author.name?.[0] || '?'} size="md" />
         </Link>
 
         {/* Body */}

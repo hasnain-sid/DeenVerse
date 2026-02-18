@@ -57,4 +57,22 @@ export const mongoIdBodyValidationRules = (fieldName = 'id') => [
     handleValidationErrors
 ];
 
+// Post creation validation
+export const createPostValidationRules = () => [
+    body('content')
+        .trim()
+        .notEmpty().withMessage('Post content is required')
+        .isLength({ max: 500 }).withMessage('Post content cannot exceed 500 characters'),
+    body('hadithRef')
+        .optional()
+        .isString().withMessage('Hadith reference must be a string'),
+    body('images')
+        .optional()
+        .isArray({ max: 4 }).withMessage('Maximum 4 images allowed'),
+    body('replyTo')
+        .optional()
+        .isMongoId().withMessage('Invalid post ID for reply'),
+    handleValidationErrors
+];
+
 export { handleValidationErrors }; // Export if needed directly elsewhere, though typically used within rule arrays

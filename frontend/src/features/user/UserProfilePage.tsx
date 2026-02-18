@@ -85,7 +85,7 @@ export function UserProfilePage() {
         <div className="flex items-end justify-between -mt-12 mb-3">
           <Avatar
             src={profile.avatar}
-            fallback={profile.name[0]}
+            fallback={profile.name?.[0] || '?'}
             size="lg"
             className="border-4 border-background"
           />

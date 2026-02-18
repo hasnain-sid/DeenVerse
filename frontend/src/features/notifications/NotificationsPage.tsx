@@ -110,7 +110,7 @@ export function NotificationsPage() {
 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-0.5">
-                    <Avatar src={n.sender.avatar} fallback={n.sender.name[0]} size="sm" />
+                    <Avatar src={n.sender.avatar} fallback={n.sender.name?.[0] || '?'} size="sm" />
                     <span className="text-sm font-semibold text-foreground truncate">
                       {n.sender.name}
                     </span>

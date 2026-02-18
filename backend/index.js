@@ -16,10 +16,8 @@ databaseConnection();
 const app = express();
 
 // middleware
-app.use(express.urlencoded({
-  extended:true
-}));
-app.use(express.json());
+app.use(express.urlencoded({ extended: true, limit: '1mb' }));
+app.use(express.json({ limit: '1mb' }));
 app.use(cookieParser());
 
 // Determine CORS origin based on environment

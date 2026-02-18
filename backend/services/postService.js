@@ -219,14 +219,23 @@ export async function toggleRepost(postId, userId) {
     post.reposts.push(userId);
     post.repostCount += 1;
 
-    // Notify post author
+    // Notify post author (deduplicate — skip if already notified within 1 hour)
     if (post.author.toString() !== userId) {
-      await Notification.create({
+      const existing = await Notification.findOne({
         recipient: post.author,
         sender: userId,
         type: "repost",
         post: postId,
+        createdAt: { $gte: new Date(Date.now() - 60 * 60 * 1000) },
       });
+      if (!existing) {
+        await Notification.create({
+          recipient: post.author,
+          sender: userId,
+          type: "repost",
+          post: postId,
+        });
+      }
     }
   }
 

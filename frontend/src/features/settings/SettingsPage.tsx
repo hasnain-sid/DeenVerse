@@ -125,6 +125,7 @@ function ProfileSection() {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors, isDirty },
   } = useForm<ProfileForm>({
     resolver: zodResolver(profileSchema),
@@ -140,6 +141,7 @@ function ProfileSection() {
     try {
       const res = await api.put('/user/profile', data);
       setUser(res.data.user);
+      reset(data); // reset form dirty state with new values
       toast.success('Profile updated');
     } catch (err: any) {
       toast.error(err.response?.data?.message ?? 'Failed to update profile');

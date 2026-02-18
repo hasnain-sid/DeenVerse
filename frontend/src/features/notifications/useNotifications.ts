@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/api';
+import { useAuthStore } from '@/stores/authStore';
 import type { Notification } from '@/types/post';
 
 export function useNotifications(page = 1) {
@@ -13,6 +14,8 @@ export function useNotifications(page = 1) {
 }
 
 export function useUnreadCount() {
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+
   return useQuery<{ count: number }>({
     queryKey: ['notifications-unread-count'],
     queryFn: async () => {
@@ -20,6 +23,7 @@ export function useUnreadCount() {
       return data;
     },
     refetchInterval: 30_000, // poll every 30s
+    enabled: isAuthenticated, // don't poll when logged out
   });
 }
 

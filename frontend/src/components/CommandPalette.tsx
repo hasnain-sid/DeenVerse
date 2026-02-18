@@ -179,7 +179,7 @@ export function CommandPalette() {
       />
 
       {/* Palette */}
-      <div className="fixed left-1/2 top-[20%] z-50 w-full max-w-lg animate-slide-down">
+      <div className="fixed left-1/2 top-[20%] z-50 w-full max-w-lg -translate-x-1/2 animate-slide-down">
         <div className="rounded-xl border bg-card shadow-2xl overflow-hidden">
           {/* Search Input */}
           <div className="flex items-center gap-3 border-b px-4 py-3">

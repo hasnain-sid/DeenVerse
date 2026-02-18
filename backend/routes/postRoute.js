@@ -1,5 +1,7 @@
 import express from "express";
 import isAuthenticated from "../config/auth.js";
+import { optionalAuth } from "../config/auth.js";
+import { createPostValidationRules } from "../middlewares/validators.js";
 import {
   createPostHandler,
   getFeedHandler,
@@ -20,9 +22,9 @@ router.get("/hashtag/:hashtag", getPostsByHashtagHandler);
 router.get("/user/:username", getUserPostsHandler);
 
 // ── Authenticated routes ─────────────────────────────
-router.post("/", isAuthenticated, createPostHandler);
+router.post("/", isAuthenticated, createPostValidationRules(), createPostHandler);
 router.get("/feed", isAuthenticated, getFeedHandler);
-router.get("/:id", getPostHandler);
+router.get("/:id", optionalAuth, getPostHandler);
 router.post("/:id/like", isAuthenticated, toggleLikeHandler);
 router.post("/:id/repost", isAuthenticated, toggleRepostHandler);
 router.delete("/:id", isAuthenticated, deletePostHandler);

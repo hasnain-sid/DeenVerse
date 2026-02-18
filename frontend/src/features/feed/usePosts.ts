@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import api from '@/lib/api';
+import { useAuthStore } from '@/stores/authStore';
 import type { Post, FeedResponse, TrendingHashtag } from '@/types/post';
 import toast from 'react-hot-toast';
 
@@ -103,6 +104,7 @@ export function useToggleLike() {
     onMutate: async (postId: string) => {
       // Optimistic update on feed pages
       await queryClient.cancelQueries({ queryKey: ['feed'] });
+      const userId = useAuthStore.getState().user?._id ?? '';
 
       queryClient.setQueriesData<{ pages: FeedResponse[] }>(
         { queryKey: ['feed'] },
@@ -112,17 +114,37 @@ export function useToggleLike() {
             ...old,
             pages: old.pages.map((page) => ({
               ...page,
-              posts: page.posts.map((post) =>
-                post._id === postId
-                  ? {
-                      ...post,
-                      likeCount: post.likes.includes('me')
-                        ? post.likeCount - 1
-                        : post.likeCount + 1,
-                    }
-                  : post,
-              ),
+              posts: page.posts.map((post) => {
+                if (post._id !== postId) return post;
+                const alreadyLiked = post.likes.includes(userId);
+                return {
+                  ...post,
+                  likes: alreadyLiked
+                    ? post.likes.filter((id) => id !== userId)
+                    : [...post.likes, userId],
+                  likeCount: alreadyLiked ? post.likeCount - 1 : post.likeCount + 1,
+                };
+              }),
             })),
+          };
+        },
+      );
+
+      // Also update single post view
+      queryClient.setQueryData<{ post: Post; replies: Post[] }>(
+        ['post', postId],
+        (old) => {
+          if (!old) return old;
+          const alreadyLiked = old.post.likes.includes(userId);
+          return {
+            ...old,
+            post: {
+              ...old.post,
+              likes: alreadyLiked
+                ? old.post.likes.filter((id) => id !== userId)
+                : [...old.post.likes, userId],
+              likeCount: alreadyLiked ? old.post.likeCount - 1 : old.post.likeCount + 1,
+            },
           };
         },
       );
@@ -143,7 +165,35 @@ export function useToggleRepost() {
       const { data } = await api.post(`/posts/${postId}/repost`);
       return data;
     },
-    onSuccess: () => {
+    onMutate: async (postId: string) => {
+      await queryClient.cancelQueries({ queryKey: ['feed'] });
+      const userId = useAuthStore.getState().user?._id ?? '';
+
+      queryClient.setQueriesData<{ pages: FeedResponse[] }>(
+        { queryKey: ['feed'] },
+        (old) => {
+          if (!old) return old;
+          return {
+            ...old,
+            pages: old.pages.map((page) => ({
+              ...page,
+              posts: page.posts.map((post) => {
+                if (post._id !== postId) return post;
+                const alreadyReposted = post.reposts.includes(userId);
+                return {
+                  ...post,
+                  reposts: alreadyReposted
+                    ? post.reposts.filter((id) => id !== userId)
+                    : [...post.reposts, userId],
+                  repostCount: alreadyReposted ? post.repostCount - 1 : post.repostCount + 1,
+                };
+              }),
+            })),
+          };
+        },
+      );
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['feed'] });
     },
   });

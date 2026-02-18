@@ -142,7 +142,7 @@ function WhoToFollow() {
         {data.suggestions.slice(0, 3).map((u) => (
           <div key={u._id} className="flex items-center gap-3">
             <Link to={`/user/${u.username}`}>
-              <Avatar src={u.avatar} fallback={u.name[0]} size="sm" />
+              <Avatar src={u.avatar} fallback={u.name?.[0] || '?'} size="sm" />
             </Link>
             <div className="flex-1 min-w-0">
               <Link

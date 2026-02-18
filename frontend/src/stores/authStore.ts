@@ -47,9 +47,10 @@ export const useAuthStore = create<AuthState>()(
         const { user } = get();
         if (!user) return;
 
-        const saved = user.saved.includes(String(hadithId))
-          ? user.saved.filter((id) => id !== String(hadithId))
-          : [...user.saved, String(hadithId)];
+        const currentSaved = user.saved ?? [];
+        const saved = currentSaved.includes(String(hadithId))
+          ? currentSaved.filter((id) => id !== String(hadithId))
+          : [...currentSaved, String(hadithId)];
 
         set({ user: { ...user, saved } });
       },

@@ -63,7 +63,7 @@ export function CreatePostComposer({
 
   return (
     <div className={`flex gap-3 ${compact ? 'px-3 py-2' : 'px-4 py-3'} border-b border-border`}>
-      <Avatar src={user.avatar} fallback={user.name[0]} size={compact ? 'sm' : 'md'} />
+      <Avatar src={user.avatar} fallback={user.name?.[0] || '?'} size={compact ? 'sm' : 'md'} />
 
       <div className="flex-1 min-w-0">
         <textarea

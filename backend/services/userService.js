@@ -1,4 +1,5 @@
 import { User } from "../models/userSchema.js";
+import mongoose from 'mongoose';
 import bcryptjs from "bcryptjs";
 import crypto from 'crypto';
 import { AppError } from '../utils/AppError.js';
@@ -17,7 +18,7 @@ export const registerUser = async (userData) => {
         throw new AppError("User already registered", 409); // 409 Conflict is more appropriate
     }
 
-    const hashedPassword = await bcryptjs.hash(password, 16);
+    const hashedPassword = await bcryptjs.hash(password, 10);
 
     await User.create({
         name,
@@ -203,7 +204,7 @@ export const changeUserPassword = async (userId, currentPassword, newPassword) =
         throw new AppError("Current password is incorrect", 401);
     }
 
-    user.password = await bcryptjs.hash(newPassword, 16);
+    user.password = await bcryptjs.hash(newPassword, 10);
     await user.save();
 
     return { success: true, message: "Password changed successfully", statusCode: 200 };
@@ -275,7 +276,7 @@ export const resetPasswordWithToken = async (token, newPassword) => {
         throw new AppError("Invalid or expired reset token", 400);
     }
 
-    user.password = await bcryptjs.hash(newPassword, 16);
+    user.password = await bcryptjs.hash(newPassword, 10);
     user.passwordResetToken = undefined;
     user.passwordResetExpires = undefined;
     await user.save();
@@ -287,40 +288,34 @@ export const resetPasswordWithToken = async (token, newPassword) => {
  * Get paginated followers list for a user
  */
 export const getFollowersList = async (userId, { page = 1, limit = 20 }) => {
-    const user = await User.findById(userId)
-        .select('followers')
-        .populate({
-            path: 'followers',
-            select: 'name username avatar bio',
-            options: { skip: (page - 1) * limit, limit },
-        });
-
+    const user = await User.findById(userId).select('followers');
     if (!user) throw new AppError('User not found', 404);
 
-    const totalUser = await User.findById(userId).select('followers');
-    const total = totalUser.followers.length;
+    const total = user.followers.length;
+    const skip = (page - 1) * limit;
+    const paginatedIds = user.followers.slice(skip, skip + limit);
 
-    return { users: user.followers, total, page, totalPages: Math.ceil(total / limit) };
+    const users = await User.find({ _id: { $in: paginatedIds } })
+        .select('name username avatar bio followers');
+
+    return { users, total, page, totalPages: Math.ceil(total / limit) };
 };
 
 /**
  * Get paginated following list for a user
  */
 export const getFollowingList = async (userId, { page = 1, limit = 20 }) => {
-    const user = await User.findById(userId)
-        .select('following')
-        .populate({
-            path: 'following',
-            select: 'name username avatar bio',
-            options: { skip: (page - 1) * limit, limit },
-        });
-
+    const user = await User.findById(userId).select('following');
     if (!user) throw new AppError('User not found', 404);
 
-    const totalUser = await User.findById(userId).select('following');
-    const total = totalUser.following.length;
+    const total = user.following.length;
+    const skip = (page - 1) * limit;
+    const paginatedIds = user.following.slice(skip, skip + limit);
 
-    return { users: user.following, total, page, totalPages: Math.ceil(total / limit) };
+    const users = await User.find({ _id: { $in: paginatedIds } })
+        .select('name username avatar bio followers');
+
+    return { users, total, page, totalPages: Math.ceil(total / limit) };
 };
 
 /**
@@ -337,7 +332,7 @@ export const getFollowSuggestions = async (userId, { limit = 5 }) => {
     const suggestions = await User.aggregate([
         { $match: { _id: { $in: user.following } } },
         { $unwind: '$following' },
-        { $match: { following: { $nin: excludeIds.map(id => id) } } },
+        { $match: { following: { $nin: excludeIds.map(id => new mongoose.Types.ObjectId(String(id))) } } },
         { $group: { _id: '$following', mutualCount: { $sum: 1 } } },
         { $sort: { mutualCount: -1 } },
         { $limit: limit },
