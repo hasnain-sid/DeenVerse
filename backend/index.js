@@ -4,6 +4,8 @@ import databaseConnection from "./config/database.js";
 import cookieParser from "cookie-parser";
 import  userRoute from "./routes/userRoute.js";
 import collectionRoute from "./routes/collectionRoute.js";
+import postRoute from "./routes/postRoute.js";
+import notificationRoute from "./routes/notificationRoute.js";
  import cors from "cors";
 import errorHandler from "./middlewares/errorHandler.js";
 
@@ -45,6 +47,8 @@ app.use(cors(corsOptions));
 // apis
 app.use("/api/v1/user",userRoute);
 app.use("/api/v1/collections",collectionRoute);
+app.use("/api/v1/posts",postRoute);
+app.use("/api/v1/notifications",notificationRoute);
 
 // Centralized Error Handler
 // This should be defined AFTER all other app.use() and routes calls

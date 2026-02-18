@@ -42,6 +42,18 @@ const SearchPage = lazy(() =>
 const CommunityPage = lazy(() =>
   import('@/features/community/CommunityPage').then((m) => ({ default: m.CommunityPage }))
 );
+const FeedPage = lazy(() =>
+  import('@/features/feed/FeedPage').then((m) => ({ default: m.FeedPage }))
+);
+const PostDetailPage = lazy(() =>
+  import('@/features/feed/PostDetailPage').then((m) => ({ default: m.PostDetailPage }))
+);
+const NotificationsPage = lazy(() =>
+  import('@/features/notifications/NotificationsPage').then((m) => ({ default: m.NotificationsPage }))
+);
+const UserProfilePage = lazy(() =>
+  import('@/features/user/UserProfilePage').then((m) => ({ default: m.UserProfilePage }))
+);
 const NotFoundPage = lazy(() =>
   import('@/features/not-found/NotFoundPage').then((m) => ({ default: m.NotFoundPage }))
 );
@@ -83,6 +95,24 @@ export default function App() {
               <Routes>
                 <Route element={<MainLayout />}>
                   <Route path="/" element={<HomePage />} />
+                  <Route
+                    path="/feed"
+                    element={
+                      <AuthGuard>
+                        <FeedPage />
+                      </AuthGuard>
+                    }
+                  />
+                  <Route path="/post/:id" element={<PostDetailPage />} />
+                  <Route
+                    path="/notifications"
+                    element={
+                      <AuthGuard>
+                        <NotificationsPage />
+                      </AuthGuard>
+                    }
+                  />
+                  <Route path="/user/:username" element={<UserProfilePage />} />
                   <Route path="/explore" element={<ExplorePage />} />
                   <Route path="/search" element={<SearchPage />} />
                   <Route path="/hadith" element={<HadithPage />} />

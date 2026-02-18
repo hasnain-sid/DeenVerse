@@ -1,20 +1,23 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { Home, Search, BookOpen, Bookmark, Users, User } from 'lucide-react';
+import { Home, Search, BookOpen, User, Newspaper, Bell } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useUIStore } from '@/stores/uiStore';
+import { useUnreadCount } from '@/features/notifications/useNotifications';
 
 const mobileNav = [
   { name: 'Home', href: '/', icon: Home },
+  { name: 'Feed', href: '/feed', icon: Newspaper },
   { name: 'Explore', href: '/explore', icon: Search },
   { name: 'Hadith', href: '/hadith', icon: BookOpen },
-  { name: 'Saved', href: '/saved', icon: Bookmark },
-  { name: 'Community', href: '/community', icon: Users },
+  { name: 'Notifications', href: '/notifications', icon: Bell },
   { name: 'Profile', href: '/profile', icon: User },
 ];
 
 export function MobileNav() {
   const location = useLocation();
   const { mobileNavOpen, setMobileNavOpen } = useUIStore();
+  const { data: unreadData } = useUnreadCount();
+  const unreadCount = unreadData?.count ?? 0;
 
   return (
     <>
@@ -27,14 +30,21 @@ export function MobileNav() {
               <NavLink
                 key={item.name}
                 to={item.href}
-                className="flex flex-col items-center gap-1 px-3 py-1"
+                className="flex flex-col items-center gap-1 px-3 py-1 relative"
               >
-                <item.icon
-                  className={cn(
-                    'h-5 w-5 transition-colors',
-                    isActive ? 'text-primary' : 'text-muted-foreground'
+                <div className="relative">
+                  <item.icon
+                    className={cn(
+                      'h-5 w-5 transition-colors',
+                      isActive ? 'text-primary' : 'text-muted-foreground'
+                    )}
+                  />
+                  {item.name === 'Notifications' && unreadCount > 0 && (
+                    <span className="absolute -top-1 -right-1.5 flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-primary text-[9px] font-bold text-primary-foreground px-0.5">
+                      {unreadCount > 9 ? '9+' : unreadCount}
+                    </span>
                   )}
-                />
+                </div>
                 <span
                   className={cn(
                     'text-[10px] font-medium transition-colors',

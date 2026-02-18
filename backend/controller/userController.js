@@ -12,7 +12,11 @@ import {
     changeUserPassword,
     refreshSession,
     createPasswordResetToken,
-    resetPasswordWithToken
+    resetPasswordWithToken,
+    getFollowersList,
+    getFollowingList,
+    getFollowSuggestions,
+    getPublicProfile
 } from "../services/userService.js";
 import { getRefreshCookieOptions } from "../utils/tokenUtils.js";
 import { verifyRefreshToken } from "../utils/tokenUtils.js";
@@ -264,6 +268,56 @@ export const resetPassword = async (req, res, next) => {
     const result = await resetPasswordWithToken(token, password);
     return res.status(result.statusCode).json({
       message: result.message,
+      success: true,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getFollowersHandler = async (req, res, next) => {
+  try {
+    const { page = 1, limit = 20 } = req.query;
+    const data = await getFollowersList(req.params.id, {
+      page: parseInt(page),
+      limit: parseInt(limit),
+    });
+    return res.status(200).json({ success: true, ...data });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getFollowingHandler = async (req, res, next) => {
+  try {
+    const { page = 1, limit = 20 } = req.query;
+    const data = await getFollowingList(req.params.id, {
+      page: parseInt(page),
+      limit: parseInt(limit),
+    });
+    return res.status(200).json({ success: true, ...data });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getSuggestionsHandler = async (req, res, next) => {
+  try {
+    const { limit = 5 } = req.query;
+    const data = await getFollowSuggestions(req.user, { limit: parseInt(limit) });
+    return res.status(200).json({ success: true, ...data });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getPublicProfileHandler = async (req, res, next) => {
+  try {
+    const { username } = req.params;
+    // req.user may be undefined if not authenticated (optional auth)
+    const result = await getPublicProfile(username, req.user || null);
+    return res.status(result.statusCode).json({
+      user: result.user,
       success: true,
     });
   } catch (error) {

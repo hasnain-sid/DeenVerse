@@ -14,7 +14,11 @@ import {
     changePassword,
     refresh,
     forgotPassword,
-    resetPassword
+    resetPassword,
+    getFollowersHandler,
+    getFollowingHandler,
+    getSuggestionsHandler,
+    getPublicProfileHandler
 } from "../controller/userController.js";
 import isAuthenticated from "../config/auth.js";
 import {
@@ -54,5 +58,13 @@ router.route("/unfollow").post(isAuthenticated, followUnfollowValidationRules(),
 // Profile management
 router.route("/profile").put(isAuthenticated, updateProfile);
 router.route("/change-password").put(isAuthenticated, changePassword);
+
+// Followers / Following / Suggestions
+router.route("/followers/:id").get(getFollowersHandler);
+router.route("/following/:id").get(getFollowingHandler);
+router.route("/suggestions").get(isAuthenticated, getSuggestionsHandler);
+
+// Public profile by username
+router.route("/username/:username").get(getPublicProfileHandler);
 
 export default router;

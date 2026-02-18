@@ -172,7 +172,7 @@
 > **Goal**: Transform from a hadith reader into a full Islamic social platform.
 
 ### 3.1 Post/Share System (Twitter-like)
-- [ ] **Step 1**: Create Post model (backend)
+- [x] **Step 1**: Create Post model (backend)
   ```
   Post {
     author: ObjectId (ref: User)
@@ -189,7 +189,7 @@
     createdAt, updatedAt
   }
   ```
-- [ ] **Step 2**: Build Post API endpoints
+- [x] **Step 2**: Build Post API endpoints
   - `POST /api/posts` — create post
   - `GET /api/posts/feed` — personalized feed (following + trending)
   - `GET /api/posts/:id` — single post with replies
@@ -197,43 +197,43 @@
   - `POST /api/posts/:id/repost` — repost/unrepost
   - `GET /api/posts/user/:username` — user's posts
   - `DELETE /api/posts/:id` — delete own post
-- [ ] **Step 3**: Build "Create Post" composer
+- [x] **Step 3**: Build "Create Post" composer
   - Rich text area (500 char limit with counter)
   - Attach hadith reference (search & select)
   - Attach images (up to 4, preview before posting)
   - "Post" button with loading state
-- [ ] **Step 4**: Build Feed page
+- [x] **Step 4**: Build Feed page
   - Infinite scroll with TanStack Query `useInfiniteQuery`
   - Pull-to-refresh on mobile
   - "New posts available" indicator at top
   - Toggle: "Following" vs "Trending" tabs
-- [ ] **Step 5**: Build PostCard component
+- [x] **Step 5**: Build PostCard component
   - Author avatar + name + username + timestamp
   - Post content with @mentions and #hashtag linking
   - Hadith preview embed (if attached)
   - Image grid (1-4 images)
   - Action bar: Like, Reply, Repost, Share, Bookmark
   - Like/repost count with optimistic updates
-- [ ] **Step 6**: Build reply/thread system
+- [x] **Step 6**: Build reply/thread system
   - Click post → full post view with replies below
   - Reply composer at bottom
   - Nested replies (1 level deep, like Twitter)
 
 ### 3.2 Follow System
-- [ ] **Step 7**: Build Follow API
+- [x] **Step 7**: Build Follow API
   - `POST /api/users/:id/follow` — follow/unfollow (toggle)
   - `GET /api/users/:id/followers` — paginated followers list
   - `GET /api/users/:id/following` — paginated following list
   - `GET /api/users/suggestions` — "Who to follow" (based on mutual follows)
-- [ ] **Step 8**: Build "Who to Follow" sidebar widget
+- [x] **Step 8**: Build "Who to Follow" sidebar widget
   - Show 3-5 suggested users with Follow button
   - Based on: mutual connections, popular scholars, trending users
-- [ ] **Step 9**: Build Followers/Following pages
+- [x] **Step 9**: Build Followers/Following pages
   - Tab view on profile: Followers | Following
   - Each item: avatar, name, bio snippet, follow button
 
 ### 3.3 Notification System
-- [ ] **Step 10**: Create Notification model (backend)
+- [x] **Step 10**: Create Notification model (backend)
   ```
   Notification {
     recipient: ObjectId (ref: User)
@@ -244,25 +244,25 @@
     createdAt
   }
   ```
-- [ ] **Step 11**: Build Notification API
+- [x] **Step 11**: Build Notification API
   - `GET /api/notifications` — paginated, sorted by date
   - `PATCH /api/notifications/read-all` — mark all read
   - `PATCH /api/notifications/:id/read` — mark single read
   - `GET /api/notifications/unread-count` — for badge
-- [ ] **Step 12**: Build Notifications page
+- [x] **Step 12**: Build Notifications page
   - Grouped by type with icons (heart for like, person for follow, etc.)
   - "Mark all as read" button
   - Click notification → navigate to relevant post/profile
-- [ ] **Step 13**: Add notification badge to sidebar
+- [x] **Step 13**: Add notification badge to sidebar
   - Red dot / count badge on bell icon
   - Update in real-time (Socket.IO, Phase 4)
 
 ### 3.4 Hashtags & Trending
-- [ ] **Step 14**: Implement hashtag system
+- [x] **Step 14**: Implement hashtag system
   - Parse #hashtags from post content
   - Store in separate Hashtag collection with usage count
   - Make hashtags clickable → shows all posts with that tag
-- [ ] **Step 15**: Build Trending page / sidebar widget
+- [x] **Step 15**: Build Trending page / sidebar widget
   - Top 10 trending hashtags (last 24h)
   - Trending posts (most likes/reposts in last 24h)
   - "Islamic Daily" — curated trending content

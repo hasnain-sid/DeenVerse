@@ -3,6 +3,7 @@ import bcryptjs from "bcryptjs";
 import crypto from 'crypto';
 import { AppError } from '../utils/AppError.js';
 import { generateAccessToken, generateRefreshToken } from '../utils/tokenUtils.js';
+import { createFollowNotification } from './notificationService.js';
 
 export const registerUser = async (userData) => {
     const { name, username, email, password } = userData;
@@ -134,11 +135,11 @@ export const followUser = async (loggedInUserId, userIdToFollow) => {
     if (!userToFollowObj.followers.includes(loggedInUserId)) {
         await userToFollowObj.updateOne({ $push: { followers: loggedInUserId } });
         await loggedInUser.updateOne({ $push: { following: userIdToFollow } });
+        // Send follow notification
+        await createFollowNotification(userIdToFollow, loggedInUserId);
     } else {
         throw new AppError(`Already following ${userToFollowObj.name}`, 400);
     }
-    // Fetch updated users to reflect changes, if necessary for the response
-    // For simplicity, just returning a success message here.
     return { success: true, message: `${loggedInUser.name} started following ${userToFollowObj.name}`, statusCode: 200 };
 };
 
@@ -280,4 +281,133 @@ export const resetPasswordWithToken = async (token, newPassword) => {
     await user.save();
 
     return { success: true, message: "Password reset successfully. Please log in.", statusCode: 200 };
+};
+
+/**
+ * Get paginated followers list for a user
+ */
+export const getFollowersList = async (userId, { page = 1, limit = 20 }) => {
+    const user = await User.findById(userId)
+        .select('followers')
+        .populate({
+            path: 'followers',
+            select: 'name username avatar bio',
+            options: { skip: (page - 1) * limit, limit },
+        });
+
+    if (!user) throw new AppError('User not found', 404);
+
+    const totalUser = await User.findById(userId).select('followers');
+    const total = totalUser.followers.length;
+
+    return { users: user.followers, total, page, totalPages: Math.ceil(total / limit) };
+};
+
+/**
+ * Get paginated following list for a user
+ */
+export const getFollowingList = async (userId, { page = 1, limit = 20 }) => {
+    const user = await User.findById(userId)
+        .select('following')
+        .populate({
+            path: 'following',
+            select: 'name username avatar bio',
+            options: { skip: (page - 1) * limit, limit },
+        });
+
+    if (!user) throw new AppError('User not found', 404);
+
+    const totalUser = await User.findById(userId).select('following');
+    const total = totalUser.following.length;
+
+    return { users: user.following, total, page, totalPages: Math.ceil(total / limit) };
+};
+
+/**
+ * Get follow suggestions based on mutual connections + popular users
+ */
+export const getFollowSuggestions = async (userId, { limit = 5 }) => {
+    const user = await User.findById(userId).select('following');
+    if (!user) throw new AppError('User not found', 404);
+
+    const excludeIds = [...user.following, userId];
+
+    // Find users followed by people you follow (mutual connections)
+    // but that you don't follow yet
+    const suggestions = await User.aggregate([
+        { $match: { _id: { $in: user.following } } },
+        { $unwind: '$following' },
+        { $match: { following: { $nin: excludeIds.map(id => id) } } },
+        { $group: { _id: '$following', mutualCount: { $sum: 1 } } },
+        { $sort: { mutualCount: -1 } },
+        { $limit: limit },
+        {
+            $lookup: {
+                from: 'users',
+                localField: '_id',
+                foreignField: '_id',
+                as: 'user',
+            },
+        },
+        { $unwind: '$user' },
+        {
+            $project: {
+                _id: '$user._id',
+                name: '$user.name',
+                username: '$user.username',
+                avatar: '$user.avatar',
+                bio: '$user.bio',
+                followerCount: { $size: { $ifNull: ['$user.followers', []] } },
+                mutualCount: 1,
+            },
+        },
+    ]);
+
+    // If not enough suggestions from mutuals, fill with popular users
+    if (suggestions.length < limit) {
+        const existingIds = suggestions.map(s => s._id);
+        const popular = await User.find({
+            _id: { $nin: [...excludeIds, ...existingIds] },
+        })
+            .sort({ followers: -1 })
+            .limit(limit - suggestions.length)
+            .select('name username avatar bio followers');
+
+        for (const u of popular) {
+            suggestions.push({
+                _id: u._id,
+                name: u.name,
+                username: u.username,
+                avatar: u.avatar,
+                bio: u.bio,
+                followerCount: u.followers?.length || 0,
+                mutualCount: 0,
+            });
+        }
+    }
+
+    return { suggestions };
+};
+
+/**
+ * Get public user profile by username (for /user/:username pages)
+ */
+export const getPublicProfile = async (username, currentUserId) => {
+    const user = await User.findOne({ username }).select('-password');
+    if (!user) throw new AppError('User not found', 404);
+
+    const isFollowing = currentUserId
+        ? user.followers.some(id => id.toString() === currentUserId)
+        : false;
+
+    return {
+        success: true,
+        user: {
+            ...user.toObject(),
+            followerCount: user.followers.length,
+            followingCount: user.following.length,
+            isFollowing,
+        },
+        statusCode: 200,
+    };
 };

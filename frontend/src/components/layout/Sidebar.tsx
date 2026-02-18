@@ -13,6 +13,8 @@ import {
   Sun,
   Moon,
   Monitor,
+  Newspaper,
+  Bell,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Avatar } from '@/components/ui/avatar';
@@ -22,11 +24,14 @@ import { useAuthStore } from '@/stores/authStore';
 import { useThemeStore } from '@/stores/themeStore';
 import { useUIStore } from '@/stores/uiStore';
 import api from '@/lib/api';
+import { useUnreadCount } from '@/features/notifications/useNotifications';
 
 const navigation = [
   { name: 'Home', href: '/', icon: Home },
+  { name: 'Feed', href: '/feed', icon: Newspaper },
   { name: 'Explore', href: '/explore', icon: Search },
   { name: 'Hadith', href: '/hadith', icon: BookOpen },
+  { name: 'Notifications', href: '/notifications', icon: Bell },
   { name: 'Saved', href: '/saved', icon: Bookmark },
   { name: 'Community', href: '/community', icon: Users },
   { name: 'Profile', href: '/profile', icon: User },
@@ -49,6 +54,8 @@ export function Sidebar() {
   const { user, isAuthenticated, logout: logoutStore } = useAuthStore();
   const { theme, setTheme } = useThemeStore();
   const { sidebarCollapsed, toggleSidebarCollapsed } = useUIStore();
+  const { data: unreadData } = useUnreadCount();
+  const unreadCount = unreadData?.count ?? 0;
 
   const handleLogout = async () => {
     try {
@@ -115,7 +122,14 @@ export function Sidebar() {
                   : 'text-muted-foreground hover:bg-secondary hover:text-foreground'
               )}
             >
-              <item.icon className="h-[18px] w-[18px] shrink-0" />
+              <div className="relative">
+                <item.icon className="h-[18px] w-[18px] shrink-0" />
+                {item.name === 'Notifications' && unreadCount > 0 && (
+                  <span className="absolute -top-1.5 -right-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground px-1">
+                    {unreadCount > 99 ? '99+' : unreadCount}
+                  </span>
+                )}
+              </div>
               {!sidebarCollapsed && (
                 <span className="animate-fade-in">{item.name}</span>
               )}
