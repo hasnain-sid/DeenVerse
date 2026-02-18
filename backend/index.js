@@ -61,24 +61,36 @@ app.use(cookieParser());
 // ── Input sanitisation (XSS prevention) ─────────────
 app.use(sanitizeInput);
 
-// Determine CORS origin based on environment
+// ── CORS origin resolution ──────────────────────────
+// Static allowed origins (always permitted)
 const productionFrontendURL =
   process.env.FRONTEND_URL_PROD || "https://deen-verse-front.vercel.app";
 
-const allowedOrigins =
-  process.env.NODE_ENV === "production"
-    ? [productionFrontendURL]
-    : ["http://localhost:3000", "http://localhost:3001", productionFrontendURL];
+// Extra origins can be injected via env (comma-separated) for custom domains
+const extraOrigins = process.env.CORS_ORIGINS
+  ? process.env.CORS_ORIGINS.split(",").map((o) => o.trim()).filter(Boolean)
+  : [];
+
+const staticAllowedOrigins = new Set([
+  productionFrontendURL,
+  "http://localhost:3000",
+  "http://localhost:3001",
+  ...extraOrigins,
+]);
+
+// Matches all Vercel preview deployments for this project:
+// e.g. deen-verse-front-qouyk09sb-hasnain-sids-projects.vercel.app
+const vercelPreviewPattern = /^https:\/\/deen-verse-front[a-z0-9-]*\.vercel\.app$/;
 
 const corsOptions = {
   origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
+    // Allow requests with no origin (mobile apps, curl, same-origin)
     if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) === -1) {
-      logger.warn(`CORS blocked origin: ${origin}`);
-      return callback(null, false);
+    if (staticAllowedOrigins.has(origin) || vercelPreviewPattern.test(origin)) {
+      return callback(null, true);
     }
-    return callback(null, true);
+    logger.warn(`CORS blocked origin: ${origin}`);
+    return callback(null, false);
   },
   credentials: true,
 };
