@@ -36,7 +36,7 @@ export function HadithPage() {
   );
 
   // Bookmark state
-  const isBookmarked = user?.saved?.includes(Number(currentHadith?.id)) ?? false;
+  const isBookmarked = user?.saved?.includes(String(currentHadith?.id)) ?? false;
 
   const handleBookmark = useCallback(async () => {
     if (!isAuthenticated || !currentHadith) {
@@ -47,7 +47,7 @@ export function HadithPage() {
     try {
       const res = await api.put(`/user/saved/${currentHadith.id}`);
       if (res.data.success) {
-        updateSaved(Number(currentHadith.id));
+        updateSaved(String(currentHadith.id));
         toast.success(isBookmarked ? 'Removed from saved' : 'Saved!');
       }
     } catch {
@@ -158,6 +158,7 @@ export function HadithPage() {
         onNext={handleNext}
         currentIndex={index}
         totalCount={hadithList?.length ?? 0}
+        label={categoryTitle}
       />
     </div>
   );

@@ -6,7 +6,7 @@ export interface User {
   email: string;
   avatar?: string;
   bio?: string;
-  saved: number[];
+  saved: string[];
   followers: string[];
   following: string[];
   createdAt: string;

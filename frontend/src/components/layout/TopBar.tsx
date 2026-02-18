@@ -1,4 +1,3 @@
-import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Menu, Search, Bell } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -14,8 +13,8 @@ const pageTitle: Record<string, string> = {
   '/saved': 'Saved',
   '/profile': 'Profile',
   '/settings': 'Settings',
+  '/community': 'Community',
   '/login': 'Sign In',
-  '/register': 'Create Account',
 };
 
 export function TopBar() {
@@ -57,7 +56,7 @@ export function TopBar() {
         <Search className="h-3.5 w-3.5" />
         <span className="text-xs">Search</span>
         <kbd className="pointer-events-none ml-2 hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
-          ⌘K
+          Ctrl+K
         </kbd>
       </Button>
 

@@ -296,7 +296,10 @@ function ReadingSection() {
             {[
               { value: 'en', label: 'English' },
               { value: 'ar', label: 'العربية' },
-              { value: 'both', label: 'Both' },
+              { value: 'ur', label: 'اردو' },
+              { value: 'fr', label: 'Français' },
+              { value: 'tr', label: 'Türkçe' },
+              { value: 'hi', label: 'हिन्दी' },
             ].map((lang) => (
               <button
                 key={lang.value}

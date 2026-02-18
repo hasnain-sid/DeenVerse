@@ -50,7 +50,11 @@ export function useSession() {
         setUser(data.user);
         return data.user;
       } catch {
-        logout();
+        // Don't call logout() here — a 401 on first visit is expected.
+        // Just clear loading so the app renders for unauthenticated visitors.
+        // If the user *was* authenticated (stale persisted state), clear it.
+        const { isAuthenticated } = useAuthStore.getState();
+        if (isAuthenticated) logout();
         return null;
       } finally {
         setLoading(false);

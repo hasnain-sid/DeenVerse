@@ -138,8 +138,10 @@ export function CommunityPage() {
         <div className="space-y-3">
           {filtered.map((person) => {
             const following = isFollowing(person._id);
-            const isMutating =
-              followMutation.isPending || unfollowMutation.isPending;
+            // Track per-user pending state using the mutation's variables
+            const isThisUserMutating =
+              (followMutation.isPending && followMutation.variables === person._id) ||
+              (unfollowMutation.isPending && unfollowMutation.variables === person._id);
 
             return (
               <Card key={person._id} className="hover:bg-secondary/30 transition-colors">
@@ -163,7 +165,7 @@ export function CommunityPage() {
                   <Button
                     variant={following ? 'outline' : 'default'}
                     size="sm"
-                    disabled={isMutating}
+                    disabled={isThisUserMutating}
                     onClick={() =>
                       following
                         ? unfollowMutation.mutate(person._id)

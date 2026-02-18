@@ -1,4 +1,3 @@
-import React from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -23,6 +22,7 @@ interface HadithCardProps {
   onNext: () => void;
   currentIndex: number;
   totalCount: number;
+  label?: string;
 }
 
 export function HadithCard({
@@ -35,6 +35,7 @@ export function HadithCard({
   onNext,
   currentIndex,
   totalCount,
+  label = 'Hadith',
 }: HadithCardProps) {
   const { fontSize, fontFamily } = useThemeStore();
 
@@ -60,7 +61,7 @@ export function HadithCard({
         <div className="flex items-center gap-2">
           <div className="h-2 w-2 rounded-full bg-primary" />
           <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
-            Hadith of the Day
+            {label}
           </span>
         </div>
         <span className="text-xs text-muted-foreground">
@@ -73,7 +74,7 @@ export function HadithCard({
         <div
           id="hadith-content"
           className="px-6 py-8 space-y-6"
-          style={{ fontSize: `${fontSize}px`, fontFamily }}
+          style={{ fontSize: `${fontSize}px`, fontFamily: fontFamily === 'System' ? 'system-ui' : fontFamily }}
         >
           {/* Title */}
           <h2 className="text-xl font-semibold text-center leading-relaxed">

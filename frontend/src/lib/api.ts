@@ -15,9 +15,10 @@ export const api = axios.create({
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // If 401, clear local auth state and redirect to login
     if (error.response?.status === 401) {
       const { isAuthenticated, logout } = useAuthStore.getState();
+      // Only redirect if the user *was* authenticated (session expired).
+      // First-visit 401s on /user/me are expected — useSession handles those.
       if (isAuthenticated) {
         logout();
         window.location.href = '/login';

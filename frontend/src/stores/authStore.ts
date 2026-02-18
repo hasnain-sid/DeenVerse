@@ -11,7 +11,7 @@ interface AuthState {
   setUser: (user: User) => void;
   login: (user: User, _accessToken?: string) => void;
   logout: () => void;
-  updateSaved: (hadithId: number) => void;
+  updateSaved: (hadithId: string) => void;
   setLoading: (loading: boolean) => void;
 }
 
@@ -42,9 +42,9 @@ export const useAuthStore = create<AuthState>()(
         const { user } = get();
         if (!user) return;
 
-        const saved = user.saved.includes(hadithId)
-          ? user.saved.filter((id) => id !== hadithId)
-          : [...user.saved, hadithId];
+        const saved = user.saved.includes(String(hadithId))
+          ? user.saved.filter((id) => id !== String(hadithId))
+          : [...user.saved, String(hadithId)];
 
         set({ user: { ...user, saved } });
       },

@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { HadithCard } from '../hadith/HadithCard';
 import { useHadithDetail } from '../hadith/useHadith';
 import { useAuthStore } from '@/stores/authStore';
@@ -15,11 +15,18 @@ export function SavedPage() {
   const savedIds = user?.saved ?? [];
   const [index, setIndex] = useState(0);
 
+  // Clamp index when savedIds shrinks (e.g. after un-bookmarking)
+  useEffect(() => {
+    if (savedIds.length > 0 && index >= savedIds.length) {
+      setIndex(savedIds.length - 1);
+    }
+  }, [savedIds.length, index]);
+
   const currentId = savedIds.length > 0 ? String(savedIds[index]) : null;
   const { data: hadithDetail, isLoading } = useHadithDetail(currentId);
 
   const isBookmarked = currentId
-    ? savedIds.includes(Number(currentId))
+    ? savedIds.includes(currentId)
     : false;
 
   const handleBookmark = useCallback(async () => {
@@ -31,7 +38,7 @@ export function SavedPage() {
     try {
       const res = await api.put(`/user/saved/${currentId}`);
       if (res.data.success) {
-        updateSaved(Number(currentId));
+        updateSaved(currentId);
         toast.success('Bookmark updated');
       }
     } catch {
@@ -114,6 +121,7 @@ export function SavedPage() {
         onNext={handleNext}
         currentIndex={index}
         totalCount={savedIds.length}
+        label="Saved Hadith"
       />
     </div>
   );

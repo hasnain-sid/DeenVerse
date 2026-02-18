@@ -1,4 +1,3 @@
-import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { BookOpen, Bookmark, TrendingUp, Users } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -31,7 +30,7 @@ const quickLinks = [
     title: 'Community',
     description: 'Connect with fellow learners',
     icon: Users,
-    href: '/explore',
+    href: '/community',
     color: 'text-purple-600 bg-purple-50 dark:bg-purple-950/50',
   },
 ];

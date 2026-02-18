@@ -76,7 +76,7 @@ export function ProfilePage() {
         <Card>
           <CardContent className="p-4 text-center">
             <Bookmark className="h-5 w-5 mx-auto mb-1.5 text-primary" />
-            <p className="text-2xl font-semibold">{user.saved.length}</p>
+            <p className="text-2xl font-semibold">{user.saved?.length ?? 0}</p>
             <p className="text-xs text-muted-foreground">Saved Hadiths</p>
           </CardContent>
         </Card>
@@ -107,7 +107,7 @@ export function ProfilePage() {
             <span className="text-sm font-medium">Saved Hadiths</span>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-xs text-muted-foreground">{user.saved.length}</span>
+            <span className="text-xs text-muted-foreground">{user.saved?.length ?? 0}</span>
             <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors" />
           </div>
         </Link>
