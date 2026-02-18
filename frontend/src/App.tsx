@@ -71,6 +71,10 @@ const StreamViewPage = lazy(() =>
 const GoLivePage = lazy(() =>
   import('@/features/streams/GoLivePage').then((m) => ({ default: m.GoLivePage }))
 );
+const PrivacyPolicy = lazy(() => import('@/features/legal/PrivacyPolicy'));
+const TermsOfService = lazy(() => import('@/features/legal/TermsOfService'));
+
+import CookieConsent from '@/components/CookieConsent';
 
 // Query client with sensible defaults for a read-heavy app
 const queryClient = new QueryClient({
@@ -181,6 +185,8 @@ export default function App() {
                       </AuthGuard>
                     }
                   />
+                  <Route path="/privacy" element={<PrivacyPolicy />} />
+                  <Route path="/terms" element={<TermsOfService />} />
                   <Route path="/login" element={<LoginPage />} />
                   <Route path="/forgot-password" element={<ForgotPasswordPage />} />
                   <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
@@ -192,6 +198,7 @@ export default function App() {
 
           <CommandPalette />
           <InstallPrompt />
+          <CookieConsent />
 
           <Toaster
             position="bottom-right"

@@ -46,6 +46,27 @@ const userSchema = new mongoose.Schema({
     type:Date,
     default:undefined
   },
+  role:{
+    type:String,
+    enum:['user','admin','moderator'],
+    default:'user'
+  },
+  banned:{
+    type:Boolean,
+    default:false
+  },
+  bannedAt:{
+    type:Date,
+    default:undefined
+  },
+  mutedUntil:{
+    type:Date,
+    default:undefined
+  },
+  verified:{
+    type:Boolean,
+    default:false
+  },
 },{timestamps:true});
 
 // ── Indexes (Phase 6 — Database Optimization) ────────

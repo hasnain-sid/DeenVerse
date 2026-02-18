@@ -16,6 +16,9 @@ import chatRoute from "./routes/chatRoute.js";
 import streamRoute from "./routes/streamRoute.js";
 import pushRoute from "./routes/pushRoute.js";
 import uploadRoute from "./routes/uploadRoute.js";
+import moderationRoute from "./routes/moderationRoute.js";
+import analyticsRoute from "./routes/analyticsRoute.js";
+import seoRoute from "./routes/seoRoute.js";
 import healthRoute from "./routes/healthRoute.js";
 import cors from "cors";
 import errorHandler from "./middlewares/errorHandler.js";
@@ -89,6 +92,9 @@ app.use(generalLimiter);
 // ── Initialise Socket.IO ─────────────────────────────
 initSocket(httpServer, corsOptions);
 
+// ── SEO routes (sitemap, robots.txt) ────────────────
+app.use("/", seoRoute);
+
 // ── Health check routes (no auth required) ──────────
 app.use("/health", healthRoute);
 
@@ -101,6 +107,8 @@ app.use("/api/v1/chat", chatRoute);
 app.use("/api/v1/streams", streamRoute);
 app.use("/api/v1/push", pushRoute);
 app.use("/api/v1/upload", uploadRoute);
+app.use("/api/v1/moderation", moderationRoute);
+app.use("/api/v1/analytics", analyticsRoute);
 
 // Centralized Error Handler
 // This should be defined AFTER all other app.use() and routes calls
