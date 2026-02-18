@@ -13,6 +13,7 @@ import {
   getPostsByHashtagHandler,
   getTrendingHashtagsHandler,
 } from "../controller/postController.js";
+import { createPostLimiter, feedLimiter } from "../middlewares/rateLimiter.js";
 
 const router = express.Router();
 
@@ -22,8 +23,8 @@ router.get("/hashtag/:hashtag", getPostsByHashtagHandler);
 router.get("/user/:username", getUserPostsHandler);
 
 // ── Authenticated routes ─────────────────────────────
-router.post("/", isAuthenticated, createPostValidationRules(), createPostHandler);
-router.get("/feed", isAuthenticated, getFeedHandler);
+router.post("/", isAuthenticated, createPostLimiter, createPostValidationRules(), createPostHandler);
+router.get("/feed", isAuthenticated, feedLimiter, getFeedHandler);
 router.get("/:id", optionalAuth, getPostHandler);
 router.post("/:id/like", isAuthenticated, toggleLikeHandler);
 router.post("/:id/repost", isAuthenticated, toggleRepostHandler);

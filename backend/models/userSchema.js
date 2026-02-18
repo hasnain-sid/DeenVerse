@@ -47,4 +47,13 @@ const userSchema = new mongoose.Schema({
     default:undefined
   },
 },{timestamps:true});
+
+// ── Indexes (Phase 6 — Database Optimization) ────────
+userSchema.index({ email: 1 }, { unique: true });
+userSchema.index({ username: 1 }, { unique: true });
+userSchema.index(
+  { name: 'text', username: 'text' },
+  { weights: { username: 2, name: 1 }, name: 'user_text_search' }
+);
+
 export const User = mongoose.model("User",userSchema);

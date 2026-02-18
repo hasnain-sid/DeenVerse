@@ -6,6 +6,11 @@ import { AppError } from '../utils/AppError.js';
 import { generateAccessToken, generateRefreshToken } from '../utils/tokenUtils.js';
 import { createFollowNotification } from './notificationService.js';
 import { sendPasswordResetEmail } from './emailService.js';
+import {
+  cacheUserProfile,
+  getCachedUserProfile,
+  invalidateUserCache,
+} from './cacheService.js';
 
 export const registerUser = async (userData) => {
     const { name, username, email, password } = userData;
@@ -91,10 +96,18 @@ export const toggleSavedContent = async (userId, contentId) => {
 };
 
 export const getUserProfile = async (userId) => {
+    // Check cache first
+    const cached = await getCachedUserProfile(userId);
+    if (cached) return { success: true, user: cached, statusCode: 200 };
+
     const user = await User.findById(userId).select("-password");
     if (!user) {
         throw new AppError("User not found", 404);
     }
+
+    // Cache for future requests
+    await cacheUserProfile(user);
+
     return { success: true, user, statusCode: 200 };
 };
 
@@ -191,6 +204,9 @@ export const updateUserProfile = async (userId, updates) => {
     if (!user) {
         throw new AppError("User not found", 404);
     }
+
+    // Invalidate caches for this user
+    await invalidateUserCache(userId);
 
     return { success: true, message: "Profile updated successfully", user, statusCode: 200 };
 };

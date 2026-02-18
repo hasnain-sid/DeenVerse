@@ -4,7 +4,10 @@ import dotenv from "dotenv";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import databaseConnection from "./config/database.js";
+import { getRedisClient } from "./config/redis.js";
+import logger from "./config/logger.js";
 import cookieParser from "cookie-parser";
+import morgan from "morgan";
 import userRoute from "./routes/userRoute.js";
 import collectionRoute from "./routes/collectionRoute.js";
 import postRoute from "./routes/postRoute.js";
@@ -13,8 +16,11 @@ import chatRoute from "./routes/chatRoute.js";
 import streamRoute from "./routes/streamRoute.js";
 import pushRoute from "./routes/pushRoute.js";
 import uploadRoute from "./routes/uploadRoute.js";
+import healthRoute from "./routes/healthRoute.js";
 import cors from "cors";
 import errorHandler from "./middlewares/errorHandler.js";
+import { securityHeaders, sanitizeInput } from "./middlewares/security.js";
+import { generalLimiter } from "./middlewares/rateLimiter.js";
 import { initSocket } from "./socket/index.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -22,16 +28,35 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 dotenv.config({
   path: join(__dirname, ".env"),
 });
+
+// ── Database & Redis ─────────────────────────────────
 databaseConnection();
+getRedisClient(); // Initialise Redis (non-blocking, graceful fallback)
+
 const app = express();
 
 // Create HTTP server (needed for Socket.IO)
 const httpServer = createServer(app);
 
-// middleware
+// ── Security headers (Helmet + CSP) ─────────────────
+app.use(securityHeaders());
+
+// ── HTTP request logging (Morgan → Winston) ─────────
+const morganFormat = process.env.NODE_ENV === "production" ? "combined" : "dev";
+app.use(
+  morgan(morganFormat, {
+    stream: { write: (msg) => logger.info(msg.trim(), { type: "http" }) },
+    skip: (req) => req.url === "/health", // Don't log health checks
+  })
+);
+
+// ── Body parsing ─────────────────────────────────────
 app.use(express.urlencoded({ extended: true, limit: "1mb" }));
 app.use(express.json({ limit: "1mb" }));
 app.use(cookieParser());
+
+// ── Input sanitisation (XSS prevention) ─────────────
+app.use(sanitizeInput);
 
 // Determine CORS origin based on environment
 const productionFrontendURL =
@@ -58,8 +83,14 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
+// ── Global rate limiter (100 req / min per IP) ──────
+app.use(generalLimiter);
+
 // ── Initialise Socket.IO ─────────────────────────────
 initSocket(httpServer, corsOptions);
+
+// ── Health check routes (no auth required) ──────────
+app.use("/health", healthRoute);
 
 // ── REST API routes ──────────────────────────────────
 app.use("/api/v1/user", userRoute);
@@ -77,6 +108,6 @@ app.use(errorHandler);
 
 // Use httpServer.listen instead of app.listen for Socket.IO support
 httpServer.listen(process.env.PORT, () => {
-  console.log(`Server is listening at port ${process.env.PORT}`);
-  console.log(`Socket.IO ready on the same port`);
+  logger.info(`🚀 Server listening on port ${process.env.PORT}`);
+  logger.info(`🔌 Socket.IO ready on the same port`);
 });

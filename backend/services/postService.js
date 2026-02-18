@@ -3,6 +3,13 @@ import { User } from "../models/userSchema.js";
 import { Notification } from "../models/notificationSchema.js";
 import { createAndEmitNotification } from "./notificationService.js";
 import { AppError } from "../utils/AppError.js";
+import {
+  cacheFeedPage,
+  getCachedFeedPage,
+  invalidateFeedCache,
+  cacheTrending,
+  getCachedTrending,
+} from "./cacheService.js";
 
 /**
  * Parse #hashtags from post content.
@@ -83,6 +90,9 @@ export async function createPost(userId, { content, hadithRef, images, replyTo }
   // Populate author before returning
   await post.populate("author", "name username avatar");
 
+  // Invalidate feed cache for the author (and followers will see on next refresh)
+  await invalidateFeedCache(userId);
+
   return post;
 }
 
@@ -92,6 +102,12 @@ export async function createPost(userId, { content, hadithRef, images, replyTo }
  */
 export async function getFeed(userId, { page = 1, limit = 20, tab = "following" }) {
   const skip = (page - 1) * limit;
+
+  // Check cache first
+  const cached = await getCachedFeedPage(userId, tab, page);
+  if (cached) return cached;
+
+  let result;
 
   if (tab === "following") {
     const user = await User.findById(userId).select("following");
@@ -112,8 +128,8 @@ export async function getFeed(userId, { page = 1, limit = 20, tab = "following" 
       replyTo: null,
     });
 
-    return { posts, total, page, totalPages: Math.ceil(total / limit) };
-  }
+    result = { posts, total, page, totalPages: Math.ceil(total / limit) };
+  } else {
 
   // Trending: posts with most engagement in last 7 days
   const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
@@ -133,7 +149,12 @@ export async function getFeed(userId, { page = 1, limit = 20, tab = "following" 
     replyTo: null,
   });
 
-  return { posts, total, page, totalPages: Math.ceil(total / limit) };
+    result = { posts, total, page, totalPages: Math.ceil(total / limit) };
+  }
+
+  // Cache the result
+  await cacheFeedPage(userId, tab, page, result);
+  return result;
 }
 
 /**
@@ -314,6 +335,10 @@ export async function getPostsByHashtag(hashtag, { page = 1, limit = 20 }) {
  * Get trending hashtags (most used in last 24 hours).
  */
 export async function getTrendingHashtags(limit = 10) {
+  // Check cache first
+  const cached = await getCachedTrending();
+  if (cached) return cached;
+
   const dayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
 
   const trending = await Post.aggregate([
@@ -324,6 +349,9 @@ export async function getTrendingHashtags(limit = 10) {
     { $limit: limit },
     { $project: { hashtag: "$_id", count: 1, _id: 0 } },
   ]);
+
+  // Cache for 5 minutes
+  await cacheTrending(trending);
 
   return trending;
 }

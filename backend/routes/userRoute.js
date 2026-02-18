@@ -28,15 +28,16 @@ import {
     followUnfollowValidationRules,
     mongoIdParamValidationRules
 } from "../middlewares/validators.js";
+import { loginLimiter, registerLimiter } from "../middlewares/rateLimiter.js";
 
 const router = express.Router();
 
 // ── Auth ─────────────────────────────────────────────
-router.route("/register").post(registerValidationRules(), Register);
-router.route("/login").post(loginValidationRules(), Login);
+router.route("/register").post(registerLimiter, registerValidationRules(), Register);
+router.route("/login").post(loginLimiter, loginValidationRules(), Login);
 router.route("/logout").post(Logout);
 router.route("/refresh").post(refresh);
-router.route("/forgot-password").post(forgotPassword);
+router.route("/forgot-password").post(loginLimiter, forgotPassword);
 router.route("/reset-password/:token").post(resetPassword);
 
 // Session check - restore user from cookie
