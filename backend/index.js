@@ -41,6 +41,38 @@ const app = express();
 // Create HTTP server (needed for Socket.IO)
 const httpServer = createServer(app);
 
+// ── CORS (must be FIRST — handles OPTIONS preflight before anything else) ───
+const productionFrontendURL =
+  process.env.FRONTEND_URL_PROD || "https://deen-verse-front.vercel.app";
+
+const extraOrigins = process.env.CORS_ORIGINS
+  ? process.env.CORS_ORIGINS.split(",").map((o) => o.trim()).filter(Boolean)
+  : [];
+
+const staticAllowedOrigins = new Set([
+  productionFrontendURL,
+  "http://localhost:3000",
+  "http://localhost:3001",
+  ...extraOrigins,
+]);
+
+// Matches all Vercel preview/production deployments for this project
+const vercelPreviewPattern = /^https:\/\/deen-verse-front[a-z0-9-]*\.vercel\.app$/;
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+    if (staticAllowedOrigins.has(origin) || vercelPreviewPattern.test(origin)) {
+      return callback(null, true);
+    }
+    logger.warn(`CORS blocked origin: ${origin}`);
+    return callback(null, false);
+  },
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
+
 // ── Security headers (Helmet + CSP) ─────────────────
 app.use(securityHeaders());
 
@@ -60,42 +92,6 @@ app.use(cookieParser());
 
 // ── Input sanitisation (XSS prevention) ─────────────
 app.use(sanitizeInput);
-
-// ── CORS origin resolution ──────────────────────────
-// Static allowed origins (always permitted)
-const productionFrontendURL =
-  process.env.FRONTEND_URL_PROD || "https://deen-verse-front.vercel.app";
-
-// Extra origins can be injected via env (comma-separated) for custom domains
-const extraOrigins = process.env.CORS_ORIGINS
-  ? process.env.CORS_ORIGINS.split(",").map((o) => o.trim()).filter(Boolean)
-  : [];
-
-const staticAllowedOrigins = new Set([
-  productionFrontendURL,
-  "http://localhost:3000",
-  "http://localhost:3001",
-  ...extraOrigins,
-]);
-
-// Matches all Vercel preview deployments for this project:
-// e.g. deen-verse-front-qouyk09sb-hasnain-sids-projects.vercel.app
-const vercelPreviewPattern = /^https:\/\/deen-verse-front[a-z0-9-]*\.vercel\.app$/;
-
-const corsOptions = {
-  origin: function (origin, callback) {
-    // Allow requests with no origin (mobile apps, curl, same-origin)
-    if (!origin) return callback(null, true);
-    if (staticAllowedOrigins.has(origin) || vercelPreviewPattern.test(origin)) {
-      return callback(null, true);
-    }
-    logger.warn(`CORS blocked origin: ${origin}`);
-    return callback(null, false);
-  },
-  credentials: true,
-};
-
-app.use(cors(corsOptions));
 
 // ── Global rate limiter (100 req / min per IP) ──────
 app.use(generalLimiter);
