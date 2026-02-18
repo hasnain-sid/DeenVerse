@@ -10,12 +10,22 @@ ehthumbs.db
 .Spotlight-V100
 .Trashes
 
+# Dependencies — all node_modules everywhere
+node_modules/
+
 # Node.js backend specific
-backend/node_modules/
 backend/.env
 backend/npm-debug.log*
 backend/yarn-debug.log*
 backend/yarn-error.log*
+
+# Frontend build artifacts
+frontend/build/
+frontend/dist/
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
 
 # General logs
 *.log

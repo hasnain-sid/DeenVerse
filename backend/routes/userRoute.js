@@ -3,29 +3,52 @@ import {
     Login,
     Register,
     Logout,
+    getMe,
     saved,
     getProfile,
     getOtherUsers,
+    searchUsersHandler,
     Follow,
-    Unfollow
+    Unfollow,
+    updateProfile,
+    changePassword,
+    refresh,
+    forgotPassword,
+    resetPassword,
+    getFollowersHandler,
+    getFollowingHandler,
+    getSuggestionsHandler,
+    getPublicProfileHandler
 } from "../controller/userController.js";
 import isAuthenticated from "../config/auth.js";
+import { optionalAuth } from "../config/auth.js";
 import {
     registerValidationRules,
     loginValidationRules,
     followUnfollowValidationRules,
-    mongoIdParamValidationRules // Added for param validation
+    mongoIdParamValidationRules
 } from "../middlewares/validators.js";
+import { loginLimiter, registerLimiter } from "../middlewares/rateLimiter.js";
 
 const router = express.Router();
 
-router.route("/register").post(registerValidationRules(), Register);
-router.route("/login").post(loginValidationRules(), Login);
-router.route("/logout").get(Logout);
+// ── Auth ─────────────────────────────────────────────
+router.route("/register").post(registerLimiter, registerValidationRules(), Register);
+router.route("/login").post(loginLimiter, loginValidationRules(), Login);
+router.route("/logout").post(Logout);
+router.route("/refresh").post(refresh);
+router.route("/forgot-password").post(loginLimiter, forgotPassword);
+router.route("/reset-password/:token").post(resetPassword);
 
-// Using mongoIdParamValidationRules to validate MongoDB ID in the URL parameter
-router.route("/saved/:id").put(isAuthenticated, mongoIdParamValidationRules('id'), saved);
+// Session check - restore user from cookie
+router.route("/me").get(isAuthenticated, getMe);
+
+// Hadith IDs are integers from the external API, not MongoDB ObjectIds
+router.route("/saved/:id").put(isAuthenticated, saved);
 router.route("/profile/:id").get(isAuthenticated, mongoIdParamValidationRules('id'), getProfile);
+
+// Search users (public — no auth required)
+router.route("/search").get(searchUsersHandler);
 
 // getOtherUsers does not take an ID param, it uses req.user from isAuthenticated
 router.route("/users").get(isAuthenticated, getOtherUsers);
@@ -33,5 +56,17 @@ router.route("/users").get(isAuthenticated, getOtherUsers);
 // followUnfollowValidationRules already checks for body('id').isMongoId()
 router.route("/follow").post(isAuthenticated, followUnfollowValidationRules(), Follow);
 router.route("/unfollow").post(isAuthenticated, followUnfollowValidationRules(), Unfollow);
+
+// Profile management
+router.route("/profile").put(isAuthenticated, updateProfile);
+router.route("/change-password").put(isAuthenticated, changePassword);
+
+// Followers / Following / Suggestions
+router.route("/followers/:id").get(optionalAuth, getFollowersHandler);
+router.route("/following/:id").get(optionalAuth, getFollowingHandler);
+router.route("/suggestions").get(isAuthenticated, getSuggestionsHandler);
+
+// Public profile by username
+router.route("/username/:username").get(optionalAuth, getPublicProfileHandler);
 
 export default router;

@@ -1,0 +1,177 @@
+name: DeenVerse CI/CD
+
+on:
+  push:
+    branches: [main, redesign/v2-modern]
+  pull_request:
+    branches: [main]
+
+env:
+  NODE_VERSION: '20.x'
+
+jobs:
+  # ── Lint & Type Check ────────────────────────────────
+  lint:
+    name: Lint & Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install shared deps
+        working-directory: packages/shared
+        run: npm ci --ignore-scripts
+
+      - name: Install frontend deps
+        working-directory: frontend
+        run: npm ci --ignore-scripts
+
+      - name: TypeScript check (frontend)
+        working-directory: frontend
+        run: npx tsc --noEmit
+
+  # ── Backend Tests ────────────────────────────────────
+  test-backend:
+    name: Backend Tests
+    runs-on: ubuntu-latest
+    services:
+      mongodb:
+        image: mongo:7
+        ports:
+          - 27017:27017
+    env:
+      MONGO_URI: mongodb://localhost:27017/deenverse_test
+      TOKEN_SECRET: test-jwt-secret-ci
+      REFRESH_TOKEN_SECRET: test-refresh-secret-ci
+      PORT: 8081
+      NODE_ENV: test
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install backend deps
+        working-directory: backend
+        run: npm ci
+
+      - name: Run backend tests
+        working-directory: backend
+        run: npm test --if-present
+
+  # ── Build Frontend ───────────────────────────────────
+  build-frontend:
+    name: Build Frontend
+    runs-on: ubuntu-latest
+    needs: [lint]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install frontend deps
+        working-directory: frontend
+        run: npm ci
+
+      - name: Build frontend
+        working-directory: frontend
+        run: npm run build
+        env:
+          VITE_API_URL: ${{ vars.VITE_API_URL || 'https://api.deenverse.com' }}
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist
+          retention-days: 7
+
+  # ── Deploy Staging ───────────────────────────────────
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: [test-backend, build-frontend]
+    if: github.ref == 'refs/heads/redesign/v2-modern' && github.event_name == 'push'
+    environment: staging
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download frontend build
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.AWS_REGION || 'us-east-1' }}
+
+      - name: Deploy frontend to S3 (staging)
+        run: |
+          aws s3 sync frontend/dist/ s3://${{ vars.S3_STAGING_BUCKET }} \
+            --delete \
+            --cache-control "max-age=31536000,immutable" \
+            --exclude "index.html" \
+            --exclude "manifest.json"
+          aws s3 cp frontend/dist/index.html s3://${{ vars.S3_STAGING_BUCKET }}/index.html \
+            --cache-control "no-cache"
+
+      - name: Invalidate CloudFront (staging)
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ vars.CF_STAGING_DISTRIBUTION_ID }} \
+            --paths "/*"
+
+  # ── Deploy Production ────────────────────────────────
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [test-backend, build-frontend]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download frontend build
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.AWS_REGION || 'us-east-1' }}
+
+      - name: Deploy frontend to S3 (production)
+        run: |
+          aws s3 sync frontend/dist/ s3://${{ vars.S3_PROD_BUCKET }} \
+            --delete \
+            --cache-control "max-age=31536000,immutable" \
+            --exclude "index.html" \
+            --exclude "manifest.json"
+          aws s3 cp frontend/dist/index.html s3://${{ vars.S3_PROD_BUCKET }}/index.html \
+            --cache-control "no-cache"
+
+      - name: Invalidate CloudFront (production)
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ vars.CF_PROD_DISTRIBUTION_ID }} \
+            --paths "/*"
