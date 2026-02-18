@@ -1,6 +1,6 @@
 import { Stream } from "../models/streamSchema.js";
 import { AppError } from "../utils/AppError.js";
-import crypto from "crypto";
+import { createIvsChannel } from "./ivsService.js";
 
 /**
  * Create a new stream session.
@@ -14,21 +14,16 @@ export async function createStream(
     throw new AppError("Stream title is required", 400);
   }
 
-  // Generate a unique stream key
-  const streamKey = `dvs_${crypto.randomBytes(16).toString("hex")}`;
-
-  // In production, this would call AWS IVS to create a channel
-  // and the playbackUrl / streamKey would come from IVS.
-  // For now, we generate them locally.
-  const playbackUrl = ""; // Will be set by AWS IVS webhook or manually
+  // Create an IVS channel (returns placeholder values if AWS IVS is not configured)
+  const ivs = await createIvsChannel(userId, title.trim());
 
   const stream = await Stream.create({
     host: userId,
     title: title.trim(),
     description: description?.trim() || "",
     category: category || "other",
-    streamKey,
-    playbackUrl,
+    streamKey: ivs.streamKeyValue,
+    playbackUrl: ivs.playbackUrl,
     status: "scheduled",
     scheduledFor: scheduledFor || null,
     chatEnabled: chatEnabled !== false,

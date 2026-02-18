@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { X, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Avatar } from '@/components/ui/avatar';
+import { ImageUpload } from '@/components/ui/image-upload';
 import { useAuthStore } from '@/stores/authStore';
 import api from '@/lib/api';
 import toast from 'react-hot-toast';
@@ -20,7 +20,7 @@ const editProfileSchema = z.object({
     .max(30)
     .regex(/^[a-zA-Z0-9_]+$/, 'Only letters, numbers, and underscores'),
   bio: z.string().max(200, 'Bio must be at most 200 characters').optional(),
-  avatar: z.string().url('Must be a valid URL').or(z.literal('')).optional(),
+  avatar: z.string().optional(),
 });
 
 type EditProfileValues = z.infer<typeof editProfileSchema>;
@@ -43,6 +43,7 @@ export function EditProfileModal({ open, onClose }: EditProfileModalProps) {
     handleSubmit,
     reset,
     watch,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<EditProfileValues>({
     resolver: zodResolver(editProfileSchema),
@@ -118,29 +119,17 @@ export function EditProfileModal({ open, onClose }: EditProfileModalProps) {
 
           {/* Form */}
           <form onSubmit={handleSubmit(onSubmit)} className="px-6 py-5 space-y-5">
-            {/* Avatar preview */}
-            <div className="flex flex-col items-center gap-3">
-              <Avatar
-                fallback={watch('name') || user?.name || ''}
-                src={avatarValue}
-                size="lg"
-                className="h-20 w-20 text-2xl"
-              />
-              <p className="text-xs text-muted-foreground">
-                Enter an image URL below to change your avatar
-              </p>
-            </div>
-
-            {/* Avatar URL */}
+            {/* Avatar upload */}
             <div>
-              <label className="text-sm font-medium mb-1.5 block">Avatar URL</label>
-              <Input
-                placeholder="https://example.com/avatar.jpg"
-                {...register('avatar')}
+              <label className="text-sm font-medium mb-2 block text-center">Profile Photo</label>
+              <ImageUpload
+                value={avatarValue || ''}
+                onChange={(url) => setValue('avatar', url as string, { shouldDirty: true })}
+                maxFiles={1}
+                maxSizeMB={5}
+                bucket="avatars"
+                variant="circle"
               />
-              {errors.avatar && (
-                <p className="text-xs text-destructive mt-1">{errors.avatar.message}</p>
-              )}
             </div>
 
             {/* Name */}

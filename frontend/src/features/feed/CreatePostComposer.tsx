@@ -1,7 +1,8 @@
 import { useState, useRef } from 'react';
-import { Send } from 'lucide-react';
+import { Send, ImagePlus } from 'lucide-react';
 import { Avatar } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
+import { ImageUpload } from '@/components/ui/image-upload';
 import { useAuthStore } from '@/stores/authStore';
 import { useCreatePost } from './usePosts';
 
@@ -22,6 +23,8 @@ export function CreatePostComposer({
 }: CreatePostComposerProps) {
   const user = useAuthStore((s) => s.user);
   const [content, setContent] = useState('');
+  const [images, setImages] = useState<string[]>([]);
+  const [showImageUpload, setShowImageUpload] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const createPost = useCreatePost();
 
@@ -32,10 +35,12 @@ export function CreatePostComposer({
   const handleSubmit = () => {
     if (!canPost) return;
     createPost.mutate(
-      { content: content.trim(), replyTo },
+      { content: content.trim(), replyTo, images: images.length > 0 ? images : undefined },
       {
         onSuccess: () => {
           setContent('');
+          setImages([]);
+          setShowImageUpload(false);
           if (textareaRef.current) {
             textareaRef.current.style.height = 'auto';
           }
@@ -77,9 +82,34 @@ export function CreatePostComposer({
           maxLength={MAX_CHARS + 50} // Allow slight overflow for better UX
         />
 
+        {/* Image upload area */}
+        {showImageUpload && (
+          <div className="mt-2">
+            <ImageUpload
+              value={images}
+              onChange={(urls) => setImages(urls as string[])}
+              maxFiles={4}
+              maxSizeMB={10}
+              bucket="media"
+            />
+          </div>
+        )}
+
         {/* Bottom bar */}
         <div className="flex items-center justify-between mt-2">
           <div className="flex items-center gap-2">
+            {/* Image upload toggle */}
+            <button
+              type="button"
+              onClick={() => setShowImageUpload(!showImageUpload)}
+              className={`p-1.5 rounded-md transition-colors ${
+                showImageUpload ? 'text-primary bg-primary/10' : 'text-muted-foreground hover:text-foreground hover:bg-secondary'
+              }`}
+              title="Add images"
+            >
+              <ImagePlus className="w-5 h-5" />
+            </button>
+
             {/* Character counter */}
             {content.length > 0 && (
               <div className="flex items-center gap-1.5">

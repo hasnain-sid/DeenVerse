@@ -12,7 +12,7 @@
 2. [Phase 2 — Core Features & Polish](#phase-2--core-features--polish-week-3-4) ✅ COMPLETED
 3. [Phase 3 — Social Platform Features](#phase-3--social-platform-features-week-5-7) ✅ COMPLETED
 4. [Phase 4 — Real-Time & Live Streaming](#phase-4--real-time--live-streaming-week-8-10) ✅ COMPLETED
-5. [Phase 5 — AWS Cloud Integration](#phase-5--aws-cloud-integration-week-11-13)
+5. [Phase 5 — AWS Cloud Integration](#phase-5--aws-cloud-integration-week-11-13) ✅ COMPLETED
 6. [Phase 6 — Scale, Security & Performance](#phase-6--scale-security--performance-week-14-16)
 7. [Phase 7 — Mobile App (React Native)](#phase-7--mobile-app-react-native-week-17-22)
 8. [Phase 8 — Analytics, Monetization & Launch](#phase-8--analytics-monetization--launch-week-23-26)
@@ -417,17 +417,17 @@
 > **Goal**: Move storage, media processing, and CDN to AWS for production scale.
 
 ### 5.1 AWS S3 — File Storage
-- [ ] **Step 1**: Setup AWS account & IAM
+- [x] **Step 1**: Setup AWS account & IAM
   - Create IAM user with S3 permissions
   - Generate access keys
   - Store in `.env` securely (AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY)
-- [ ] **Step 2**: Create S3 buckets
+- [x] **Step 2**: Create S3 buckets
   - `deenverse-avatars` — user profile pictures
   - `deenverse-media` — post images, audio files
   - `deenverse-streams` — stream recordings (VOD)
   - Configure bucket policies (public read for media, private for recordings)
   - Enable CORS for browser uploads
-- [ ] **Step 3**: Implement presigned URL upload flow
+- [x] **Step 3**: Implement presigned URL upload flow
   ```
   Frontend                    Backend                      S3
      │                          │                           │
@@ -447,62 +447,62 @@
      │  { finalUrl }            │                           │
      │ ◀─────────────────────   │                           │
   ```
-- [ ] **Step 4**: Build upload API endpoints
+- [x] **Step 4**: Build upload API endpoints
   - `POST /api/upload/presign` — get presigned S3 URL
   - `POST /api/upload/confirm` — confirm & save URL to DB
   - Validate file type (images only for now: jpg, png, webp)
   - Validate file size (max 5MB for avatars, 10MB for posts)
-- [ ] **Step 5**: Build frontend upload components
+- [x] **Step 5**: Build frontend upload components
   - `<ImageUpload />` — drag & drop + click to upload
   - Progress bar during upload
   - Image preview / crop before upload
   - Multiple image upload for posts (up to 4)
 
 ### 5.2 AWS CloudFront — CDN
-- [ ] **Step 6**: Setup CloudFront distribution
+- [x] **Step 6**: Setup CloudFront distribution
   - Origin: S3 buckets
   - Enable HTTPS with custom domain (cdn.deenverse.com)
   - Cache policy: 30 days for media, 1 year for avatars
   - Enable gzip/brotli compression
-- [ ] **Step 7**: Setup CloudFront for frontend static assets
+- [x] **Step 7**: Setup CloudFront for frontend static assets
   - Deploy `frontend/dist/` to S3
   - CloudFront serves the SPA
   - Cache-busting with content hashes in filenames
-- [ ] **Step 8**: Image optimization pipeline
+- [x] **Step 8**: Image optimization pipeline
   - AWS Lambda@Edge for on-the-fly image resizing
   - Serve WebP to supported browsers
   - Generate thumbnails: 100x100 (avatar), 400x400 (feed), 1200x630 (og:image)
 
 ### 5.3 AWS IVS — Live Streaming
-- [ ] **Step 9**: Setup Amazon IVS (Interactive Video Service)
+- [x] **Step 9**: Setup Amazon IVS (Interactive Video Service)
   - Create IVS channel per streamer
   - Get ingest endpoint (RTMP URL) and stream key
   - Get playback URL (HLS) for viewers
   - Configure recording to S3 (VOD)
-- [ ] **Step 10**: Integrate IVS with backend
+- [x] **Step 10**: Integrate IVS with backend
   - Create IVS channel when user creates a stream
   - Use IVS EventBridge webhooks for stream start/end
   - Store playback URLs in Stream model
   - Auto-scale: IVS handles millions of viewers natively
-- [ ] **Step 11**: Integrate IVS player on frontend
+- [x] **Step 11**: Integrate IVS player on frontend
   - Use Amazon IVS Player SDK (optimized HLS player)
   - Adaptive bitrate streaming
   - Ultra-low latency mode (<3 seconds)
   - Timed metadata for interactive features
 
 ### 5.4 AWS SES — Email Service
-- [ ] **Step 12**: Setup Amazon SES
+- [x] **Step 12**: Setup Amazon SES
   - Verify domain (deenverse.com)
   - Create email templates (verification, password reset, notifications)
   - Configure sending limits
-- [ ] **Step 13**: Build email service (backend)
+- [x] **Step 13**: Build email service (backend)
   - `sendVerificationEmail(user)` — sends verification link
   - `sendPasswordResetEmail(user)` — sends reset link
   - `sendNotificationDigest(user)` — daily summary of notifications
   - Use HTML email templates with branding
 
 ### 5.5 AWS SQS — Message Queue (Optional)
-- [ ] **Step 14**: Setup SQS for async tasks
+- [x] **Step 14**: Setup SQS for async tasks
   - Queue for: email sending, push notifications, feed generation
   - Decouple heavy processing from API response time
   - Worker process to consume queue items
@@ -831,15 +831,15 @@
 
 | Layer | Technology | Phase |
 |-------|-----------|-------|
-| Forms | React Hook Form + Zod | Phase 2 |
-| Real-time | Socket.IO | Phase 4 |
+| Forms | React Hook Form + Zod | ✅ Phase 2 |
+| Real-time | Socket.IO | ✅ Phase 4 |
 | Caching | Redis (ioredis) | Phase 6 |
-| File Storage | AWS S3 | Phase 5 |
-| CDN | AWS CloudFront | Phase 5 |
-| Live Streaming | AWS IVS | Phase 5 |
-| Email | AWS SES | Phase 5 |
-| Message Queue | AWS SQS | Phase 5 |
-| Push Notifications | Web Push + FCM/APNs | Phase 4 & 7 |
+| File Storage | AWS S3 | ✅ Phase 5 |
+| CDN | AWS CloudFront | ✅ Phase 5 |
+| Live Streaming | AWS IVS | ✅ Phase 5 |
+| Email | AWS SES | ✅ Phase 5 |
+| Message Queue | AWS SQS | ✅ Phase 5 |
+| Push Notifications | Web Push + FCM/APNs | ✅ Phase 4 & 7 |
 | Logging | Winston + Morgan | Phase 6 |
 | Error Tracking | Sentry | Phase 6 |
 | Mobile | React Native (Expo) | Phase 7 |
@@ -924,7 +924,7 @@
 | **Phase 2** ✅ | Week 3-4 | Auth overhaul, hadith rebuild, search, profiles |
 | **Phase 3** ✅ | Week 5-7 | Posts, feed, follows, notifications, DMs, hashtags |
 | **Phase 4** ✅ | Week 8-10 | Socket.IO, live streaming, push notifications |
-| **Phase 5** | Week 11-13 | AWS S3, CloudFront, IVS, SES |
+| **Phase 5** ✅ | Week 11-13 | AWS S3, CloudFront, IVS, SES |
 | **Phase 6** | Week 14-16 | Redis, rate limiting, performance, security |
 | **Phase 7** | Week 17-22 | React Native iOS + Android app |
 | **Phase 8** | Week 23-26 | Analytics, moderation, monetization, launch |

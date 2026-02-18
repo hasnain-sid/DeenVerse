@@ -58,7 +58,7 @@ export function useCreatePost() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (body: { content: string; hadithRef?: string; replyTo?: string }) => {
+    mutationFn: async (body: { content: string; hadithRef?: string; replyTo?: string; images?: string[] }) => {
       const { data } = await api.post('/posts', body);
       return data;
     },

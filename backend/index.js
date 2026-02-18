@@ -12,6 +12,7 @@ import notificationRoute from "./routes/notificationRoute.js";
 import chatRoute from "./routes/chatRoute.js";
 import streamRoute from "./routes/streamRoute.js";
 import pushRoute from "./routes/pushRoute.js";
+import uploadRoute from "./routes/uploadRoute.js";
 import cors from "cors";
 import errorHandler from "./middlewares/errorHandler.js";
 import { initSocket } from "./socket/index.js";
@@ -68,6 +69,7 @@ app.use("/api/v1/notifications", notificationRoute);
 app.use("/api/v1/chat", chatRoute);
 app.use("/api/v1/streams", streamRoute);
 app.use("/api/v1/push", pushRoute);
+app.use("/api/v1/upload", uploadRoute);
 
 // Centralized Error Handler
 // This should be defined AFTER all other app.use() and routes calls

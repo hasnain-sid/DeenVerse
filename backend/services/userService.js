@@ -5,6 +5,7 @@ import crypto from 'crypto';
 import { AppError } from '../utils/AppError.js';
 import { generateAccessToken, generateRefreshToken } from '../utils/tokenUtils.js';
 import { createFollowNotification } from './notificationService.js';
+import { sendPasswordResetEmail } from './emailService.js';
 
 export const registerUser = async (userData) => {
     const { name, username, email, password } = userData;
@@ -253,10 +254,17 @@ export const createPasswordResetToken = async (email) => {
     user.passwordResetExpires = Date.now() + 60 * 60 * 1000; // 1 hour
     await user.save({ validateBeforeSave: false });
 
+    // Send reset email (graceful fallback if SES not configured)
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+    const resetUrl = `${frontendUrl}/reset-password/${resetToken}`;
+    await sendPasswordResetEmail(user.email, resetUrl).catch((err) => {
+        console.warn('[UserService] Email send failed:', err.message);
+    });
+
     return {
         success: true,
         message: "If an account with that email exists, a reset link has been sent.",
-        resetToken, // In production, this would be sent via email, not returned
+        resetToken, // Included in dev for testing; strip in production
         statusCode: 200,
     };
 };
