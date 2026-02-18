@@ -7,6 +7,8 @@ import { AuthGuard } from '@/features/auth/AuthGuard';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { useSession } from '@/features/auth/useAuth';
 import { CommandPalette } from '@/components/CommandPalette';
+import { InstallPrompt } from '@/components/InstallPrompt';
+import { useSocket } from '@/hooks/useSocket';
 
 // Lazy-load route-level pages for code splitting
 const HomePage = lazy(() =>
@@ -57,6 +59,18 @@ const UserProfilePage = lazy(() =>
 const NotFoundPage = lazy(() =>
   import('@/features/not-found/NotFoundPage').then((m) => ({ default: m.NotFoundPage }))
 );
+const MessagesPage = lazy(() =>
+  import('@/features/messages/MessagesPage').then((m) => ({ default: m.MessagesPage }))
+);
+const StreamsPage = lazy(() =>
+  import('@/features/streams/StreamsPage').then((m) => ({ default: m.StreamsPage }))
+);
+const StreamViewPage = lazy(() =>
+  import('@/features/streams/StreamViewPage').then((m) => ({ default: m.StreamViewPage }))
+);
+const GoLivePage = lazy(() =>
+  import('@/features/streams/GoLivePage').then((m) => ({ default: m.GoLivePage }))
+);
 
 // Query client with sensible defaults for a read-heavy app
 const queryClient = new QueryClient({
@@ -82,6 +96,7 @@ function PageLoader() {
 // Restores session from httpOnly cookie on app load
 function SessionRestorer({ children }: { children: React.ReactNode }) {
   useSession();
+  useSocket(); // Connect Socket.IO when authenticated
   return <>{children}</>;
 }
 
@@ -148,6 +163,24 @@ export default function App() {
                       </AuthGuard>
                     }
                   />
+                  <Route
+                    path="/messages"
+                    element={
+                      <AuthGuard>
+                        <MessagesPage />
+                      </AuthGuard>
+                    }
+                  />
+                  <Route path="/streams" element={<StreamsPage />} />
+                  <Route path="/streams/:id" element={<StreamViewPage />} />
+                  <Route
+                    path="/go-live"
+                    element={
+                      <AuthGuard>
+                        <GoLivePage />
+                      </AuthGuard>
+                    }
+                  />
                   <Route path="/login" element={<LoginPage />} />
                   <Route path="/forgot-password" element={<ForgotPasswordPage />} />
                   <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
@@ -158,6 +191,7 @@ export default function App() {
           </SessionRestorer>
 
           <CommandPalette />
+          <InstallPrompt />
 
           <Toaster
             position="bottom-right"

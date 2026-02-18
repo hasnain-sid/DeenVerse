@@ -1,6 +1,7 @@
 import { Post } from "../models/postSchema.js";
 import { User } from "../models/userSchema.js";
 import { Notification } from "../models/notificationSchema.js";
+import { createAndEmitNotification } from "./notificationService.js";
 import { AppError } from "../utils/AppError.js";
 
 /**
@@ -51,11 +52,11 @@ export async function createPost(userId, { content, hadithRef, images, replyTo }
     // Create notification for parent post author (if not replying to self)
     const parent = await Post.findById(replyTo).select("author");
     if (parent && parent.author.toString() !== userId) {
-      await Notification.create({
-        recipient: parent.author,
-        sender: userId,
+      await createAndEmitNotification({
+        recipientId: parent.author,
+        senderId: userId,
         type: "reply",
-        post: post._id,
+        postId: post._id,
       });
     }
   }
@@ -69,14 +70,13 @@ export async function createPost(userId, { content, hadithRef, images, replyTo }
       _id: { $ne: userId },
     }).select("_id");
 
-    if (mentionedUsers.length > 0) {
-      const notifs = mentionedUsers.map((u) => ({
-        recipient: u._id,
-        sender: userId,
+    for (const u of mentionedUsers) {
+      await createAndEmitNotification({
+        recipientId: u._id,
+        senderId: userId,
         type: "mention",
-        post: post._id,
-      }));
-      await Notification.insertMany(notifs);
+        postId: post._id,
+      });
     }
   }
 
@@ -189,11 +189,11 @@ export async function toggleLike(postId, userId) {
         createdAt: { $gte: new Date(Date.now() - 60 * 60 * 1000) }, // within 1 hour
       });
       if (!existing) {
-        await Notification.create({
-          recipient: post.author,
-          sender: userId,
+        await createAndEmitNotification({
+          recipientId: post.author,
+          senderId: userId,
           type: "like",
-          post: postId,
+          postId,
         });
       }
     }
@@ -229,11 +229,11 @@ export async function toggleRepost(postId, userId) {
         createdAt: { $gte: new Date(Date.now() - 60 * 60 * 1000) },
       });
       if (!existing) {
-        await Notification.create({
-          recipient: post.author,
-          sender: userId,
+        await createAndEmitNotification({
+          recipientId: post.author,
+          senderId: userId,
           type: "repost",
-          post: postId,
+          postId,
         });
       }
     }

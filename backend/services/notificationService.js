@@ -2,6 +2,32 @@ import { Notification } from "../models/notificationSchema.js";
 import { AppError } from "../utils/AppError.js";
 
 /**
+ * Emit a real-time notification via Socket.IO and send a web push.
+ * Gracefully no-ops if socket isn't initialised.
+ */
+async function emitNotification(recipientId, notification) {
+  try {
+    const { getIO } = await import("../socket/index.js");
+    const io = getIO();
+
+    // Populate sender info for the notification payload
+    const populated = await Notification.findById(notification._id)
+      .populate("sender", "name username avatar")
+      .populate("post", "content")
+      .lean();
+
+    io.to(`user:${recipientId}`).emit("notification:new", populated);
+
+    // Send web push notification (fire-and-forget)
+    import("./pushService.js")
+      .then(({ pushNotification }) => pushNotification(populated))
+      .catch(() => {});
+  } catch {
+    // Socket not initialised or other error — skip silently
+  }
+}
+
+/**
  * Get notifications for a user (paginated, newest first).
  */
 export async function getNotifications(userId, { page = 1, limit = 30 }) {
@@ -68,10 +94,29 @@ export async function createFollowNotification(recipientId, senderId) {
   });
 
   if (!existing) {
-    await Notification.create({
+    const notification = await Notification.create({
       recipient: recipientId,
       sender: senderId,
       type: "follow",
     });
+    await emitNotification(recipientId, notification);
   }
+}
+
+/**
+ * Create a generic notification and emit it in real-time.
+ * Used by other services (post likes, replies, mentions, reposts).
+ */
+export async function createAndEmitNotification({ recipientId, senderId, type, postId }) {
+  if (recipientId === senderId) return; // Don't notify yourself
+
+  const notification = await Notification.create({
+    recipient: recipientId,
+    sender: senderId,
+    type,
+    post: postId || null,
+  });
+
+  await emitNotification(recipientId, notification);
+  return notification;
 }

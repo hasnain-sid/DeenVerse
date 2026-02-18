@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { Home, Search, BookOpen, User, Newspaper, Bell } from 'lucide-react';
+import { Home, Search, Newspaper, Bell, Radio } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useUIStore } from '@/stores/uiStore';
 import { useUnreadCount } from '@/features/notifications/useNotifications';
@@ -7,10 +7,9 @@ import { useUnreadCount } from '@/features/notifications/useNotifications';
 const mobileNav = [
   { name: 'Home', href: '/', icon: Home },
   { name: 'Feed', href: '/feed', icon: Newspaper },
+  { name: 'Streams', href: '/streams', icon: Radio },
   { name: 'Explore', href: '/explore', icon: Search },
-  { name: 'Hadith', href: '/hadith', icon: BookOpen },
   { name: 'Notifications', href: '/notifications', icon: Bell },
-  { name: 'Profile', href: '/profile', icon: User },
 ];
 
 export function MobileNav() {

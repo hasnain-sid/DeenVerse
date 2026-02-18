@@ -15,6 +15,8 @@ import {
   Monitor,
   Newspaper,
   Bell,
+  MessageCircle,
+  Radio,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Avatar } from '@/components/ui/avatar';
@@ -25,13 +27,16 @@ import { useThemeStore } from '@/stores/themeStore';
 import { useUIStore } from '@/stores/uiStore';
 import api from '@/lib/api';
 import { useUnreadCount } from '@/features/notifications/useNotifications';
+import { useChatUnreadCount } from '@/features/messages/useChat';
 
 const navigation = [
   { name: 'Home', href: '/', icon: Home },
   { name: 'Feed', href: '/feed', icon: Newspaper },
   { name: 'Explore', href: '/explore', icon: Search },
   { name: 'Hadith', href: '/hadith', icon: BookOpen },
+  { name: 'Streams', href: '/streams', icon: Radio },
   { name: 'Notifications', href: '/notifications', icon: Bell },
+  { name: 'Messages', href: '/messages', icon: MessageCircle },
   { name: 'Saved', href: '/saved', icon: Bookmark },
   { name: 'Community', href: '/community', icon: Users },
   { name: 'Profile', href: '/profile', icon: User },
@@ -56,6 +61,8 @@ export function Sidebar() {
   const { sidebarCollapsed, toggleSidebarCollapsed } = useUIStore();
   const { data: unreadData } = useUnreadCount();
   const unreadCount = unreadData?.count ?? 0;
+  const { data: chatUnreadData } = useChatUnreadCount();
+  const chatUnreadCount = chatUnreadData?.count ?? 0;
 
   const handleLogout = async () => {
     try {
@@ -127,6 +134,11 @@ export function Sidebar() {
                 {item.name === 'Notifications' && unreadCount > 0 && (
                   <span className="absolute -top-1.5 -right-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground px-1">
                     {unreadCount > 99 ? '99+' : unreadCount}
+                  </span>
+                )}
+                {item.name === 'Messages' && chatUnreadCount > 0 && (
+                  <span className="absolute -top-1.5 -right-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground px-1">
+                    {chatUnreadCount > 99 ? '99+' : chatUnreadCount}
                   </span>
                 )}
               </div>

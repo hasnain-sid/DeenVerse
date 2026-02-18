@@ -8,6 +8,7 @@ import {
   Palette,
   Lock,
   BookOpen,
+  Bell,
   Sun,
   Moon,
   Monitor,
@@ -19,6 +20,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAuthStore } from '@/stores/authStore';
 import { useThemeStore } from '@/stores/themeStore';
+import { usePushNotifications } from '@/hooks/usePushNotifications';
 import { cn } from '@/lib/utils';
 import api from '@/lib/api';
 import { Link } from 'react-router-dom';
@@ -51,11 +53,12 @@ type PasswordForm = z.infer<typeof passwordSchema>;
 
 // ── Section types ────────────────────────────────────
 
-type Section = 'profile' | 'appearance' | 'reading' | 'password';
+type Section = 'profile' | 'appearance' | 'notifications' | 'reading' | 'password';
 
 const sections: { id: Section; label: string; icon: React.ElementType }[] = [
   { id: 'profile', label: 'Profile', icon: User },
   { id: 'appearance', label: 'Appearance', icon: Palette },
+  { id: 'notifications', label: 'Notifications', icon: Bell },
   { id: 'reading', label: 'Reading', icon: BookOpen },
   { id: 'password', label: 'Password', icon: Lock },
 ];
@@ -108,6 +111,7 @@ export function SettingsPage() {
         <div className="flex-1 min-w-0">
           {active === 'profile' && <ProfileSection />}
           {active === 'appearance' && <AppearanceSection />}
+          {active === 'notifications' && <NotificationsSection />}
           {active === 'reading' && <ReadingSection />}
           {active === 'password' && <PasswordSection />}
         </div>
@@ -277,6 +281,56 @@ function AppearanceSection() {
               </button>
             ))}
           </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+// ── Notifications Section ────────────────────────────
+
+function NotificationsSection() {
+  const { isSupported, isSubscribed, permission, subscribe, unsubscribe } = usePushNotifications();
+
+  return (
+    <div className="space-y-6">
+      <Card>
+        <CardContent className="pt-6">
+          <h2 className="text-sm font-medium mb-4">Push Notifications</h2>
+
+          {!isSupported ? (
+            <p className="text-sm text-muted-foreground">
+              Push notifications are not supported in your browser.
+            </p>
+          ) : permission === 'denied' ? (
+            <p className="text-sm text-muted-foreground">
+              Push notifications are blocked. Please enable them in your browser settings.
+            </p>
+          ) : (
+            <div className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                Get notified about new likes, replies, followers, and live streams — even when DeenVerse is closed.
+              </p>
+              <div className="flex items-center gap-3">
+                {isSubscribed ? (
+                  <>
+                    <span className="flex items-center gap-1.5 text-sm text-green-600">
+                      <Bell className="h-4 w-4" />
+                      Push notifications enabled
+                    </span>
+                    <Button variant="ghost" size="sm" onClick={unsubscribe}>
+                      Disable
+                    </Button>
+                  </>
+                ) : (
+                  <Button size="sm" onClick={subscribe} className="gap-1.5">
+                    <Bell className="h-4 w-4" />
+                    Enable Push Notifications
+                  </Button>
+                )}
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
