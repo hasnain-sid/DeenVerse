@@ -1,6 +1,5 @@
-import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { Home, Search, BookOpen, Bookmark, User } from 'lucide-react';
+import { Home, Search, BookOpen, Bookmark, Users, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useUIStore } from '@/stores/uiStore';
 
@@ -9,6 +8,7 @@ const mobileNav = [
   { name: 'Explore', href: '/explore', icon: Search },
   { name: 'Hadith', href: '/hadith', icon: BookOpen },
   { name: 'Saved', href: '/saved', icon: Bookmark },
+  { name: 'Community', href: '/community', icon: Users },
   { name: 'Profile', href: '/profile', icon: User },
 ];
 

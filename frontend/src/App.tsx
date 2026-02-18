@@ -29,6 +29,9 @@ const LoginPage = lazy(() =>
 const SettingsPage = lazy(() =>
   import('@/features/settings/SettingsPage').then((m) => ({ default: m.SettingsPage }))
 );
+const CommunityPage = lazy(() =>
+  import('@/features/community/CommunityPage').then((m) => ({ default: m.CommunityPage }))
+);
 const NotFoundPage = lazy(() =>
   import('@/features/not-found/NotFoundPage').then((m) => ({ default: m.NotFoundPage }))
 );
@@ -93,6 +96,14 @@ export default function App() {
                     element={
                       <AuthGuard>
                         <SettingsPage />
+                      </AuthGuard>
+                    }
+                  />
+                  <Route
+                    path="/community"
+                    element={
+                      <AuthGuard>
+                        <CommunityPage />
                       </AuthGuard>
                     }
                   />

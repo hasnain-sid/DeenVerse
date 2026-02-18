@@ -6,6 +6,7 @@ import {
   Search,
   Settings,
   User,
+  Users,
   LogOut,
   LogIn,
   ChevronLeft,
@@ -27,6 +28,7 @@ const navigation = [
   { name: 'Explore', href: '/explore', icon: Search },
   { name: 'Hadith', href: '/hadith', icon: BookOpen },
   { name: 'Saved', href: '/saved', icon: Bookmark },
+  { name: 'Community', href: '/community', icon: Users },
   { name: 'Profile', href: '/profile', icon: User },
 ];
 
