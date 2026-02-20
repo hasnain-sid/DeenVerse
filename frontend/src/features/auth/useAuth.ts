@@ -66,24 +66,33 @@ export function useSession() {
       try {
         // Try to refresh the session using the refresh token cookie
         const { data } = await api.post('/user/refresh');
-        if (data.accessToken) {
-          setAccessToken(data.accessToken);
+        if (data.accessToken) setAccessToken(data.accessToken);
+        if (data.user) setUser(data.user);
+        return data.user ?? null;
+      } catch (refreshErr: unknown) {
+        // 401 = no session, expected for unauthenticated users — not an error
+        const status = (refreshErr as { response?: { status?: number } })?.response?.status;
+        if (status !== 401) {
+          console.error('[session] refresh failed:', refreshErr);
         }
-        if (data.user) {
-          setUser(data.user);
+
+        // Fallback: if an access token is already in memory, hit /me directly
+        const { accessToken, isAuthenticated } = useAuthStore.getState();
+        if (accessToken) {
+          try {
+            const { data } = await api.get('/user/me');
+            setUser(data.user);
+            return data.user ?? null;
+          } catch {
+            // /me also failed — token is invalid, log the user out
+            if (isAuthenticated) logout();
+            return null;
+          }
         }
-        return data.user;
-      } catch {
-        // Refresh failed — try the old /me endpoint as fallback
-        try {
-          const { data } = await api.get('/user/me');
-          setUser(data.user);
-          return data.user;
-        } catch {
-          const { isAuthenticated } = useAuthStore.getState();
-          if (isAuthenticated) logout();
-          return null;
-        }
+
+        // No token at all — if the store thinks we're logged in, clear it
+        if (isAuthenticated) logout();
+        return null;
       } finally {
         setLoading(false);
       }
