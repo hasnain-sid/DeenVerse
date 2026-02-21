@@ -65,7 +65,7 @@ export function PostCard({ post, compact = false }: PostCardProps) {
 
   return (
     <div
-      className="px-4 py-3 border-b border-border hover:bg-muted/30 transition-colors cursor-pointer"
+      className="bg-card rounded-[20px] border border-border p-5 mb-5 hover:border-primary/50 transition-colors cursor-pointer"
       onClick={handleCardClick}
     >
       {/* Reply indicator */}
@@ -160,7 +160,7 @@ export function PostCard({ post, compact = false }: PostCardProps) {
 
           {/* Hadith reference badge */}
           {post.hadithRef && (
-            <div className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 bg-primary/10 text-primary text-xs rounded-full font-medium">
+            <div className="mt-3 text-xs text-primary mb-2 font-medium uppercase tracking-wider">
               📖 Hadith #{post.hadithRef}
             </div>
           )}
@@ -185,11 +185,10 @@ export function PostCard({ post, compact = false }: PostCardProps) {
             <Button
               variant="ghost"
               size="sm"
-              className={`h-8 px-2 gap-1.5 text-xs ${
-                isReposted
+              className={`h-8 px-2 gap-1.5 text-xs ${isReposted
                   ? 'text-green-500 hover:text-green-600'
                   : 'text-muted-foreground hover:text-green-500'
-              }`}
+                }`}
               onClick={(e) => {
                 e.stopPropagation();
                 repostMutation.mutate(post._id);
@@ -203,11 +202,10 @@ export function PostCard({ post, compact = false }: PostCardProps) {
             <Button
               variant="ghost"
               size="sm"
-              className={`h-8 px-2 gap-1.5 text-xs ${
-                isLiked
+              className={`h-8 px-2 gap-1.5 text-xs ${isLiked
                   ? 'text-red-500 hover:text-red-600'
                   : 'text-muted-foreground hover:text-red-500'
-              }`}
+                }`}
               onClick={(e) => {
                 e.stopPropagation();
                 likeMutation.mutate(post._id);

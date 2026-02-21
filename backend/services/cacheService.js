@@ -17,6 +17,7 @@ import { getRedisClient, isRedisConnected } from "../config/redis.js";
 export const TTL = {
   USER_PROFILE: 5 * 60,      // 5 minutes
   HADITH: 24 * 60 * 60,      // 24 hours
+  QURAN: 7 * 24 * 60 * 60,   // 7 days (immutable Quran text)
   FEED: 60,                   // 1 minute
   TRENDING: 5 * 60,           // 5 minutes
   FOLLOWER_COUNT: 5 * 60,     // 5 minutes

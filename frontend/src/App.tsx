@@ -71,6 +71,12 @@ const StreamViewPage = lazy(() =>
 const GoLivePage = lazy(() =>
   import('@/features/streams/GoLivePage').then((m) => ({ default: m.GoLivePage }))
 );
+const DailyLearningPage = lazy(() =>
+  import('@/features/daily-learning/DailyLearningPage').then((m) => ({ default: m.DailyLearningPage }))
+);
+const LearnQuranHub = lazy(() =>
+  import('@/features/learn-quran/LearnQuranHub').then((m) => ({ default: m.LearnQuranHub }))
+);
 const PrivacyPolicy = lazy(() => import('@/features/legal/PrivacyPolicy'));
 const TermsOfService = lazy(() => import('@/features/legal/TermsOfService'));
 
@@ -108,7 +114,7 @@ export default function App() {
   return (
     <ErrorBoundary label="App">
       <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
+        <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
           <SessionRestorer>
             <Suspense fallback={<PageLoader />}>
               <Routes>
@@ -177,6 +183,8 @@ export default function App() {
                   />
                   <Route path="/streams" element={<StreamsPage />} />
                   <Route path="/streams/:id" element={<StreamViewPage />} />
+                  <Route path="/learn-quran" element={<LearnQuranHub />} />
+                  <Route path="/daily-learning" element={<DailyLearningPage />} />
                   <Route
                     path="/go-live"
                     element={

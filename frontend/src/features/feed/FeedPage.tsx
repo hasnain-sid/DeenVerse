@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { TrendingUp, Users as UsersIcon, Loader2, Sparkles } from 'lucide-react';
+import { Loader2, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Avatar } from '@/components/ui/avatar';
@@ -39,37 +39,22 @@ export function FeedPage() {
 
   return (
     <div className="max-w-[600px] mx-auto">
-      {/* Header */}
-      <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b border-border">
-        <h1 className="px-4 py-3 text-lg font-bold text-foreground">Feed</h1>
-
-        {/* Tabs */}
-        <div className="flex">
+      {/* Feed Header */}
+      <div className="sticky top-14 z-20 bg-background/95 backdrop-blur-md py-3 mb-4 -mx-4 px-4 sm:mx-0 sm:px-0">
+        <div className="flex items-center space-x-2">
           <button
             onClick={() => setTab('following')}
-            className={`flex-1 py-2.5 text-sm font-medium text-center transition-colors relative
-              ${tab === 'following' ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+            className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors
+              ${tab === 'following' ? 'bg-secondary text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
           >
-            <div className="flex items-center justify-center gap-1.5">
-              <UsersIcon className="w-4 h-4" />
-              Following
-            </div>
-            {tab === 'following' && (
-              <div className="absolute bottom-0 left-1/4 right-1/4 h-0.5 bg-primary rounded-full" />
-            )}
+            Following
           </button>
           <button
             onClick={() => setTab('trending')}
-            className={`flex-1 py-2.5 text-sm font-medium text-center transition-colors relative
-              ${tab === 'trending' ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+            className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors
+              ${tab === 'trending' ? 'bg-secondary text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
           >
-            <div className="flex items-center justify-center gap-1.5">
-              <TrendingUp className="w-4 h-4" />
-              Trending
-            </div>
-            {tab === 'trending' && (
-              <div className="absolute bottom-0 left-1/4 right-1/4 h-0.5 bg-primary rounded-full" />
-            )}
+            Trending
           </button>
         </div>
       </div>
@@ -199,9 +184,9 @@ export function TrendingWidget() {
 
 function FeedSkeleton() {
   return (
-    <div>
+    <div className="space-y-5">
       {[1, 2, 3, 4].map((i) => (
-        <div key={i} className="px-4 py-3 border-b border-border flex gap-3">
+        <div key={i} className="bg-card rounded-[20px] border border-border p-5 flex gap-3">
           <Skeleton className="w-10 h-10 rounded-full shrink-0" />
           <div className="flex-1 space-y-2">
             <div className="flex items-center gap-2">

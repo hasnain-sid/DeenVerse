@@ -17,6 +17,7 @@ import {
   Bell,
   MessageCircle,
   Radio,
+  GraduationCap,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Avatar } from '@/components/ui/avatar';
@@ -33,6 +34,7 @@ const navigation = [
   { name: 'Home', href: '/', icon: Home },
   { name: 'Feed', href: '/feed', icon: Newspaper },
   { name: 'Explore', href: '/explore', icon: Search },
+  { name: 'Learn Quran', href: '/learn-quran', icon: GraduationCap },
   { name: 'Hadith', href: '/hadith', icon: BookOpen },
   { name: 'Streams', href: '/streams', icon: Radio },
   { name: 'Notifications', href: '/notifications', icon: Bell },

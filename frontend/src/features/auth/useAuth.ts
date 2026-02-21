@@ -70,10 +70,11 @@ export function useSession() {
         if (data.user) setUser(data.user);
         return data.user ?? null;
       } catch (refreshErr: unknown) {
-        // 401 = no session, expected for unauthenticated users — not an error
+        // 401 = no session (expected for unauthenticated users)
+        // 500 = backend issue (not actionable on the client)
         const status = (refreshErr as { response?: { status?: number } })?.response?.status;
-        if (status !== 401) {
-          console.error('[session] refresh failed:', refreshErr);
+        if (status !== 401 && status !== 500) {
+          console.warn('[session] refresh failed:', refreshErr);
         }
 
         // Fallback: if an access token is already in memory, hit /me directly

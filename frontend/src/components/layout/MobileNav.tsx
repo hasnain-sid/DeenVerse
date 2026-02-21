@@ -1,15 +1,30 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { Home, Search, Newspaper, Bell, Radio } from 'lucide-react';
+import { Home, Search, Bookmark, Users, Newspaper, Bell, Radio, BookOpen, MessageCircle, User, GraduationCap } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useUIStore } from '@/stores/uiStore';
 import { useUnreadCount } from '@/features/notifications/useNotifications';
 
-const mobileNav = [
+// Bottom nav is restricted to core items
+const bottomNav = [
+  { name: 'Home', href: '/', icon: Home },
+  { name: 'Explore', href: '/explore', icon: Search },
+  { name: 'Saved', href: '/saved', icon: Bookmark },
+  { name: 'Community', href: '/community', icon: Users },
+];
+
+// Extended nav for the hamburger menu slide out
+const extendedNav = [
   { name: 'Home', href: '/', icon: Home },
   { name: 'Feed', href: '/feed', icon: Newspaper },
-  { name: 'Streams', href: '/streams', icon: Radio },
   { name: 'Explore', href: '/explore', icon: Search },
+  { name: 'Learn Quran', href: '/learn-quran', icon: GraduationCap },
+  { name: 'Hadith', href: '/hadith', icon: BookOpen },
+  { name: 'Streams', href: '/streams', icon: Radio },
   { name: 'Notifications', href: '/notifications', icon: Bell },
+  { name: 'Messages', href: '/messages', icon: MessageCircle },
+  { name: 'Saved', href: '/saved', icon: Bookmark },
+  { name: 'Community', href: '/community', icon: Users },
+  { name: 'Profile', href: '/profile', icon: User },
 ];
 
 export function MobileNav() {
@@ -21,29 +36,22 @@ export function MobileNav() {
   return (
     <>
       {/* Bottom tab bar */}
-      <nav className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background/95 backdrop-blur-sm md:hidden">
-        <div className="flex items-center justify-around py-2">
-          {mobileNav.map((item) => {
+      <nav className="fixed bottom-0 left-0 right-0 z-40 border-t bg-background/95 backdrop-blur-sm md:hidden pb-safe">
+        <div className="max-w-md mx-auto h-16 flex items-center justify-around px-2">
+          {bottomNav.map((item) => {
             const isActive = location.pathname === item.href;
             return (
               <NavLink
                 key={item.name}
                 to={item.href}
-                className="flex flex-col items-center gap-1 px-3 py-1 relative"
+                className="flex flex-col items-center justify-center w-full h-full relative"
               >
-                <div className="relative">
-                  <item.icon
-                    className={cn(
-                      'h-5 w-5 transition-colors',
-                      isActive ? 'text-primary' : 'text-muted-foreground'
-                    )}
-                  />
-                  {item.name === 'Notifications' && unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1.5 flex h-3.5 min-w-3.5 items-center justify-center rounded-full bg-primary text-[9px] font-bold text-primary-foreground px-0.5">
-                      {unreadCount > 9 ? '9+' : unreadCount}
-                    </span>
+                <item.icon
+                  className={cn(
+                    'h-6 w-6 mb-1 transition-colors',
+                    isActive ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
                   )}
-                </div>
+                />
                 <span
                   className={cn(
                     'text-[10px] font-medium transition-colors',
@@ -65,7 +73,7 @@ export function MobileNav() {
           onClick={() => setMobileNavOpen(false)}
         >
           <div
-            className="absolute left-0 top-0 h-full w-72 bg-background border-r animate-slide-in p-4"
+            className="absolute left-0 top-0 h-full w-72 bg-background border-r animate-slide-in p-4 overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center gap-2 mb-6">
@@ -76,7 +84,7 @@ export function MobileNav() {
             </div>
 
             <nav className="space-y-1">
-              {mobileNav.map((item) => {
+              {extendedNav.map((item) => {
                 const isActive = location.pathname === item.href;
                 return (
                   <NavLink
@@ -84,7 +92,7 @@ export function MobileNav() {
                     to={item.href}
                     onClick={() => setMobileNavOpen(false)}
                     className={cn(
-                      'flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors',
+                      'flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors relative',
                       isActive
                         ? 'bg-primary/10 text-primary'
                         : 'text-muted-foreground hover:bg-secondary hover:text-foreground'
@@ -92,6 +100,11 @@ export function MobileNav() {
                   >
                     <item.icon className="h-5 w-5" />
                     {item.name}
+                    {item.name === 'Notifications' && unreadCount > 0 && (
+                      <span className="absolute right-3 flex h-5 min-w-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground px-1.5">
+                        {unreadCount > 9 ? '9+' : unreadCount}
+                      </span>
+                    )}
                   </NavLink>
                 );
               })}

@@ -20,6 +20,8 @@ import moderationRoute from "./routes/moderationRoute.js";
 import analyticsRoute from "./routes/analyticsRoute.js";
 import seoRoute from "./routes/seoRoute.js";
 import healthRoute from "./routes/healthRoute.js";
+import dailyAyahRoute from "./routes/dailyAyah.js";
+import dailyLearningRoute from "./routes/dailyLearningRoute.js";
 import cors from "cors";
 import errorHandler from "./middlewares/errorHandler.js";
 import { securityHeaders, sanitizeInput } from "./middlewares/security.js";
@@ -116,13 +118,29 @@ app.use("/api/v1/push", pushRoute);
 app.use("/api/v1/upload", uploadRoute);
 app.use("/api/v1/moderation", moderationRoute);
 app.use("/api/v1/analytics", analyticsRoute);
+app.use("/api/v1/daily-ayah", dailyAyahRoute);
+app.use("/api/v1/daily-learning", dailyLearningRoute);
 
 // Centralized Error Handler
 // This should be defined AFTER all other app.use() and routes calls
 app.use(errorHandler);
 
+const port = Number(process.env.PORT) || 8081;
+
+httpServer.on("error", (error) => {
+  if (error.code === "EADDRINUSE") {
+    logger.error(
+      `Port ${port} is already in use. Stop the existing process on that port and restart the backend.`
+    );
+    process.exit(1);
+  }
+
+  logger.error("HTTP server startup failed", { error });
+  process.exit(1);
+});
+
 // Use httpServer.listen instead of app.listen for Socket.IO support
-httpServer.listen(process.env.PORT, () => {
-  logger.info(`🚀 Server listening on port ${process.env.PORT}`);
+httpServer.listen(port, () => {
+  logger.info(`🚀 Server listening on port ${port}`);
   logger.info(`🔌 Socket.IO ready on the same port`);
 });
