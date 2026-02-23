@@ -22,6 +22,8 @@ import seoRoute from "./routes/seoRoute.js";
 import healthRoute from "./routes/healthRoute.js";
 import dailyAyahRoute from "./routes/dailyAyah.js";
 import dailyLearningRoute from "./routes/dailyLearningRoute.js";
+import quranRoute from "./routes/quranRoute.js";
+import quranTopicRoute from "./routes/quranTopicRoute.js";
 import cors from "cors";
 import errorHandler from "./middlewares/errorHandler.js";
 import { securityHeaders, sanitizeInput } from "./middlewares/security.js";
@@ -120,6 +122,8 @@ app.use("/api/v1/moderation", moderationRoute);
 app.use("/api/v1/analytics", analyticsRoute);
 app.use("/api/v1/daily-ayah", dailyAyahRoute);
 app.use("/api/v1/daily-learning", dailyLearningRoute);
+app.use("/api/v1/quran", quranRoute);
+app.use("/api/v1/quran-topics", quranTopicRoute);
 
 // Centralized Error Handler
 // This should be defined AFTER all other app.use() and routes calls

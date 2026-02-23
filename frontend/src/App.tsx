@@ -77,6 +77,24 @@ const DailyLearningPage = lazy(() =>
 const LearnQuranHub = lazy(() =>
   import('@/features/learn-quran/LearnQuranHub').then((m) => ({ default: m.LearnQuranHub }))
 );
+const QuranReaderPage = lazy(() =>
+  import('@/features/quran/QuranReaderPage').then((m) => ({ default: m.QuranReaderPage }))
+);
+const QuranPrototypes = lazy(() =>
+  import('@/features/quran/prototypes/PrototypesViewer').then((m) => ({ default: m.default }))
+);
+const DailyLearningPrototypes = lazy(() =>
+  import('@/features/daily-learning/prototypes/PrototypesViewer').then((m) => ({ default: m.default }))
+);
+const QuranTopicsPage = lazy(() =>
+  import('@/features/quran-topics/QuranTopicsPage').then((m) => ({ default: m.QuranTopicsPage }))
+);
+const TopicDetailPage = lazy(() =>
+  import('@/features/quran-topics/TopicDetailPage').then((m) => ({ default: m.TopicDetailPage }))
+);
+const MoodDetailPage = lazy(() =>
+  import('@/features/quran-topics/MoodDetailPage').then((m) => ({ default: m.MoodDetailPage }))
+);
 const PrivacyPolicy = lazy(() => import('@/features/legal/PrivacyPolicy'));
 const TermsOfService = lazy(() => import('@/features/legal/TermsOfService'));
 
@@ -184,7 +202,13 @@ export default function App() {
                   <Route path="/streams" element={<StreamsPage />} />
                   <Route path="/streams/:id" element={<StreamViewPage />} />
                   <Route path="/learn-quran" element={<LearnQuranHub />} />
+                  <Route path="/quran-reader" element={<QuranReaderPage />} />
+                  <Route path="/quran-prototypes" element={<QuranPrototypes />} />
+                  <Route path="/daily-learning-prototypes" element={<DailyLearningPrototypes />} />
                   <Route path="/daily-learning" element={<DailyLearningPage />} />
+                  <Route path="/quran-topics" element={<QuranTopicsPage />} />
+                  <Route path="/quran-topics/:slug" element={<TopicDetailPage />} />
+                  <Route path="/quran-topics/mood/:moodId" element={<MoodDetailPage />} />
                   <Route
                     path="/go-live"
                     element={
