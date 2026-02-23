@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Type, MessageSquare, MoreHorizontal, Check, RefreshCw } from 'lucide-react';
+import { useState } from 'react';
+import { Type, MessageSquare, Check } from 'lucide-react';
 
 export default function Prototype9() {
     const [arabicFont, setArabicFont] = useState('font-sans');

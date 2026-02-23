@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { AlignRight, Book, Settings2, Type } from 'lucide-react';
+import { useState } from 'react';
+import { AlignRight, Settings2, Type } from 'lucide-react';
 
 export default function Prototype2() {
   const [arabicFont, setArabicFont] = useState('font-sans');

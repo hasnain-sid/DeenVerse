@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { Settings, BookOpen } from 'lucide-react';
+import { useState } from 'react';
 
 export default function Prototype5() {
   const [arabicFont, setArabicFont] = useState('font-serif');

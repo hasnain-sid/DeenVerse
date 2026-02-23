@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Type, BookOpen, Layers } from 'lucide-react';
 
 export default function Prototype7() {

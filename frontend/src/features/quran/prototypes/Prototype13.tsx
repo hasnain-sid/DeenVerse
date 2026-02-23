@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { PenLine, Save, Calendar, ArrowRight } from 'lucide-react';
+import { useState } from 'react';
+import { PenLine, Save, Calendar } from 'lucide-react';
 
 export default function Prototype13() {
     const [reflection, setReflection] = useState('');

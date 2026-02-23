@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Sun, CheckCircle2, BookOpen, Quote } from 'lucide-react';
 
 export default function Prototype11() {

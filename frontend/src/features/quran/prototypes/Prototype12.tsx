@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { ChevronRight, ChevronLeft, Pause, Play, BookOpen, Check, Heart } from 'lucide-react';
+import { useState } from 'react';
+import { Pause, Play, BookOpen, Heart } from 'lucide-react';
 
 export default function Prototype12() {
     const [activeSlide, setActiveSlide] = useState(0);

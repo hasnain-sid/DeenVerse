@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Prototype1 from './Prototype1';
 import Prototype2 from './Prototype2';
 import Prototype3 from './Prototype3';

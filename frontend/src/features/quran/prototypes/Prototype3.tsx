@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { ChevronDown, ChevronUp, Settings, BookOpen, Layers } from 'lucide-react';
+import { useState } from 'react';
+import { ChevronDown, ChevronUp, BookOpen, Layers } from 'lucide-react';
 
 export default function Prototype3() {
   const [isExpanded, setIsExpanded] = useState(false);

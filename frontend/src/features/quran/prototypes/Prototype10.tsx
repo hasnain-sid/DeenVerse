@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Settings, BookOpen, Quote, ChevronDown } from 'lucide-react';
 
 export default function Prototype10() {

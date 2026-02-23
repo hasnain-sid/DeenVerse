@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Target, CheckCircle2, Circle, ChevronRight, Award } from 'lucide-react';
+import { useState } from 'react';
+import { Target, CheckCircle2, Circle, Award } from 'lucide-react';
 
 export default function Prototype14() {
     const [completedActions, setCompletedActions] = useState<number[]>([]);

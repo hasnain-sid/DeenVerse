@@ -1,4 +1,3 @@
-import React from 'react';
 import { Sparkles, Quote, BookOpen, Bookmark, MessageSquarePlus, Share2 } from 'lucide-react';
 
 export default function Prototype15() {

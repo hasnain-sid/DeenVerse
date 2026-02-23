@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Maximize2, Settings, BookOpen, Type } from 'lucide-react';
+import { useState } from 'react';
+import { Maximize2, BookOpen } from 'lucide-react';
 
 export default function Prototype4() {
   const [showControls, setShowControls] = useState(false);

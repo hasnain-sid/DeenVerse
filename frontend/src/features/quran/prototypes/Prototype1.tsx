@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { BookOpen, Settings, Info, Check, AlignRight, Book, LayoutList } from 'lucide-react';
+import { useState } from 'react';
+import { BookOpen, Settings, Check, AlignRight, Book, LayoutList } from 'lucide-react';
 
 type ReadingMode = 'ayah' | 'ruku' | 'juzz';
 

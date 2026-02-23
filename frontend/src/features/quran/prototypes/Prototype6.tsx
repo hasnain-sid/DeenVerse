@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { BookOpen, Settings, Info, Type, FileText } from 'lucide-react';
+import { useState } from 'react';
+import { BookOpen, Type, FileText } from 'lucide-react';
 
 export default function Prototype6() {
     const [isFlipped, setIsFlipped] = useState(false);

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Settings, X, ChevronRight, BookOpen, Minimize2 } from 'lucide-react';
+import { useState } from 'react';
+import { Settings, X, BookOpen, Minimize2 } from 'lucide-react';
 
 export default function Prototype8() {
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { ArrowRight, Check, Book, Lightbulb, Activity } from 'lucide-react';
 
 const MOCK_DATA = {
