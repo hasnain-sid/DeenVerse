@@ -121,3 +121,45 @@ Types, Zod schemas, and utils shared between frontend and backend live in `packa
 - **Mobile `extra.apiUrl`** in `packages/mobile/app.json` is hardcoded to `http://localhost:8081` — update for production builds.
 - **CSP `unsafe-inline`** for `scriptSrc` is a known issue noted in `security.js`; do not widen it further.
 - **Chunk size limit** is 250 KB — splitting large new dependencies into a named manual chunk in `vite.config.ts` is preferred over ignoring the warning.
+
+---
+
+## Copilot Customization Index
+
+### On-Demand Instruction Files (`.github/instructions/`)
+
+| File | Trigger Keywords | What It Enforces |
+|---|---|---|
+| `prototyping.instructions.md` | prototype, mockup, design exploration | 3–5 variants, `prototypes/` folder, `PrototypesViewer`, temporary route, frontend-only mocks |
+| `new-feature.instructions.md` | new feature, new page, scaffold feature | Feature folder structure, named page export, query hooks, route registration |
+| `research.instructions.md` | research first, deep search, compare options | Deep web + GitHub + local codebase research before coding, recommendation brief |
+| `api-endpoint.instructions.md` | new endpoint, backend route/controller/service | Route → controller → service → model chain, ESM-only, AppError usage |
+| `debugging.instructions.md` | debug, fix bug, runtime/build/type errors | Reproduce → diagnose → minimal fix workflow with DeenVerse issue map |
+| `refactoring.instructions.md` | refactor, split, extract, cleanup | Behavior-preserving refactor rules, extraction patterns, scope control |
+
+### Auto-Applied Instruction
+
+| File | applyTo | Purpose |
+|---|---|---|
+| `react-component.instructions.md` | `frontend/src/**/*.tsx` | Named exports, typed props, `cn()`, lucide icons, responsive, accessible UI |
+
+### Prompt Commands (`.github/prompts/`)
+
+| File | Command | Use For |
+|---|---|---|
+| `prototype.prompt.md` | `/prototype` | Generate frontend prototype variants with viewer and route |
+| `research.prompt.md` | `/research` | Deep research brief with options and recommendation |
+| `new-feature.prompt.md` | `/new-feature` | Build a full-stack feature end-to-end |
+| `fix.prompt.md` | `/fix` | Debug and resolve a bug with minimal changes |
+| `explain.prompt.md` | `/explain` | Explain code flow, architecture, and gotchas |
+
+### Strict Gate
+
+For any request to create or integrate a new feature where research preference is not explicitly stated, ask:
+> Do you want deep research first (internet + GitHub + local codebase), or should I implement directly?
+
+Implementation starts only after user confirmation.
+
+### Maintenance Rule
+
+When adding a new `.instructions.md` or `.prompt.md` file, update this index.
