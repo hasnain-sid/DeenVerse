@@ -32,7 +32,7 @@
   --color-surfaceHighlight: #1a1a1a;
 
   --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-  --font-arabic: 'Amiri', 'Traditional Arabic', serif;
+  --font-arabic: 'Scheherazade New', 'Amiri', 'Traditional Arabic', serif;
 }
 
 @layer base {
@@ -101,7 +101,7 @@
 
 /* Arabic text */
 .font-arabic {
-  font-family: 'Amiri', 'Traditional Arabic', serif;
+  font-family: 'Scheherazade New', 'Amiri', 'Traditional Arabic', serif;
   direction: rtl;
   line-height: 2;
 }

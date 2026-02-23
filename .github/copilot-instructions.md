@@ -121,3 +121,31 @@ Types, Zod schemas, and utils shared between frontend and backend live in `packa
 - **Mobile `extra.apiUrl`** in `packages/mobile/app.json` is hardcoded to `http://localhost:8081` — update for production builds.
 - **CSP `unsafe-inline`** for `scriptSrc` is a known issue noted in `security.js`; do not widen it further.
 - **Chunk size limit** is 250 KB — splitting large new dependencies into a named manual chunk in `vite.config.ts` is preferred over ignoring the warning.
+
+---
+
+## Prototyping
+
+When creating UI prototypes, follow the detailed workflow in `.github/instructions/prototyping.instructions.md`. Key points:
+- Prototypes live in `frontend/src/features/<feature>/prototypes/` — colocated with their feature.
+- Create 3–5 distinct design variants, each in its own `PrototypeN.tsx` file.
+- Always include a `PrototypesViewer.tsx` with a toggleable toolbar and register a temporary route at `/prototypes/<feature>`.
+- Frontend only — all data is mocked inline. Never modify backend for prototypes.
+- Use the existing design system (shadcn/ui, Tailwind, Lucide, Framer Motion).
+- After user chooses, promote the selected variant and delete the `prototypes/` folder.
+- Use `/prototype` prompt command to invoke this workflow.
+
+---
+
+## Research First
+
+Before implementing new features, run deep research and share a recommendation brief first.
+
+- **Strict gate**: For any create/integrate-new-feature request where research preference is not explicitly stated, ask this confirmation first and wait:
+  `Do you want deep research first (internet + GitHub + local codebase), or should I implement directly?`
+- Do not start implementation until user confirms one path.
+
+- Use `.github/instructions/research.instructions.md` when user asks for research, deep search, or option comparison.
+- Prefer official docs, mature OSS repos, and concrete code examples over generic summaries.
+- Compare 2-3 implementation approaches with trade-offs, then recommend one based on current DeenVerse constraints.
+- Use `/research` prompt command for repeatable pre-implementation research workflows.

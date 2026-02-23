@@ -53,23 +53,26 @@ interface ReflectionSplitViewProps {
     onComplete?: () => void;
 }
 
-/** Renders a single ayah view (for the "ayah" tab) */
+/** Renders a single ayah view matching the Daily Learning Prototype 1 design */
 function SingleAyahPanel({ content }: { content: DailyLearningContent }) {
     return (
-        <div className="md:col-span-5 bg-gradient-to-br from-card to-background rounded-2xl border border-border p-6 flex flex-col justify-center">
-            <div className="text-right mb-8">
-                <p className="font-arabic text-3xl leading-relaxed text-primary">
+        <div className="md:col-span-5 bg-[#0f0f0f] rounded-2xl border border-zinc-800/60 p-6 md:p-8 flex flex-col justify-between">
+            {/* Arabic Text */}
+            <div className="mb-10">
+                <p dir="rtl" className="text-3xl md:text-5xl leading-[2.2] text-emerald-500 font-arabic text-right">
                     {content.arabic}
                 </p>
             </div>
+
+            {/* Translation */}
             <div>
-                <h4 className="text-xs uppercase tracking-widest text-muted-foreground mb-2 font-semibold">
+                <h4 className="text-xs font-bold tracking-widest text-zinc-500 uppercase mb-4">
                     Translation
                 </h4>
-                <p className="text-foreground font-medium">
+                <p className="text-lg text-zinc-100 leading-relaxed font-medium mb-4">
                     "{content.translation}"
                 </p>
-                <p className="text-sm text-primary/80 mt-2">
+                <p className="text-sm text-emerald-600/80 font-medium">
                     {content.surah} ({content.referenceId})
                     {content.juzNumber != null && <span className="ml-2">· Juzz {content.juzNumber}</span>}
                     {content.page != null && <span className="ml-2">· Page {content.page}</span>}
@@ -138,7 +141,7 @@ export function ReflectionSplitView({ content, onComplete }: ReflectionSplitView
     const isMultiAyah = content.type !== 'ayah' && content.ayahs && content.ayahs.length > 0;
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 min-h-[600px] bg-[#0a0a0a] text-white p-6 md:p-10 rounded-3xl border border-zinc-800 shadow-2xl">
             {/* Left Panel: The Source */}
             {isMultiAyah
                 ? <MultiAyahPanel content={content} />
@@ -146,19 +149,19 @@ export function ReflectionSplitView({ content, onComplete }: ReflectionSplitView
             }
 
             {/* Right Panel: Practical Context & Action */}
-            <div className="md:col-span-7 bg-card rounded-2xl border border-border p-6 md:p-8 flex flex-col">
-                <h3 className="text-xl font-semibold mb-4 text-card-foreground">{content.title}</h3>
+            <div className="md:col-span-7 bg-[#141414] rounded-2xl border border-zinc-800/60 p-6 md:p-8 flex flex-col">
+                <h3 className="text-2xl font-bold text-white mb-4">{content.title}</h3>
 
-                <div className="prose prose-invert prose-sm text-muted-foreground mb-8 flex-1">
-                    <p>{content.context}</p>
-                </div>
+                <p className="text-zinc-400 text-lg leading-relaxed mb-8 flex-1">
+                    {content.context}
+                </p>
 
-                <div className="bg-background/50 p-4 rounded-xl border border-border mb-6">
-                    <h4 className="text-sm font-semibold text-primary mb-2 flex items-center gap-2">
-                        <Sparkles className="w-4 h-4" />
+                <div className="bg-[#0a0a0a] border border-zinc-800/80 rounded-xl p-6 mb-8">
+                    <h4 className="text-sm font-semibold text-emerald-500 mb-3 flex items-center gap-2">
+                        <Sparkles className="w-5 h-5" />
                         Action Item
                     </h4>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-zinc-300 leading-relaxed">
                         {content.actionItem}
                     </p>
                 </div>
@@ -166,7 +169,7 @@ export function ReflectionSplitView({ content, onComplete }: ReflectionSplitView
                 <Button
                     onClick={onComplete}
                     variant="secondary"
-                    className="w-full rounded-xl hover:bg-primary hover:text-primary-foreground transition-colors"
+                    className="w-full py-4 rounded-xl font-semibold bg-zinc-800/50 hover:bg-emerald-500/20 text-zinc-200 hover:text-emerald-400 border border-zinc-700/50 hover:border-emerald-500/30 transition-all duration-300"
                 >
                     I completed this reflection
                 </Button>

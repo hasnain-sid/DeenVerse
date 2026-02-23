@@ -4,6 +4,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 
 const features = [
     {
+        title: 'Read Quran',
+        description: 'Browse ayahs, rukus, and juzz with translations, font options, and a beautiful reading experience.',
+        icon: BookHeart,
+        href: '/quran-reader',
+        status: 'Available',
+        color: 'text-emerald-500',
+        bg: 'bg-emerald-500/10',
+    },
+    {
         title: 'Daily Ayah + Practical Reflection',
         description: 'Relate Quran to your daily life. View a daily ayah and apply it with guided reflections.',
         icon: BookHeart,
@@ -11,6 +20,24 @@ const features = [
         status: 'Available',
         color: 'text-primary',
         bg: 'bg-primary/10',
+    },
+    {
+        title: 'Daily Learning Prototypes',
+        description: 'View the 5 different design prototypes for the Daily Learning experience.',
+        icon: BookOpenText,
+        href: '/daily-learning-prototypes',
+        status: 'Available',
+        color: 'text-blue-500',
+        bg: 'bg-blue-500/10',
+    },
+    {
+        title: 'Quran UI Prototypes',
+        description: 'View the 5 different design prototypes for the Quran reading experience.',
+        icon: BookOpenText,
+        href: '/quran-prototypes',
+        status: 'Available',
+        color: 'text-emerald-500',
+        bg: 'bg-emerald-500/10',
     },
     {
         title: 'Consistency Engine',

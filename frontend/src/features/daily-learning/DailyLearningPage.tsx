@@ -1,10 +1,12 @@
 import { useState } from 'react';
-import { BookOpen } from 'lucide-react';
+import { BookOpen, Palette } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { DailyLearningTabs } from './components/DailyLearningTabs';
 import { ReflectionSplitView, type LearningUnitType } from './components/ReflectionSplitView';
 import { useDailyLearningContent, useSaveReflection } from './useDailyLearning';
 import { useAuthStore } from '@/stores/authStore';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
 
 export function DailyLearningPage() {
     const [activeUnit, setActiveUnit] = useState<LearningUnitType>('ayah');
@@ -37,7 +39,15 @@ export function DailyLearningPage() {
                     <BookOpen className="w-6 h-6 text-primary" />
                     <h2 className="text-2xl font-bold text-foreground">Daily Learning</h2>
                 </div>
-                <DailyLearningTabs activeUnit={activeUnit} onChange={setActiveUnit} />
+                <div className="flex items-center gap-4">
+                    <Button variant="outline" size="sm" asChild>
+                        <Link to="/daily-learning-prototypes" className="flex items-center gap-2">
+                            <Palette className="w-4 h-4" />
+                            View Prototypes
+                        </Link>
+                    </Button>
+                    <DailyLearningTabs activeUnit={activeUnit} onChange={setActiveUnit} />
+                </div>
             </div>
 
             {/* Content */}
