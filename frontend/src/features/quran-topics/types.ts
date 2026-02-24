@@ -22,6 +22,8 @@ export interface AyahItem {
   juzNumber: number;
   page: number;
   revelationType: string;
+  tafsir?: string | null;
+  audioUrl?: string | null;
 }
 
 /** Lesson associated with a topic */
@@ -42,6 +44,38 @@ export interface TopicDetail {
   ayahs: AyahItem[];
   lessons: TopicLesson | null;
   ayahCount: number;
+
+  // Phase 3 Extensions
+  reflections?: Reflection[];
+  learningProgress?: LearningProgress;
+}
+
+export interface Reflection {
+  id: string;
+  userId: string;
+  userName: string;
+  content: string;
+  likes: number;
+  date: string;
+  isScholarVerified: boolean;
+  scholarName?: string;
+  scholarNote?: string;
+}
+
+export interface LearningProgress {
+  topicSlug?: string;
+  lastReviewed: string | null;
+  nextReviewDate: string | null;
+  repetitionLevel: number;
+  totalReviews?: number;
+}
+
+/** Paginated reflections response from the API */
+export interface ReflectionsResponse {
+  reflections: Reflection[];
+  total: number;
+  page: number;
+  totalPages: number;
 }
 
 /** Lightweight mood item returned by the /moods list endpoint */

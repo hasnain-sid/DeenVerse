@@ -1,15 +1,27 @@
+import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft, Loader2 } from 'lucide-react';
-import { useTopicDetail } from './useQuranTopics';
+import { useTopicDetail, useTopicReflections, useTopicProgress } from './useQuranTopics';
+import { useAuthStore } from '@/stores/authStore';
 import { AyahCard } from './components/AyahCard';
 import { LessonsSection } from './components/LessonsSection';
 import { DynamicIcon } from './components/TopicCard';
+import { TopicTabs } from './components/TopicTabs';
+import { SpacedRepetitionCard } from './components/SpacedRepetitionCard';
+import { CommunityReflections } from './components/CommunityReflections';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 
 export function TopicDetailPage() {
   const { slug } = useParams<{ slug: string }>();
+  const { isAuthenticated } = useAuthStore();
   const { data: topic, isLoading, isError } = useTopicDetail(slug);
+  const { data: reflectionsData } = useTopicReflections(slug);
+  const { data: progressData } = useTopicProgress(isAuthenticated ? slug : undefined);
+  const [activeTab, setActiveTab] = useState<'reading' | 'reflections'>('reading');
+
+  const reflections = reflectionsData?.reflections || [];
+  const learningProgress = progressData?.progress || undefined;
 
   if (isLoading) {
     return (
@@ -40,7 +52,7 @@ export function TopicDetailPage() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto space-y-8 animate-fade-in">
+    <div className="max-w-3xl mx-auto space-y-8 animate-fade-in p-4 md:p-6 pb-24">
       {/* Back link */}
       <Link
         to="/quran-topics"
@@ -68,30 +80,51 @@ export function TopicDetailPage() {
         </div>
       </div>
 
-      {/* Lessons & Understanding */}
-      {topic.lessons && (
-        <section className="space-y-3">
-          <h2 className="text-lg font-semibold text-foreground">Understanding & Lessons</h2>
-          <LessonsSection lessons={topic.lessons} />
-        </section>
+      {/* Phase 3 Tabs */}
+      <TopicTabs
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        reflectionCount={reflections.length}
+      />
+
+      {activeTab === 'reading' && (
+        <div className="space-y-8 animate-fade-in">
+          {/* Spaced Repetition */}
+          <SpacedRepetitionCard progress={learningProgress} />
+
+          {/* Lessons & Understanding */}
+          {topic.lessons && (
+            <section className="space-y-3">
+              <h2 className="text-lg font-semibold text-foreground">Understanding & Lessons</h2>
+              <LessonsSection lessons={topic.lessons} />
+            </section>
+          )}
+
+          {/* Ayahs */}
+          <section className="space-y-4">
+            <h2 className="text-lg font-semibold text-foreground">Ayahs</h2>
+            {topic.ayahs.length === 0 ? (
+              <div className="flex items-center gap-2 py-8 justify-center text-muted-foreground">
+                <Loader2 className="h-5 w-5 animate-spin" />
+                <span>Loading ayahs...</span>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {topic.ayahs.map((ayah, i) => (
+                  <AyahCard key={ayah.globalAyahNumber || i} ayah={ayah} index={i} />
+                ))}
+              </div>
+            )}
+          </section>
+        </div>
       )}
 
-      {/* Ayahs */}
-      <section className="space-y-4">
-        <h2 className="text-lg font-semibold text-foreground">Ayahs</h2>
-        {topic.ayahs.length === 0 ? (
-          <div className="flex items-center gap-2 py-8 justify-center text-muted-foreground">
-            <Loader2 className="h-5 w-5 animate-spin" />
-            <span>Loading ayahs...</span>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            {topic.ayahs.map((ayah, i) => (
-              <AyahCard key={ayah.globalAyahNumber} ayah={ayah} index={i} />
-            ))}
-          </div>
-        )}
-      </section>
+      {activeTab === 'reflections' && (
+        <section className="animate-fade-in">
+          <h2 className="text-lg font-semibold text-foreground mb-4 hidden">Community Reflections</h2>
+          <CommunityReflections reflections={reflections} topicSlug={slug} />
+        </section>
+      )}
     </div>
   );
 }

@@ -472,7 +472,27 @@ GET /api/v1/quran-search?q=riba&lang=en
 
 ---
 
-### Phase 2 — AI Enhancement
+### Phase 2A — Smart Fuzzy Search (Lite) ✅ IMPLEMENTED
+
+Client-side fuzzy search using **Fuse.js** — zero API keys, zero cost, instant results, works offline.
+
+1. **Installed Fuse.js** on the frontend (~5KB gzipped)
+2. **Created `useSmartSearch.ts` hook** — builds Fuse.js indexes from loaded topics/moods data
+3. **Upgraded `SearchBar.tsx`** — real-time fuzzy dropdown as user types, matching across:
+   - Topic names, Arabic names, descriptions, categories
+   - Mood names and descriptions
+4. **Dropdown UI** — shows matched topics (with icons + category badges) and moods (with emojis)
+5. **Fallback** — "Search full Quran text" option triggers existing AlQuran Cloud keyword search
+6. **Navigation** — clicking a dropdown result navigates to the topic/mood detail page
+
+**Files created/modified:**
+- `frontend/src/features/quran-topics/useSmartSearch.ts` — Fuse.js hook
+- `frontend/src/features/quran-topics/components/SearchBar.tsx` — upgraded with dropdown
+- `frontend/src/features/quran-topics/QuranTopicsPage.tsx` — wired smart search
+
+---
+
+### Phase 2B — AI Enhancement (Future — Requires API Keys)
 
 1. **Embed all ayahs** into a vector store for semantic search
 2. **Add natural language search** — "What does Quran say about avoiding bank interest?"
@@ -595,7 +615,17 @@ graph TD
 | 11 | Integrate keyword search via AlQuran Cloud API | P1 |
 | 12 | Add "Save" and "Mark Complete" functionality | P2 |
 
-### Phase 2 — AI Enhancement (Estimated: 2-3 weeks)
+### Phase 2A — Smart Fuzzy Search (Lite) ✅ COMPLETED
+
+| Step | Task | Status |
+|------|------|--------|
+| 1 | Install Fuse.js on frontend | ✅ Done |
+| 2 | Create `useSmartSearch.ts` hook (Fuse.js indexes on topics + moods) | ✅ Done |
+| 3 | Upgrade `SearchBar.tsx` with real-time fuzzy dropdown | ✅ Done |
+| 4 | Wire smart search into `QuranTopicsPage.tsx` | ✅ Done |
+| 5 | Fall back to AlQuran Cloud keyword search for full Quran text | ✅ Done |
+
+### Phase 2B — AI Enhancement (Future — Estimated: 2-3 weeks)
 
 | Step | Task | Priority |
 |------|------|----------|
@@ -607,15 +637,17 @@ graph TD
 | 6 | Add user engagement tracking (which topics, completion rates) | P1 |
 | 7 | Build personalized recommendations | P2 |
 
-### Phase 3 — Community & Depth (Estimated: 2-3 weeks)
+### Phase 3 — Community & Depth ✅ IMPLEMENTED (Backend + Frontend)
 
-| Step | Task | Priority |
+*Note: Phase 3 backend APIs are now integrated with the frontend for reflections, tafsir/audio enrichment, and spaced repetition progress. Scholar verification currently supports display fields in the reflection schema/response, while scholar moderation workflows are still pending.*
+
+| Step | Task | Backend Status |
 |------|------|----------|
-| 1 | Community reflections per topic (user-submitted insights) | P1 |
-| 2 | Scholar-verified content badges | P1 |
-| 3 | Tafsir integration for deeper understanding | P2 |
-| 4 | Audio recitation for passages | P2 |
-| 5 | Spaced repetition for revisiting topics | P2 |
+| 1 | Community reflections per topic (user-submitted insights) | ✅ Done |
+| 2 | Scholar-verified content badges | 🟡 Partial (schema/display ready; verification workflow pending) |
+| 3 | Tafsir integration for deeper understanding | ✅ Done |
+| 4 | Audio recitation for passages | ✅ Done |
+| 5 | Spaced repetition for revisiting topics | ✅ Done |
 
 ---
 

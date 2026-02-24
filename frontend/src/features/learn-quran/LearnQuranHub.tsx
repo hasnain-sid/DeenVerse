@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { BookHeart, GraduationCap, Flame, MessageCircleQuestion, AudioLines, BookOpenText } from 'lucide-react';
+import { BookHeart, GraduationCap, Flame, MessageCircleQuestion, AudioLines, BookOpenText, Compass } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 const features = [
@@ -22,22 +22,13 @@ const features = [
         bg: 'bg-primary/10',
     },
     {
-        title: 'Daily Learning Prototypes',
-        description: 'View the 5 different design prototypes for the Daily Learning experience.',
-        icon: BookOpenText,
-        href: '/daily-learning-prototypes',
+        title: 'Quran by Topic & Mood',
+        description: 'Discover what the Quran says about topics that matter — browse by category, mood, or search by keyword.',
+        icon: Compass,
+        href: '/quran-topics',
         status: 'Available',
-        color: 'text-blue-500',
-        bg: 'bg-blue-500/10',
-    },
-    {
-        title: 'Quran UI Prototypes',
-        description: 'View the 5 different design prototypes for the Quran reading experience.',
-        icon: BookOpenText,
-        href: '/quran-prototypes',
-        status: 'Available',
-        color: 'text-emerald-500',
-        bg: 'bg-emerald-500/10',
+        color: 'text-teal-500',
+        bg: 'bg-teal-500/10',
     },
     {
         title: 'Consistency Engine',
@@ -113,6 +104,8 @@ export function LearnQuranHub() {
                     )
                 ))}
             </div>
+
+
         </div>
     );
 }

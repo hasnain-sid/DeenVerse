@@ -40,7 +40,7 @@ export function MoodDetailPage() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto space-y-8 animate-fade-in">
+    <div className="max-w-3xl mx-auto space-y-8 animate-fade-in p-4 md:p-6 pb-24">
       {/* Back link */}
       <Link
         to="/quran-topics"

@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { Home, Search, Bookmark, Users, Newspaper, Bell, Radio, BookOpen, MessageCircle, User, GraduationCap } from 'lucide-react';
+import { Home, Search, Bookmark, Users, Newspaper, Bell, Radio, BookOpen, BookHeart, MessageCircle, User, GraduationCap, Moon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useUIStore } from '@/stores/uiStore';
 import { useUnreadCount } from '@/features/notifications/useNotifications';
@@ -18,6 +18,8 @@ const extendedNav = [
   { name: 'Feed', href: '/feed', icon: Newspaper },
   { name: 'Explore', href: '/explore', icon: Search },
   { name: 'Learn Quran', href: '/learn-quran', icon: GraduationCap },
+  { name: 'Quran by Topic', href: '/quran-topics', icon: BookHeart },
+  { name: 'Ruhani Space', href: '/ruhani', icon: Moon },
   { name: 'Hadith', href: '/hadith', icon: BookOpen },
   { name: 'Streams', href: '/streams', icon: Radio },
   { name: 'Notifications', href: '/notifications', icon: Bell },

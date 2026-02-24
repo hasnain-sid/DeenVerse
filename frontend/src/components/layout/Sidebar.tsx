@@ -1,5 +1,6 @@
 import { NavLink, useLocation } from 'react-router-dom';
 import {
+  BookHeart,
   BookOpen,
   Bookmark,
   Home,
@@ -18,6 +19,7 @@ import {
   MessageCircle,
   Radio,
   GraduationCap,
+  Sparkles,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Avatar } from '@/components/ui/avatar';
@@ -35,6 +37,9 @@ const navigation = [
   { name: 'Feed', href: '/feed', icon: Newspaper },
   { name: 'Explore', href: '/explore', icon: Search },
   { name: 'Learn Quran', href: '/learn-quran', icon: GraduationCap },
+  { name: 'Quran by Topic', href: '/quran-topics', icon: BookHeart },
+  { name: 'Iman Boost', href: '/iman-boost', icon: Sparkles },
+  { name: 'Ruhani Space', href: '/ruhani', icon: Moon },
   { name: 'Hadith', href: '/hadith', icon: BookOpen },
   { name: 'Streams', href: '/streams', icon: Radio },
   { name: 'Notifications', href: '/notifications', icon: Bell },

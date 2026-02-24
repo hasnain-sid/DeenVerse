@@ -1,6 +1,7 @@
 import { useState, useMemo, useCallback } from 'react';
 import { BookOpen, Loader2 } from 'lucide-react';
 import { useTopics, useMoods, useQuranSearch } from './useQuranTopics';
+import { useSmartSearch } from './useSmartSearch';
 import { TopicCard } from './components/TopicCard';
 import { MoodCard } from './components/MoodCard';
 import { SearchBar } from './components/SearchBar';
@@ -16,7 +17,10 @@ export function QuranTopicsPage() {
 
   const { data: searchData, isLoading: searchLoading } = useQuranSearch(searchKeyword);
 
-  const handleSearch = useCallback((query: string) => {
+  // Smart fuzzy search (client-side, instant)
+  const { search: smartSearch } = useSmartSearch(topicsData?.topics, moodsData?.moods);
+
+  const handleKeywordSearch = useCallback((query: string) => {
     setSearchKeyword(query);
   }, []);
 
@@ -33,7 +37,7 @@ export function QuranTopicsPage() {
   const isLoading = topicsLoading || moodsLoading;
 
   return (
-    <div className="space-y-8 animate-fade-in max-w-5xl mx-auto">
+    <div className="space-y-8 animate-fade-in max-w-5xl mx-auto p-4 md:p-6 pb-24">
       {/* Header */}
       <div className="space-y-2">
         <div className="flex items-center gap-3">
@@ -46,7 +50,7 @@ export function QuranTopicsPage() {
       </div>
 
       {/* Search */}
-      <SearchBar onSearch={handleSearch} />
+      <SearchBar onKeywordSearch={handleKeywordSearch} smartSearch={smartSearch} />
 
       {/* Search results (shown when searching) */}
       {searchKeyword && (
@@ -97,11 +101,10 @@ export function QuranTopicsPage() {
               <button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
-                className={`rounded-full px-3 py-1.5 text-sm transition-colors ${
-                  activeCategory === cat
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
-                }`}
+                className={`rounded-full px-3 py-1.5 text-sm transition-colors ${activeCategory === cat
+                  ? 'bg-primary text-primary-foreground'
+                  : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
+                  }`}
               >
                 {cat}
               </button>

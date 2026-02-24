@@ -5,6 +5,12 @@ import logger from "../config/logger.js";
 
 const TOPIC_CACHE_TTL = TTL.QURAN; // 7 days — ayah text is immutable
 
+// ── Tafsir & Audio editions ─────────────────────────────
+const ALQURAN_CLOUD_BASE =
+  process.env.ALQURAN_CLOUD_BASE_URL || "https://api.alquran.cloud/v1";
+const TAFSIR_EDITION = process.env.QURAN_TAFSIR_EDITION || "en.maududi";
+const AUDIO_EDITION = process.env.QURAN_AUDIO_EDITION || "ar.alafasy";
+
 // ── List endpoints ──────────────────────────────────────────────
 
 /**
@@ -54,7 +60,7 @@ export async function getTopicAyahs(slug) {
   const topic = getTopicBySlug(slug);
   if (!topic) return null;
 
-  const cacheKey = `quran-topics:topic:${slug}`;
+  const cacheKey = `quran-topics:v2:topic:${slug}`;
   const cached = await cacheGet(cacheKey);
   if (cached) return cached;
 
@@ -89,7 +95,7 @@ export async function getMoodAyahs(moodId) {
   const mood = getMoodById(moodId);
   if (!mood) return null;
 
-  const cacheKey = `quran-topics:mood:${moodId}`;
+  const cacheKey = `quran-topics:v2:mood:${moodId}`;
   const cached = await cacheGet(cacheKey);
   if (cached) return cached;
 
@@ -178,7 +184,8 @@ export async function searchQuranByKeyword(keyword) {
 
 /**
  * Resolve an array of [surahNumber, ayahNumber] references into
- * full ayah objects using quranService.getAyah().
+ * full ayah objects using quranService.getAyah(), enriched with
+ * tafsir text and audio URL from AlQuran Cloud.
  * Uses Promise.allSettled to gracefully handle individual failures.
  * @param {Array<[number, number]>} refs
  * @returns {Promise<Array<object>>}
@@ -191,11 +198,72 @@ async function resolveAyahRefs(refs) {
         logger.warn(`Could not resolve ayah ${surah}:${ayah} to global number`);
         return Promise.reject(new Error(`Invalid ref ${surah}:${ayah}`));
       }
-      return getAyah(globalNum);
+      return resolveAyahWithExtras(globalNum);
     })
   );
 
   return results
     .filter((r) => r.status === "fulfilled")
     .map((r) => r.value);
+}
+
+/**
+ * Fetch a single ayah with tafsir and audio enrichment.
+ * First gets the base ayah via quranService, then fetches extras (cached independently).
+ * @param {number} globalAyahNumber
+ * @returns {Promise<object>}
+ */
+async function resolveAyahWithExtras(globalAyahNumber) {
+  // Base ayah data (Arabic + translation) — already cached in quranService
+  const base = await getAyah(globalAyahNumber);
+
+  // Tafsir + audio — separate cache key so base cache isn't invalidated
+  const extrasCacheKey = `quran:ayah-extras:${globalAyahNumber}`;
+  let extras = await cacheGet(extrasCacheKey);
+
+  if (!extras) {
+    extras = { tafsir: null, audioUrl: null };
+    try {
+      const [tafsirResult, audioResult] = await Promise.allSettled([
+        fetchTafsir(globalAyahNumber),
+        fetchAudioUrl(globalAyahNumber),
+      ]);
+      if (tafsirResult.status === "fulfilled") extras.tafsir = tafsirResult.value;
+      if (audioResult.status === "fulfilled") extras.audioUrl = audioResult.value;
+      await cacheSet(extrasCacheKey, extras, TOPIC_CACHE_TTL);
+    } catch (err) {
+      logger.warn(`Failed to fetch extras for ayah ${globalAyahNumber}:`, err.message);
+    }
+  }
+
+  return { ...base, ...extras };
+}
+
+/**
+ * Fetch tafsir text for a single ayah from AlQuran Cloud.
+ * @param {number} globalAyahNumber
+ * @returns {Promise<string|null>}
+ */
+async function fetchTafsir(globalAyahNumber) {
+  try {
+    const url = `${ALQURAN_CLOUD_BASE}/ayah/${globalAyahNumber}/${TAFSIR_EDITION}`;
+    const res = await fetch(url);
+    if (!res.ok) return null;
+    const json = await res.json();
+    return json.data?.text || null;
+  } catch (err) {
+    logger.warn(`Tafsir fetch failed for ayah ${globalAyahNumber}:`, err.message);
+    return null;
+  }
+}
+
+/**
+ * Construct audio URL for a single ayah from AlQuran Cloud CDN.
+ * Audio files follow the pattern: /audio/{bitrate}/{edition}/{ayahNumber}.mp3
+ * @param {number} globalAyahNumber
+ * @returns {Promise<string>}
+ */
+async function fetchAudioUrl(globalAyahNumber) {
+  // AlQuran Cloud serves audio at a predictable CDN URL
+  return `https://cdn.islamic.network/quran/audio/128/${AUDIO_EDITION}/${globalAyahNumber}.mp3`;
 }

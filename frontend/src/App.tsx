@@ -81,6 +81,9 @@ const QuranReaderPage = lazy(() =>
   import('@/features/quran/QuranReaderPage').then((m) => ({ default: m.QuranReaderPage }))
 );
 
+const ImanBoostPage = lazy(() =>
+  import('@/features/iman-boost').then((m) => ({ default: m.ImanBoostPage }))
+);
 const QuranTopicsPage = lazy(() =>
   import('@/features/quran-topics/QuranTopicsPage').then((m) => ({ default: m.QuranTopicsPage }))
 );
@@ -89,6 +92,22 @@ const TopicDetailPage = lazy(() =>
 );
 const MoodDetailPage = lazy(() =>
   import('@/features/quran-topics/MoodDetailPage').then((m) => ({ default: m.MoodDetailPage }))
+);
+// Ruhani Hub Phase 1 & 2 Pages
+const RuhaniHubPage = lazy(() =>
+  import('@/features/ruhani/RuhaniHubPage').then((m) => ({ default: m.RuhaniHubPage }))
+);
+const TafakkurPage = lazy(() =>
+  import('@/features/ruhani/TafakkurPage').then((m) => ({ default: m.TafakkurPage }))
+);
+const TazkiaPage = lazy(() =>
+  import('@/features/ruhani/TazkiaPage').then((m) => ({ default: m.TazkiaPage }))
+);
+const TadabburPage = lazy(() =>
+  import('@/features/ruhani/TadabburPage').then((m) => ({ default: m.TadabburPage }))
+);
+const RuhaniJournalPage = lazy(() =>
+  import('@/features/ruhani/RuhaniJournalPage').then((m) => ({ default: m.RuhaniJournalPage }))
 );
 const PrivacyPolicy = lazy(() => import('@/features/legal/PrivacyPolicy'));
 const TermsOfService = lazy(() => import('@/features/legal/TermsOfService'));
@@ -198,11 +217,26 @@ export default function App() {
                   <Route path="/streams/:id" element={<StreamViewPage />} />
                   <Route path="/learn-quran" element={<LearnQuranHub />} />
                   <Route path="/quran-reader" element={<QuranReaderPage />} />
-
                   <Route path="/daily-learning" element={<DailyLearningPage />} />
                   <Route path="/quran-topics" element={<QuranTopicsPage />} />
-                  <Route path="/quran-topics/:slug" element={<TopicDetailPage />} />
                   <Route path="/quran-topics/mood/:moodId" element={<MoodDetailPage />} />
+                  <Route path="/quran-topics/:slug" element={<TopicDetailPage />} />
+
+                  {/* Ruhani Hub Routes */}
+                  <Route path="/ruhani" element={<RuhaniHubPage />} />
+                  <Route path="/ruhani/tafakkur" element={<TafakkurPage />} />
+                  <Route path="/ruhani/tadabbur" element={<TadabburPage />} />
+                  <Route path="/ruhani/tazkia" element={<TazkiaPage />} />
+                  <Route
+                    path="/ruhani/journal"
+                    element={
+                      <AuthGuard>
+                        <RuhaniJournalPage />
+                      </AuthGuard>
+                    }
+                  />
+
+                  <Route path="/iman-boost" element={<ImanBoostPage />} />
                   <Route
                     path="/go-live"
                     element={

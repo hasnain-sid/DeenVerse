@@ -1,11 +1,13 @@
 import { useState } from 'react';
-import { BookOpen, Settings, Check, AlignRight, Book, LayoutList, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { BookOpen, Settings, Check, AlignRight, Book, LayoutList, ChevronLeft, ChevronRight, Heart } from 'lucide-react';
 import { useAyah, useRuku, useJuz } from './useQuranReader';
 import { Skeleton } from '@/components/ui/skeleton';
 
 type ReadingMode = 'ayah' | 'ruku' | 'juzz';
 
 export function QuranReaderPage() {
+    const navigate = useNavigate();
     const [readingMode, setReadingMode] = useState<ReadingMode>('ruku');
     const [activeTab, setActiveTab] = useState<'translation' | 'tafseer'>('translation');
     const [arabicFont, setArabicFont] = useState('font-arabic');
@@ -188,6 +190,19 @@ export function QuranReaderPage() {
                                                 </p>
                                             </div>
                                         )}
+                                    </div>
+
+                                    {/* Tadabbur Mode Button */}
+                                    <div className="mt-8 pt-6 border-t border-border">
+                                        <button
+                                            onClick={() => navigate('/ruhani/tadabbur', {
+                                                state: { preselectedAyahKey: ayahQuery.data?.referenceId }
+                                            })}
+                                            className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-xl text-sm font-medium bg-secondary/50 hover:bg-secondary text-foreground transition-colors border border-border"
+                                        >
+                                            <Heart className="w-4 h-4" />
+                                            Enter Tadabbur Mode
+                                        </button>
                                     </div>
                                 </div>
                             )}
