@@ -80,12 +80,7 @@ const LearnQuranHub = lazy(() =>
 const QuranReaderPage = lazy(() =>
   import('@/features/quran/QuranReaderPage').then((m) => ({ default: m.QuranReaderPage }))
 );
-const QuranPrototypes = lazy(() =>
-  import('@/features/quran/prototypes/PrototypesViewer').then((m) => ({ default: m.default }))
-);
-const DailyLearningPrototypes = lazy(() =>
-  import('@/features/daily-learning/prototypes/PrototypesViewer').then((m) => ({ default: m.default }))
-);
+
 const QuranTopicsPage = lazy(() =>
   import('@/features/quran-topics/QuranTopicsPage').then((m) => ({ default: m.QuranTopicsPage }))
 );
@@ -203,8 +198,7 @@ export default function App() {
                   <Route path="/streams/:id" element={<StreamViewPage />} />
                   <Route path="/learn-quran" element={<LearnQuranHub />} />
                   <Route path="/quran-reader" element={<QuranReaderPage />} />
-                  <Route path="/quran-prototypes" element={<QuranPrototypes />} />
-                  <Route path="/daily-learning-prototypes" element={<DailyLearningPrototypes />} />
+
                   <Route path="/daily-learning" element={<DailyLearningPage />} />
                   <Route path="/quran-topics" element={<QuranTopicsPage />} />
                   <Route path="/quran-topics/:slug" element={<TopicDetailPage />} />
