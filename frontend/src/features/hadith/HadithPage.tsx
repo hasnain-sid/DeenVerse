@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { HadithCard } from './HadithCard';
 import { useHadithList, useHadithDetail } from './useHadith';
@@ -9,8 +9,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Languages, Type, Minus, Plus, ArrowLeft } from 'lucide-react';
 import api from '@/lib/api';
 import toast from 'react-hot-toast';
-import { toPng } from 'html-to-image';
-import download from 'downloadjs';
+import { ShareActionsMenu } from '@/features/share/ShareActionsMenu';
+import type { SharePayload } from '@/features/share/types';
 
 export function HadithPage() {
   const [searchParams] = useSearchParams();
@@ -60,21 +60,27 @@ export function HadithPage() {
     }
   }, [isAuthenticated, currentHadith, isBookmarked, updateSaved]);
 
-  const handleShare = useCallback(async () => {
-    try {
-      const el = document.getElementById('hadith-content');
-      if (!el) return;
-      
-      toast.loading('Generating image...');
-      const dataUrl = await toPng(el, { quality: 0.95 });
-      toast.dismiss();
-      download(dataUrl, 'hadith.png');
-      toast.success('Downloaded!');
-    } catch {
-      toast.dismiss();
-      toast.error('Failed to generate image');
-    }
-  }, []);
+  const sharePayload = useMemo<SharePayload | null>(() => {
+    if (!hadithDetail || !currentHadith) return null;
+
+    const url = `${window.location.origin}/hadith?category=${encodeURIComponent(categoryId)}&title=${encodeURIComponent(categoryTitle)}`;
+
+    return {
+      kind: 'hadith',
+      title: hadithDetail.title || 'Hadith',
+      text: hadithDetail.hadeeth,
+      url,
+      feedCaption: `Reflecting on this hadith: ${hadithDetail.title}`,
+      sharedContent: {
+        kind: 'hadith',
+        title: hadithDetail.title,
+        sourceRef: hadithDetail.reference,
+        sourceRoute: `/hadith?category=${encodeURIComponent(categoryId)}&title=${encodeURIComponent(categoryTitle)}`,
+        excerpt: hadithDetail.hadeeth,
+        meta: [categoryTitle, `Hadith #${currentHadith.id}`],
+      },
+    };
+  }, [hadithDetail, currentHadith, categoryId, categoryTitle]);
 
   const handlePrev = useCallback(() => {
     if (!hadithList) return;
@@ -158,7 +164,7 @@ export function HadithPage() {
         isLoading={isDetailLoading}
         isBookmarked={isBookmarked}
         onBookmark={handleBookmark}
-        onShare={handleShare}
+        shareAction={sharePayload ? <ShareActionsMenu payload={sharePayload} /> : undefined}
         onPrev={handlePrev}
         onNext={handleNext}
         currentIndex={index}

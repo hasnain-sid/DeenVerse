@@ -72,7 +72,167 @@ export const createPostValidationRules = () => [
     body('replyTo')
         .optional()
         .isMongoId().withMessage('Invalid post ID for reply'),
+    body('sharedContent')
+        .optional()
+        .isObject().withMessage('sharedContent must be an object'),
+    body('sharedContent.kind')
+        .optional()
+        .isIn(['hadith', 'ayah', 'ruku', 'juzz', 'mood', 'sign'])
+        .withMessage('Invalid sharedContent kind'),
+    body('sharedContent.title')
+        .optional()
+        .isString().withMessage('sharedContent title must be a string')
+        .isLength({ max: 200 }).withMessage('sharedContent title is too long'),
+    body('sharedContent.excerpt')
+        .optional()
+        .isString().withMessage('sharedContent excerpt must be a string')
+        .isLength({ max: 800 }).withMessage('sharedContent excerpt is too long'),
+    body('sharedContent.arabic')
+        .optional()
+        .isString().withMessage('sharedContent arabic must be a string')
+        .isLength({ max: 2000 }).withMessage('sharedContent arabic is too long'),
+    body('sharedContent.translation')
+        .optional()
+        .isString().withMessage('sharedContent translation must be a string')
+        .isLength({ max: 1200 }).withMessage('sharedContent translation is too long'),
+    body('sharedContent.sourceRef')
+        .optional()
+        .isString().withMessage('sharedContent sourceRef must be a string')
+        .isLength({ max: 200 }).withMessage('sharedContent sourceRef is too long'),
+    body('sharedContent.sourceRoute')
+        .optional()
+        .isString().withMessage('sharedContent sourceRoute must be a string')
+        .isLength({ max: 500 }).withMessage('sharedContent sourceRoute is too long'),
+    body('sharedContent.meta')
+        .optional()
+        .isArray({ max: 8 }).withMessage('sharedContent meta can have up to 8 items'),
+    handleValidationErrors
+];
+
+// Share-to-feed validation (dedicated share endpoint)
+export const shareToFeedValidationRules = () => [
+    body('content')
+        .optional()
+        .isString().withMessage('Feed caption must be a string')
+        .isLength({ max: 500 }).withMessage('Caption cannot exceed 500 characters'),
+    body('sharedContent')
+        .notEmpty().withMessage('sharedContent is required for share-to-feed')
+        .isObject().withMessage('sharedContent must be an object'),
+    body('sharedContent.kind')
+        .notEmpty().withMessage('sharedContent.kind is required')
+        .isIn(['hadith', 'ayah', 'ruku', 'juzz', 'mood', 'sign'])
+        .withMessage('Invalid sharedContent kind'),
+    body('sharedContent.title')
+        .optional()
+        .isString().withMessage('sharedContent title must be a string')
+        .isLength({ max: 200 }).withMessage('sharedContent title is too long'),
+    body('sharedContent.excerpt')
+        .optional()
+        .isString().withMessage('sharedContent excerpt must be a string')
+        .isLength({ max: 800 }).withMessage('sharedContent excerpt is too long'),
+    body('sharedContent.arabic')
+        .optional()
+        .isString().withMessage('sharedContent arabic must be a string')
+        .isLength({ max: 2000 }).withMessage('sharedContent arabic is too long'),
+    body('sharedContent.translation')
+        .optional()
+        .isString().withMessage('sharedContent translation must be a string')
+        .isLength({ max: 1200 }).withMessage('sharedContent translation is too long'),
+    body('sharedContent.sourceRef')
+        .optional()
+        .isString().withMessage('sharedContent sourceRef must be a string')
+        .isLength({ max: 200 }).withMessage('sharedContent sourceRef is too long'),
+    body('sharedContent.sourceRoute')
+        .optional()
+        .isString().withMessage('sharedContent sourceRoute must be a string')
+        .isLength({ max: 500 }).withMessage('sharedContent sourceRoute is too long'),
+    body('sharedContent.meta')
+        .optional()
+        .isArray({ max: 8 }).withMessage('sharedContent meta can have up to 8 items'),
     handleValidationErrors
 ];
 
 export { handleValidationErrors }; // Export if needed directly elsewhere, though typically used within rule arrays
+
+// ── Stream creation validation ────────────────────────
+export const createStreamValidationRules = () => [
+    body('title')
+        .trim()
+        .notEmpty().withMessage('Stream title is required')
+        .isLength({ max: 200 }).withMessage('Stream title cannot exceed 200 characters'),
+    body('description')
+        .optional()
+        .isString().withMessage('Description must be a string')
+        .isLength({ max: 1000 }).withMessage('Description cannot exceed 1000 characters'),
+    body('scheduledFor')
+        .optional()
+        .isISO8601().withMessage('scheduledFor must be a valid ISO 8601 date'),
+    handleValidationErrors
+];
+
+// ── Chat conversation validation ─────────────────────
+export const startConversationValidationRules = () => [
+    body('userId')
+        .notEmpty().withMessage('User ID is required')
+        .isMongoId().withMessage('Invalid user ID format'),
+    handleValidationErrors
+];
+
+// ── Chat message validation ───────────────────────────
+export const sendMessageValidationRules = () => [
+    param('id')
+        .isMongoId().withMessage('Invalid conversation ID format'),
+    body('content')
+        .trim()
+        .notEmpty().withMessage('Message content is required')
+        .isLength({ max: 2000 }).withMessage('Message cannot exceed 2000 characters'),
+    handleValidationErrors
+];
+
+// ── Reset password validation ─────────────────────────
+export const resetPasswordValidationRules = () => [
+    param('token')
+        .notEmpty().withMessage('Reset token is required')
+        .isString().withMessage('Invalid reset token'),
+    body('password')
+        .isLength({ min: 6 }).withMessage('Password must be at least 6 characters long'),
+    handleValidationErrors
+];
+
+// ── Spiritual practice validation ─────────────────────
+export const savePracticeValidationRules = () => [
+    body('type')
+        .notEmpty().withMessage('Practice type is required')
+        .isIn(['tafakkur', 'tadabbur', 'tazkia'])
+        .withMessage('Invalid practice type'),
+    body('content')
+        .optional()
+        .isString().withMessage('Content must be a string')
+        .isLength({ max: 2000 }).withMessage('Content cannot exceed 2000 characters'),
+    handleValidationErrors
+];
+
+// ── Profile update validation ─────────────────────────
+export const updateProfileValidationRules = () => [
+    body('name')
+        .optional()
+        .trim()
+        .isLength({ min: 1, max: 50 }).withMessage('Name must be between 1 and 50 characters'),
+    body('bio')
+        .optional()
+        .isString().withMessage('Bio must be a string')
+        .isLength({ max: 160 }).withMessage('Bio cannot exceed 160 characters'),
+    body('avatar')
+        .optional()
+        .isString().withMessage('Avatar must be a string URL'),
+    handleValidationErrors
+];
+
+// ── Change password validation ────────────────────────
+export const changePasswordValidationRules = () => [
+    body('currentPassword')
+        .notEmpty().withMessage('Current password is required'),
+    body('newPassword')
+        .isLength({ min: 6 }).withMessage('New password must be at least 6 characters long'),
+    handleValidationErrors
+];

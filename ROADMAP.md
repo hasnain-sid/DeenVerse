@@ -21,6 +21,15 @@
 
 ---
 
+## Backlog Notes (Post-v2)
+
+- [ ] **Upload AWS integration follow-up (deferred)**
+  - Add backend env vars for S3 upload flow: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION`, `S3_BUCKET_AVATARS`, `S3_BUCKET_MEDIA`, `S3_BUCKET_STREAMS`, optional `CDN_BASE_URL`.
+  - Verify S3 bucket CORS for browser `PUT` uploads from DeenVerse frontend origins.
+  - Re-test full upload path: `POST /api/v1/upload/presign` → browser PUT to signed URL → `POST /api/v1/upload/confirm`.
+
+---
+
 ## Phase 1 — Foundation & Redesign (Week 1-2) ✅ COMPLETED
 
 ### 1.1 Frontend Migration

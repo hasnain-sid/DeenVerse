@@ -21,10 +21,11 @@ export const createPostHandler = async (req, res, next) => {
 
 export const getFeedHandler = async (req, res, next) => {
   try {
-    const { page = 1, limit = 20, tab = "following" } = req.query;
+    const { page, limit = 20, tab = "following", cursor } = req.query;
     const data = await getFeed(req.user, {
-      page: parseInt(page),
-      limit: parseInt(limit),
+      cursor: cursor || undefined,
+      page: page ? parseInt(page, 10) || 1 : undefined,
+      limit: parseInt(limit, 10) || 20,
       tab,
     });
     return res.status(200).json({ success: true, ...data });
@@ -62,10 +63,11 @@ export const toggleRepostHandler = async (req, res, next) => {
 
 export const getUserPostsHandler = async (req, res, next) => {
   try {
-    const { page = 1, limit = 20 } = req.query;
+    const { page, limit = 20, cursor } = req.query;
     const data = await getUserPosts(req.params.username, {
-      page: parseInt(page),
-      limit: parseInt(limit),
+      cursor: cursor || undefined,
+      page: page ? parseInt(page, 10) || 1 : undefined,
+      limit: parseInt(limit, 10) || 20,
     });
     return res.status(200).json({ success: true, ...data });
   } catch (error) {
@@ -84,10 +86,11 @@ export const deletePostHandler = async (req, res, next) => {
 
 export const getPostsByHashtagHandler = async (req, res, next) => {
   try {
-    const { page = 1, limit = 20 } = req.query;
+    const { page, limit = 20, cursor } = req.query;
     const data = await getPostsByHashtag(req.params.hashtag, {
-      page: parseInt(page),
-      limit: parseInt(limit),
+      cursor: cursor || undefined,
+      page: page ? parseInt(page, 10) || 1 : undefined,
+      limit: parseInt(limit, 10) || 20,
     });
     return res.status(200).json({ success: true, ...data });
   } catch (error) {
@@ -98,7 +101,7 @@ export const getPostsByHashtagHandler = async (req, res, next) => {
 export const getTrendingHashtagsHandler = async (req, res, next) => {
   try {
     const { limit = 10 } = req.query;
-    const trending = await getTrendingHashtags(parseInt(limit));
+    const trending = await getTrendingHashtags(parseInt(limit, 10) || 10);
     return res.status(200).json({ success: true, trending });
   } catch (error) {
     next(error);

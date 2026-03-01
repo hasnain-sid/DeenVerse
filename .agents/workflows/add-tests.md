@@ -50,3 +50,7 @@ For each function/component, identify:
 * Check for any flaky tests (run multiple times if needed).
 * Verify no existing tests were broken.
 * Report test coverage summary.
+
+## Step 6: Update Feature Board
+* If tests are for a tracked feature, note "tests added" in the feature board Notes column.
+* If tests uncovered issues (orphan API calls, broken integrations), flag the feature as ⚠️ on the board.

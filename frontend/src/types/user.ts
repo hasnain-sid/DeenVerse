@@ -9,6 +9,10 @@ export interface User {
   saved: string[];
   followers: string[];
   following: string[];
+  role?: 'user' | 'admin' | 'moderator';
+  verified?: boolean;
+  streakGoal?: number;
+  banned?: boolean;
   createdAt: string;
   updatedAt: string;
 }

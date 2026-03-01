@@ -13,15 +13,6 @@ const features = [
         bg: 'bg-emerald-500/10',
     },
     {
-        title: 'Daily Ayah + Practical Reflection',
-        description: 'Relate Quran to your daily life. View a daily ayah and apply it with guided reflections.',
-        icon: BookHeart,
-        href: '/daily-learning',
-        status: 'Available',
-        color: 'text-primary',
-        bg: 'bg-primary/10',
-    },
-    {
         title: 'Quran by Topic & Mood',
         description: 'Discover what the Quran says about topics that matter — browse by category, mood, or search by keyword.',
         icon: Compass,

@@ -10,6 +10,8 @@ import {
   getRecordingsHandler,
   getMyStreamsHandler,
 } from "../controller/streamController.js";
+import { createStreamValidationRules } from "../middlewares/validators.js";
+import { createStreamLimiter } from "../middlewares/rateLimiter.js";
 
 const router = express.Router();
 
@@ -21,7 +23,7 @@ router.get("/recordings", getRecordingsHandler);
 // ── Authenticated routes ─────────────────────────────
 // NOTE: /me/streams must come BEFORE /:id to avoid "me" matching as an id
 router.get("/me/streams", isAuthenticated, getMyStreamsHandler);
-router.post("/", isAuthenticated, createStreamHandler);
+router.post("/", isAuthenticated, createStreamLimiter, createStreamValidationRules(), createStreamHandler);
 router.patch("/:id/start", isAuthenticated, startStreamHandler);
 router.patch("/:id/end", isAuthenticated, endStreamHandler);
 

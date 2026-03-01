@@ -31,6 +31,12 @@ When a component or utility is used by **2+ features**:
 2. Update all import paths.
 3. Never move preemptively — wait until actual reuse happens.
 
+## Feature Board Awareness
+
+- Before refactoring, check `.agents/feature-board.md` — don't refactor code another agent is actively working on (🔵).
+- If the refactor changes API paths or shared schemas, update the feature contract in `.agents/contracts/`.
+- After refactoring, run `npm run check:integrity` to ensure no orphan calls were created.
+
 ## Rules
 
 - **Don't refactor code you weren't asked to touch** — scope creep is the #1 refactoring failure mode.

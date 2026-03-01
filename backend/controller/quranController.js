@@ -15,7 +15,7 @@ export const getAyahByNumber = async (req, res, next) => {
         }
 
         const ayah = await getAyah(num);
-        res.status(200).json(ayah);
+        res.status(200).json({ success: true, ...ayah });
     } catch (error) {
         logger.error("Error fetching ayah:", error);
         next(new AppError("Failed to fetch ayah", 500));
@@ -35,7 +35,7 @@ export const getRukuByNumber = async (req, res, next) => {
         }
 
         const ruku = await getRuku(num);
-        res.status(200).json(ruku);
+        res.status(200).json({ success: true, ...ruku });
     } catch (error) {
         logger.error("Error fetching ruku:", error);
         next(new AppError("Failed to fetch ruku", 500));
@@ -55,7 +55,7 @@ export const getJuzByNumber = async (req, res, next) => {
         }
 
         const juz = await getJuz(num);
-        res.status(200).json(juz);
+        res.status(200).json({ success: true, ...juz });
     } catch (error) {
         logger.error("Error fetching juzz:", error);
         next(new AppError("Failed to fetch juzz", 500));

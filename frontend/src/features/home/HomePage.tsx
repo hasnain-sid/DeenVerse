@@ -1,7 +1,15 @@
-import { BookOpen, Clock, ArrowRight } from 'lucide-react';
+import { Radio, ArrowRight, Heart, Loader2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
-import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
+import { useState } from 'react';
+import {
+  useDailyLearningHome,
+  useStreak,
+  useRecentCollections,
+  useLiveStream,
+  useHomeStats,
+} from './useHome';
 
 export function HomePage() {
   const { user, isAuthenticated } = useAuthStore();
@@ -11,104 +19,147 @@ export function HomePage() {
     weekday: 'long',
     day: 'numeric',
     month: 'short',
-    year: 'numeric'
+    year: 'numeric',
   });
+
+  // ─── Data hooks ──────────────────────────────────
+  const { data: dailyLearning, isLoading: learningLoading } = useDailyLearningHome();
+  const { data: streak } = useStreak(isAuthenticated);
+  const { data: collections } = useRecentCollections(isAuthenticated);
+  const { data: liveStream } = useLiveStream();
+  const { data: homeStats } = useHomeStats(isAuthenticated);
+
+  const streakCurrent = streak?.current ?? 0;
+
+  // Create Spotlight cells dynamically based on real data
+  const SPOTLIGHT_CELLS = [
+    {
+      id: 'learning',
+      label: 'Daily Learning',
+      icon: Heart,
+      gradient: 'from-orange-500/10 to-transparent',
+      arabic: !learningLoading && dailyLearning ? dailyLearning.arabic : '',
+      text: learningLoading ? 'Loading...' : dailyLearning ? `"${dailyLearning.translation}"` : 'Start your learning journey',
+      meta: 'Daily Reading',
+      link: '/daily-learning',
+    },
+    {
+      id: 'stream',
+      label: liveStream ? 'Live Now' : 'Streams',
+      icon: Radio,
+      gradient: 'from-red-500/10 to-transparent',
+      text: liveStream ? liveStream.title : 'No live streams right now',
+      meta: liveStream
+        ? `${liveStream.host.name} · ${liveStream.viewerCount} watching`
+        : 'Check back later for live content',
+      live: !!liveStream,
+      link: '/streams',
+    },
+  ];
+
+  // Map stats dynamically
+  const STATS = [
+    { value: streakCurrent.toString(), label: 'Day Streak', highlight: true },
+    { value: homeStats?.versesLearned?.toString() ?? '0', label: 'Verses Learned', highlight: false },
+    { value: homeStats?.activeCourses?.toString() ?? '0', label: 'Active Courses', highlight: false },
+    { value: collections ? collections.length.toString() : '0', label: 'Saved Items', highlight: false },
+  ];
+
+  const [selectedCell, setSelectedCell] = useState<string | null>(null);
 
   return (
     <div className="space-y-8 animate-fade-in max-w-5xl mx-auto">
-      {/* Date & Welcome Header */}
+      {/* Greeting */}
       <div className="mb-8">
-        <h2 className="text-3xl font-bold tracking-tight mb-1 text-foreground">
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">
           {isAuthenticated ? `Assalamu Alaikum, ${userName}` : 'Assalamu Alaikum'}
-        </h2>
-        <p className="text-muted-foreground">
-          Welcome to your Islamic knowledge companion. {currentDate}
-        </p>
+        </h1>
+        <p className="text-muted-foreground mt-1">{currentDate}</p>
       </div>
 
-      {/* Bento Box Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 auto-rows-[160px]">
-        {/* Large Feature Card (Spans 2 cols, 2 rows) */}
-        <Link
-          to="/hadith"
-          className="md:col-span-2 md:row-span-2 rounded-[20px] bg-card border border-border p-6 flex flex-col justify-between hover:border-primary/50 transition-colors group relative overflow-hidden"
-        >
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-          <div className="relative z-10">
-            <div className="flex items-center gap-2 text-primary mb-4">
-              <BookOpen className="w-5 h-5" />
-              <span className="text-xs font-semibold uppercase tracking-wider">Today's Hadith</span>
-            </div>
-            <h3 className="text-xl md:text-2xl font-semibold mb-2 line-clamp-3 text-card-foreground">
-              "The best among you are those who have the best manners and character."
-            </h3>
-            <p className="text-muted-foreground text-sm">Sahih al-Bukhari 6029</p>
-          </div>
-          <div className="flex items-center justify-between mt-4 relative z-10">
-            <span className="flex items-center text-sm text-muted-foreground gap-1">
-              <Clock className="w-4 h-4" /> 2 min read
-            </span>
-            <Button variant="secondary" className="rounded-full group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-              Read Now
-            </Button>
-          </div>
-        </Link>
+      {/* 2x2 Spotlight Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        {SPOTLIGHT_CELLS.map((cell) => (
+          <Link
+            key={cell.id}
+            to={cell.link}
+            onMouseEnter={() => setSelectedCell(cell.id)}
+            onMouseLeave={() => setSelectedCell(null)}
+            className={cn(
+              'block rounded-[20px] bg-card border p-6 text-left transition-all group relative overflow-hidden',
+              selectedCell === cell.id
+                ? 'border-primary ring-1 ring-primary/20'
+                : 'border-border hover:border-primary/30'
+            )}
+          >
+            <div className={cn('absolute inset-0 bg-gradient-to-br transition-opacity duration-500',
+              selectedCell === cell.id ? 'opacity-100' : 'opacity-40', cell.gradient)} />
+            <div className="relative z-10">
+              <div className="flex items-center gap-2 mb-4">
+                <cell.icon className="w-4 h-4 text-primary" />
+                <span className="text-xs font-semibold uppercase tracking-wider text-primary">
+                  {cell.label}
+                </span>
+                {cell.live && (
+                  <span className="ml-auto flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                    <span className="text-[10px] font-bold text-red-500 uppercase">Live</span>
+                  </span>
+                )}
+              </div>
 
-        {/* Daily Reminder (Text heavy, Arabic focus) */}
-        <div className="rounded-[20px] bg-card border border-border p-6 flex flex-col justify-center items-center text-center">
-          <p className="font-arabic text-3xl mb-3 text-primary leading-normal">
-            بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ
-          </p>
-          <p className="text-sm text-muted-foreground italic">
-            "In the name of Allah, the Most Gracious, the Most Merciful"
-          </p>
-        </div>
+              {cell.id === 'learning' && learningLoading ? (
+                <div className="flex items-center gap-2 text-muted-foreground py-4">
+                  <Loader2 className="w-4 h-4 animate-spin" /> Loading...
+                </div>
+              ) : (
+                <>
+                  {cell.arabic && (
+                    <p className="font-arabic text-xl md:text-2xl leading-relaxed mb-2 text-card-foreground line-clamp-2">
+                      {cell.arabic}
+                    </p>
+                  )}
 
-        {/* Goal Progress / Quick Stat */}
-        <div className="rounded-[20px] bg-gradient-to-br from-brand-600 to-primary text-primary-foreground p-6 flex flex-col justify-between shadow-sm border border-primary/20">
-          <h4 className="font-semibold text-lg text-primary-foreground/90">Goal Progress</h4>
-          <div>
-            <div className="text-3xl font-bold mb-1 text-primary-foreground">
-              4<span className="text-lg opacity-70">/7</span>
+                  <p className="text-card-foreground/80 text-sm md:text-base leading-relaxed line-clamp-2 font-medium">
+                    {cell.text}
+                  </p>
+                </>
+              )}
+
+              <div className="flex items-center justify-between mt-4">
+                <p className="text-xs text-muted-foreground">{cell.meta}</p>
+                <ArrowRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 group-hover:text-primary transition-all -translate-x-2 group-hover:translate-x-0" />
+              </div>
             </div>
-            <p className="text-xs opacity-80 uppercase tracking-widest font-semibold">Days Streak</p>
-          </div>
-        </div>
+          </Link>
+        ))}
       </div>
 
-      {/* Horizontal Immersive Feed - Recent Activity */}
-      <div className="pt-4">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-foreground">Continue Reading</h3>
-          <Link to="/explore" className="text-sm text-primary hover:text-primary/80 transition-colors font-medium">
-            View All
-          </Link>
-        </div>
-
-        {/* Horizontal Scroll Area */}
-        <div className="flex gap-4 overflow-x-auto pb-4 hide-scroll snap-x">
-          <Link to="/explore" className="min-w-[280px] w-[280px] h-40 rounded-[20px] bg-card border border-border p-5 flex flex-col justify-between snap-start shrink-0 hover:border-primary/30 transition-colors group">
-            <div>
-              <span className="px-2 py-1 rounded text-[10px] font-bold uppercase bg-secondary text-muted-foreground mb-2 inline-block">Collection</span>
-              <h4 className="font-semibold text-lg line-clamp-1 text-card-foreground group-hover:text-primary transition-colors">The Concept of Tawheed</h4>
-            </div>
-            <div className="w-full bg-secondary h-1.5 rounded-full overflow-hidden">
-              <div className="bg-primary h-full w-[60%]" />
-            </div>
-          </Link>
-
-          <Link to="/saved" className="min-w-[280px] w-[280px] h-40 rounded-[20px] bg-card border border-border p-5 flex flex-col justify-between snap-start shrink-0 hover:border-primary/30 transition-colors group">
-            <div>
-              <span className="px-2 py-1 rounded text-[10px] font-bold uppercase bg-secondary text-muted-foreground mb-2 inline-block">Bookmarked</span>
-              <h4 className="font-semibold text-lg line-clamp-2 text-card-foreground group-hover:text-primary transition-colors">Significance of the Last Ten Nights</h4>
-            </div>
-          </Link>
-
-          <Link to="/explore" className="min-w-[280px] w-[280px] h-40 rounded-[20px] bg-transparent border border-border border-dashed p-5 flex flex-col items-center justify-center snap-start shrink-0 hover:border-primary/50 transition-colors group text-muted-foreground hover:text-primary">
-            <ArrowRight className="w-6 h-6 mb-2" />
-            <span className="text-sm font-medium">Explore more topics</span>
-          </Link>
-        </div>
+      {/* Stats Bar */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        {STATS.map((stat, i) => (
+          <div
+            key={i}
+            className={cn(
+              'rounded-[20px] p-5 flex flex-col items-center text-center transition-transform hover:scale-[1.02]',
+              stat.highlight
+                ? 'bg-gradient-to-br from-primary to-brand-600 text-primary-foreground shadow-sm'
+                : 'bg-card border border-border'
+            )}
+          >
+            <p className={cn('text-2xl md:text-3xl font-bold mb-1', !stat.highlight && 'text-foreground')}>
+              {stat.value}
+            </p>
+            <p
+              className={cn(
+                'text-[10px] uppercase tracking-widest font-semibold',
+                stat.highlight ? 'opacity-80' : 'text-muted-foreground'
+              )}
+            >
+              {stat.label}
+            </p>
+          </div>
+        ))}
       </div>
     </div>
   );

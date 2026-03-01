@@ -47,7 +47,13 @@ Follow the **Conventional Commits** format:
 - `fix(habits): resolve timer not pausing on app background`
 - `docs: update ROADMAP with quran learning milestones`
 
-## Step 5: Commit & Optionally Push
+## Step 5: Update Feature Board
+* If this commit completes a task or layer:
+  - Move the task from **🔵 In Progress** → **✅ Done Today** in `.agents/feature-board.md`.
+  - Update the layer status in the Active Features table.
+* If this commit completes a feature layer, follow the handover protocol (`.agents/workflows/feature-handover.md`).
+
+## Step 6: Commit & Optionally Push
 * Run `git commit -m "<message>"`.
 * Ask the user if they want to push to remote.
 * If yes, run `git push origin <current-branch>`.

@@ -64,6 +64,15 @@ export const doSomething = async (user, payload) => {
 };
 ```
 
+## Feature Board Integration
+
+Before creating a new endpoint:
+1. Check `.agents/feature-board.md` — is this endpoint part of a tracked feature?
+2. If yes, check the feature contract in `.agents/contracts/` for the agreed API shape.
+3. After creating the endpoint, update the feature board (Backend → ✅ or 🔵).
+4. If the frontend is still ⬜, add a handover note with curl examples so the frontend agent can integrate.
+5. Run `npm run check:integrity` to confirm the new route is detected.
+
 ## Rules
 
 - **ESM only**: `import`/`export`, never `require`/`module.exports`

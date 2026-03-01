@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient, useInfiniteQuery } from '@tanstack/react-query';
 import api from '@/lib/api';
 import { useAuthStore } from '@/stores/authStore';
-import type { Post, FeedResponse, TrendingHashtag } from '@/types/post';
+import type { Post, FeedResponse, TrendingHashtag, SharedContent } from '@/types/post';
 import toast from 'react-hot-toast';
 
 // ─── Feed (infinite scroll) ──────────────────────────────────────────────────
@@ -9,15 +9,16 @@ import toast from 'react-hot-toast';
 export function useFeed(tab: 'following' | 'trending' = 'following') {
   return useInfiniteQuery<FeedResponse>({
     queryKey: ['feed', tab],
-    queryFn: async ({ pageParam = 1 }) => {
-      const { data } = await api.get('/posts/feed', {
-        params: { page: pageParam, limit: 10, tab },
-      });
+    queryFn: async ({ pageParam }) => {
+      const params: Record<string, string | number> = { limit: 10, tab };
+      if (pageParam) {
+        params.cursor = pageParam as string;
+      }
+      const { data } = await api.get('/posts/feed', { params });
       return data;
     },
-    initialPageParam: 1,
-    getNextPageParam: (lastPage) =>
-      lastPage.page < lastPage.totalPages ? lastPage.page + 1 : undefined,
+    initialPageParam: null as string | null,
+    getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
   });
 }
 
@@ -39,15 +40,16 @@ export function usePost(postId: string | undefined) {
 export function useUserPosts(username: string | undefined) {
   return useInfiniteQuery<FeedResponse>({
     queryKey: ['userPosts', username],
-    queryFn: async ({ pageParam = 1 }) => {
-      const { data } = await api.get(`/posts/user/${username}`, {
-        params: { page: pageParam, limit: 10 },
-      });
+    queryFn: async ({ pageParam }) => {
+      const params: Record<string, string | number> = { limit: 10 };
+      if (pageParam) {
+        params.cursor = pageParam as string;
+      }
+      const { data } = await api.get(`/posts/user/${username}`, { params });
       return data;
     },
-    initialPageParam: 1,
-    getNextPageParam: (lastPage) =>
-      lastPage.page < lastPage.totalPages ? lastPage.page + 1 : undefined,
+    initialPageParam: null as string | null,
+    getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
     enabled: !!username,
   });
 }
@@ -58,7 +60,13 @@ export function useCreatePost() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (body: { content: string; hadithRef?: string; replyTo?: string; images?: string[] }) => {
+    mutationFn: async (body: {
+      content: string;
+      hadithRef?: string;
+      replyTo?: string;
+      images?: string[];
+      sharedContent?: SharedContent;
+    }) => {
       const { data } = await api.post('/posts', body);
       return data;
     },
@@ -204,15 +212,16 @@ export function useToggleRepost() {
 export function useHashtagPosts(hashtag: string | undefined) {
   return useInfiniteQuery<FeedResponse>({
     queryKey: ['hashtag', hashtag],
-    queryFn: async ({ pageParam = 1 }) => {
-      const { data } = await api.get(`/posts/hashtag/${hashtag}`, {
-        params: { page: pageParam, limit: 10 },
-      });
+    queryFn: async ({ pageParam }) => {
+      const params: Record<string, string | number> = { limit: 10 };
+      if (pageParam) {
+        params.cursor = pageParam as string;
+      }
+      const { data } = await api.get(`/posts/hashtag/${hashtag}`, { params });
       return data;
     },
-    initialPageParam: 1,
-    getNextPageParam: (lastPage) =>
-      lastPage.page < lastPage.totalPages ? lastPage.page + 1 : undefined,
+    initialPageParam: null as string | null,
+    getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
     enabled: !!hashtag,
   });
 }
@@ -220,11 +229,11 @@ export function useHashtagPosts(hashtag: string | undefined) {
 // ─── Trending hashtags ───────────────────────────────────────────────────────
 
 export function useTrendingHashtags() {
-  return useQuery<{ hashtags: TrendingHashtag[] }>({
+  return useQuery<TrendingHashtag[]>({
     queryKey: ['trending-hashtags'],
     queryFn: async () => {
       const { data } = await api.get('/posts/trending/hashtags');
-      return data;
+      return data.trending ?? [];
     },
     staleTime: 5 * 60 * 1000, // 5 min
   });

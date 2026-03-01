@@ -1,4 +1,4 @@
-import { api } from '@/lib/api';
+import api from '@/lib/api';
 import type { TafakkurTopic, TazkiaTrait, TadabburAyah, JournalResponse, RuhaniStats } from '../types';
 
 export interface SpiritualPracticePayload {

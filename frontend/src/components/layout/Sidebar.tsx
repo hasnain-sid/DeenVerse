@@ -11,6 +11,7 @@ import {
   LogOut,
   LogIn,
   ChevronLeft,
+  ChevronDown,
   Sun,
   Moon,
   Monitor,
@@ -31,6 +32,7 @@ import { useUIStore } from '@/stores/uiStore';
 import api from '@/lib/api';
 import { useUnreadCount } from '@/features/notifications/useNotifications';
 import { useChatUnreadCount } from '@/features/messages/useChat';
+import { useState } from 'react';
 
 const navigation = [
   { name: 'Home', href: '/', icon: Home },
@@ -48,6 +50,21 @@ const navigation = [
   { name: 'Community', href: '/community', icon: Users },
   { name: 'Profile', href: '/profile', icon: User },
 ];
+
+const navigationGroups = [
+  {
+    title: 'Main',
+    items: ['Home', 'Feed', 'Explore'],
+  },
+  {
+    title: 'Learning',
+    items: ['Learn Quran', 'Quran by Topic', 'Iman Boost', 'Ruhani Space', 'Hadith'],
+  },
+  {
+    title: 'Community',
+    items: ['Streams', 'Notifications', 'Messages', 'Saved', 'Community', 'Profile'],
+  },
+] as const;
 
 const themeIcons = {
   light: Sun,
@@ -70,6 +87,7 @@ export function Sidebar() {
   const unreadCount = unreadData?.count ?? 0;
   const { data: chatUnreadData } = useChatUnreadCount();
   const chatUnreadCount = chatUnreadData?.count ?? 0;
+  const [expandedGroups, setExpandedGroups] = useState<string[]>(['Main', 'Learning']);
 
   const handleLogout = async () => {
     try {
@@ -84,6 +102,14 @@ export function Sidebar() {
     const themes: Array<'light' | 'dark' | 'system'> = ['light', 'dark', 'system'];
     const currentIdx = themes.indexOf(theme);
     setTheme(themes[(currentIdx + 1) % themes.length]);
+  };
+
+  const toggleGroup = (groupTitle: string) => {
+    setExpandedGroups((current) =>
+      current.includes(groupTitle)
+        ? current.filter((name) => name !== groupTitle)
+        : [...current, groupTitle]
+    );
   };
 
   const ThemeIcon = themeIcons[theme];
@@ -122,47 +148,107 @@ export function Sidebar() {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 space-y-1 px-3 py-2">
-        {navigation.map((item) => {
-          const isActive = location.pathname === item.href;
-          const link = (
-            <NavLink
-              key={item.name}
-              to={item.href}
-              className={cn(
-                'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
-                isActive
-                  ? 'bg-primary/10 text-primary'
-                  : 'text-muted-foreground hover:bg-secondary hover:text-foreground'
-              )}
-            >
-              <div className="relative">
-                <item.icon className="h-[18px] w-[18px] shrink-0" />
-                {item.name === 'Notifications' && unreadCount > 0 && (
-                  <span className="absolute -top-1.5 -right-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground px-1">
-                    {unreadCount > 99 ? '99+' : unreadCount}
-                  </span>
-                )}
-                {item.name === 'Messages' && chatUnreadCount > 0 && (
-                  <span className="absolute -top-1.5 -right-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground px-1">
-                    {chatUnreadCount > 99 ? '99+' : chatUnreadCount}
-                  </span>
-                )}
-              </div>
-              {!sidebarCollapsed && (
-                <span className="animate-fade-in">{item.name}</span>
-              )}
-            </NavLink>
-          );
+      <nav className="min-h-0 flex-1 overflow-y-auto px-3 py-2">
+        {sidebarCollapsed ? (
+          <div className="space-y-1">
+            {navigation.map((item) => {
+              const isActive = location.pathname === item.href;
+              const link = (
+                <NavLink
+                  key={item.name}
+                  to={item.href}
+                  className={cn(
+                    'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
+                    isActive
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-muted-foreground hover:bg-secondary hover:text-foreground'
+                  )}
+                >
+                  <div className="relative">
+                    <item.icon className="h-[18px] w-[18px] shrink-0" />
+                    {item.name === 'Notifications' && unreadCount > 0 && (
+                      <span className="absolute -top-1.5 -right-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground px-1">
+                        {unreadCount > 99 ? '99+' : unreadCount}
+                      </span>
+                    )}
+                    {item.name === 'Messages' && chatUnreadCount > 0 && (
+                      <span className="absolute -top-1.5 -right-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground px-1">
+                        {chatUnreadCount > 99 ? '99+' : chatUnreadCount}
+                      </span>
+                    )}
+                  </div>
+                </NavLink>
+              );
 
-          return sidebarCollapsed ? (
-            <Tooltip key={item.name} content={item.name} side="right">
-              {link}
-            </Tooltip>
-          ) : (
-            link
-          );
-        })}
+              return (
+                <Tooltip key={item.name} content={item.name} side="right">
+                  {link}
+                </Tooltip>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {navigationGroups.map((group) => {
+              const isExpanded = expandedGroups.includes(group.title);
+              const groupItems = navigation.filter((item) => (group.items as readonly string[]).includes(item.name));
+
+              return (
+                <div key={group.title} className="rounded-lg border bg-card">
+                  <button
+                    type="button"
+                    onClick={() => toggleGroup(group.title)}
+                    className="flex w-full items-center justify-between px-3 py-2 text-left text-sm font-medium"
+                  >
+                    <span>{group.title}</span>
+                    <ChevronDown
+                      className={cn(
+                        'h-4 w-4 text-muted-foreground transition-transform',
+                        isExpanded && 'rotate-180'
+                      )}
+                    />
+                  </button>
+
+                  {isExpanded && (
+                    <div className="space-y-1 border-t px-2 py-2">
+                      {groupItems.map((item) => {
+                        const isActive = location.pathname === item.href;
+
+                        return (
+                          <NavLink
+                            key={item.name}
+                            to={item.href}
+                            className={cn(
+                              'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
+                              isActive
+                                ? 'bg-primary/10 text-primary'
+                                : 'text-muted-foreground hover:bg-secondary hover:text-foreground'
+                            )}
+                          >
+                            <div className="relative">
+                              <item.icon className="h-[18px] w-[18px] shrink-0" />
+                              {item.name === 'Notifications' && unreadCount > 0 && (
+                                <span className="absolute -top-1.5 -right-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground px-1">
+                                  {unreadCount > 99 ? '99+' : unreadCount}
+                                </span>
+                              )}
+                              {item.name === 'Messages' && chatUnreadCount > 0 && (
+                                <span className="absolute -top-1.5 -right-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground px-1">
+                                  {chatUnreadCount > 99 ? '99+' : chatUnreadCount}
+                                </span>
+                              )}
+                            </div>
+                            <span className="animate-fade-in">{item.name}</span>
+                          </NavLink>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
       </nav>
 
       {/* Footer */}

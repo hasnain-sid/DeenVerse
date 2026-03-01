@@ -85,8 +85,23 @@ const FeaturePage = lazy(() =>
 <Route path="/feature" element={<AuthGuard><FeaturePage /></AuthGuard>} />
 ```
 
+## Feature Board Integration (MANDATORY)
+
+Before building:
+1. Check `.agents/feature-board.md` — is this feature tracked? Does a contract exist?
+2. If multi-layer (needs backend too): create a contract from `.agents/contracts/_template.md` FIRST.
+3. Claim the task on the board: **⏳ Pending** → **🔵 In Progress**.
+
+After building:
+4. Update your layer to ✅ on the feature board.
+5. Move the task to **✅ Done Today**.
+6. If backend is ⬜, leave a handover note listing API paths your hooks call.
+7. Run `npm run check:integrity` — zero orphan calls.
+
 ## Checklist
 
+- [ ] Feature board checked and updated
+- [ ] Contract created (if multi-layer)
 - [ ] Page uses named export (not default)
 - [ ] API calls go through `api` instance from `@/lib/api`, never raw `axios` or `fetch`
 - [ ] All API paths are relative (`/feature-name`), never absolute URLs
@@ -95,3 +110,4 @@ const FeaturePage = lazy(() =>
 - [ ] Toasts via `react-hot-toast`, no `alert()`
 - [ ] Responsive layout (mobile-first, `md:` for desktop)
 - [ ] Loading and error states handled
+- [ ] Integrity check passes (`npm run check:integrity`)

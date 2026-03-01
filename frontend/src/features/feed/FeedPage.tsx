@@ -38,56 +38,63 @@ export function FeedPage() {
   const allPosts = data?.pages.flatMap((p) => p.posts) ?? [];
 
   return (
-    <div className="max-w-[600px] mx-auto">
-      {/* Feed Header */}
-      <div className="sticky top-14 z-20 bg-background/95 backdrop-blur-md py-3 mb-4 -mx-4 px-4 sm:mx-0 sm:px-0">
-        <div className="flex items-center space-x-2">
-          <button
-            onClick={() => setTab('following')}
-            className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors
+    <div className="max-w-4xl mx-auto lg:grid lg:grid-cols-[1fr_300px] gap-8">
+      {/* Main Feed Column */}
+      <div className="min-w-0">
+        <div className="sticky top-14 z-20 bg-background/95 backdrop-blur-md py-3 mb-4 -mx-4 px-4 sm:mx-0 sm:px-0">
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => setTab('following')}
+              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors
               ${tab === 'following' ? 'bg-secondary text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
-          >
-            Following
-          </button>
-          <button
-            onClick={() => setTab('trending')}
-            className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors
+            >
+              Following
+            </button>
+            <button
+              onClick={() => setTab('trending')}
+              className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors
               ${tab === 'trending' ? 'bg-secondary text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
-          >
-            Trending
-          </button>
+            >
+              Trending
+            </button>
+          </div>
         </div>
+
+        {/* Composer */}
+        <CreatePostComposer placeholder="Share a thought, hadith, or reflection..." />
+
+        {/* Feed */}
+        {isLoading ? (
+          <FeedSkeleton />
+        ) : isError ? (
+          <div className="p-8 text-center text-muted-foreground">
+            <p>Failed to load your feed.</p>
+            <Button variant="outline" size="sm" className="mt-3" onClick={() => window.location.reload()}>
+              Retry
+            </Button>
+          </div>
+        ) : allPosts.length === 0 ? (
+          <EmptyFeed tab={tab} />
+        ) : (
+          <>
+            {allPosts.map((post) => (
+              <PostCard key={post._id} post={post} />
+            ))}
+
+            {/* Infinite scroll trigger */}
+            <div ref={observerRef} className="h-12 flex items-center justify-center">
+              {isFetchingNextPage && (
+                <Loader2 className="w-5 h-5 text-muted-foreground animate-spin" />
+              )}
+            </div>
+          </>
+        )}
       </div>
 
-      {/* Composer */}
-      <CreatePostComposer placeholder="Share a thought, hadith, or reflection..." />
-
-      {/* Feed */}
-      {isLoading ? (
-        <FeedSkeleton />
-      ) : isError ? (
-        <div className="p-8 text-center text-muted-foreground">
-          <p>Failed to load your feed.</p>
-          <Button variant="outline" size="sm" className="mt-3" onClick={() => window.location.reload()}>
-            Retry
-          </Button>
-        </div>
-      ) : allPosts.length === 0 ? (
-        <EmptyFeed tab={tab} />
-      ) : (
-        <>
-          {allPosts.map((post) => (
-            <PostCard key={post._id} post={post} />
-          ))}
-
-          {/* Infinite scroll trigger */}
-          <div ref={observerRef} className="h-12 flex items-center justify-center">
-            {isFetchingNextPage && (
-              <Loader2 className="w-5 h-5 text-muted-foreground animate-spin" />
-            )}
-          </div>
-        </>
-      )}
+      {/* Sidebar Column (Hidden on mobile/tablet) */}
+      <div className="hidden lg:block space-y-6 sticky top-20 h-fit">
+        <TrendingWidget />
+      </div>
     </div>
   );
 }
@@ -159,19 +166,19 @@ function WhoToFollow() {
 export function TrendingWidget() {
   const { data } = useTrendingHashtags();
 
-  if (!data?.hashtags?.length) return null;
+  if (!data?.length) return null;
 
   return (
     <div className="border border-border rounded-xl p-4">
       <h4 className="font-semibold text-foreground text-sm mb-3">Trending</h4>
       <div className="space-y-2.5">
-        {data.hashtags.slice(0, 5).map((h) => (
+        {data.slice(0, 5).map((h) => (
           <Link
-            key={h._id}
-            to={`/search?q=${encodeURIComponent('#' + h._id)}&tab=hashtags`}
+            key={h.hashtag}
+            to={`/search?q=${encodeURIComponent('#' + h.hashtag)}&tab=hashtags`}
             className="block hover:bg-muted/50 -mx-2 px-2 py-1 rounded-lg transition-colors"
           >
-            <p className="text-sm font-medium text-foreground">#{h._id}</p>
+            <p className="text-sm font-medium text-foreground">#{h.hashtag}</p>
             <p className="text-xs text-muted-foreground">{h.count} posts</p>
           </Link>
         ))}

@@ -19,14 +19,14 @@ import {
 import { cn } from '@/lib/utils';
 import api from '@/lib/api';
 import toast from 'react-hot-toast';
-import { toPng } from 'html-to-image';
-import download from 'downloadjs';
 import {
   useCollections,
   useCreateCollection,
   useDeleteCollection,
   type HadithCollection,
 } from './useCollections';
+import { ShareActionsMenu } from '@/features/share/ShareActionsMenu';
+import type { SharePayload } from '@/features/share/types';
 
 // ── View Mode ────────────────────────────────────────
 
@@ -94,21 +94,28 @@ export function SavedPage() {
     }
   }, [isAuthenticated, currentId, updateSaved]);
 
-  const handleShare = useCallback(async () => {
-    try {
-      const el = document.getElementById('hadith-content');
-      if (!el) return;
-
-      toast.loading('Generating image...');
-      const dataUrl = await toPng(el, { quality: 0.95 });
-      toast.dismiss();
-      download(dataUrl, 'saved-hadith.png');
-      toast.success('Downloaded!');
-    } catch {
-      toast.dismiss();
-      toast.error('Failed to generate image');
+  const sharePayload: SharePayload | null = hadithDetail && currentId
+    ? {
+      kind: 'hadith',
+      title: hadithDetail.title || 'Saved Hadith',
+      text: hadithDetail.hadeeth,
+      url: `${window.location.origin}/saved`,
+      feedCaption: `Sharing a saved hadith: ${hadithDetail.title}`,
+      sharedContent: {
+        kind: 'hadith',
+        title: hadithDetail.title,
+        sourceRef: hadithDetail.reference,
+        sourceRoute: '/saved',
+        excerpt: hadithDetail.hadeeth,
+        meta: [
+          viewMode === 'collection' && activeCollection
+            ? `${activeCollection.emoji} ${activeCollection.name}`
+            : 'Saved Hadiths',
+          `Hadith #${currentId}`,
+        ],
+      },
     }
-  }, []);
+    : null;
 
   const handlePrev = useCallback(() => {
     if (activeHadithIds.length > 0) {
@@ -317,7 +324,7 @@ export function SavedPage() {
             isLoading={isLoading}
             isBookmarked={isBookmarked}
             onBookmark={handleBookmark}
-            onShare={handleShare}
+            shareAction={sharePayload ? <ShareActionsMenu payload={sharePayload} /> : undefined}
             onPrev={handlePrev}
             onNext={handleNext}
             currentIndex={index}

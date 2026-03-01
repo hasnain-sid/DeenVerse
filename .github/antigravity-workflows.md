@@ -19,6 +19,8 @@
 | 9 | `/deploy-check` | Pre-deploy verification: build, lint, type-check, tests | Before deploying to Vercel or any environment |
 | 10 | `/research` | Deep research with structured comparison & recommendations | Evaluating APIs, libraries, or architecture decisions |
 | 11 | `/daily-standup` | Summarize recent work, open TODOs, suggest next priorities | Starting a new coding session |
+| 12 | `/feature-handover` | Complete your layer and hand off to the next agent | After finishing backend/frontend/shared layer of a feature |
+| 13 | `/feature-status-check` | Check feature completeness across all layers | Start of session, before deployment, suspected gaps |
 
 ---
 

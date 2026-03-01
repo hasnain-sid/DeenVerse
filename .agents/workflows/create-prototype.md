@@ -28,14 +28,27 @@ When requested to create a prototype, evaluate the current scenario and follow t
 ## Step 4: Styling & Polish
 * Ensure the prototype looks premium and interactive. Add realistic hover states, transitions, and micro-animations to give the true "feel" of the final product. 
 * Avoid "placeholder" aesthetics. A prototype should wow the stakeholder and provide a clear vision of the end goal.
+* Ensure the prototype design is fully responsive and mobile-friendly.
+
+---
+
+## Step 5: Update Feature Board
+* Add the prototype to `.agents/feature-board.md`:
+  - Feature name → row in Active Features table
+  - Frontend: 🔵 (prototype, not production)
+  - Backend: `—` (not applicable for prototypes)
+  - Notes: "Prototype only — uses mock data"
+* This ensures other agents know this feature exists and has a UI direction but NO backend.
 
 ---
 
 **Summary for Agent Execution:**
 When the user says "Create a prototype for X":
-1. Read the current architecture.
-2. Determine if it should be an isolated HTML file or an integrated React/Frontend component behind a dev route.
-3. Create the `prototypes` folder if missing.
-4. Build the UI.
-5. Create mock data (no backend code).
-6. Verify and polish the visual aesthetics.
+1. Check `.agents/feature-board.md` — is this feature already tracked?
+2. Read the current architecture.
+3. Determine if it should be an isolated HTML file or an integrated React/Frontend component behind a dev route.
+4. Create the `prototypes` folder if missing.
+5. Build the UI (ensure it is responsive and mobile-friendly).
+6. Create mock data (no backend code).
+7. Update the feature board.
+8. Verify and polish the visual aesthetics.

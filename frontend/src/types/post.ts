@@ -1,3 +1,14 @@
+export interface SharedContent {
+  kind: 'hadith' | 'ayah' | 'ruku' | 'juzz' | 'mood' | 'sign';
+  title?: string;
+  sourceRef?: string;
+  sourceRoute?: string;
+  excerpt?: string;
+  arabic?: string;
+  translation?: string;
+  meta?: string[];
+}
+
 export interface Post {
   _id: string;
   author: {
@@ -8,6 +19,7 @@ export interface Post {
   };
   content: string;
   hadithRef?: string;
+  sharedContent?: SharedContent | null;
   images: string[];
   likes: string[];
   reposts: string[];
@@ -23,6 +35,7 @@ export interface Post {
   replyCount: number;
   likeCount: number;
   repostCount: number;
+  shareCount: number;
   views: number;
   hashtags: string[];
   createdAt: string;
@@ -49,12 +62,26 @@ export interface Notification {
 
 export interface FeedResponse {
   posts: Post[];
-  page: number;
-  totalPages: number;
-  total: number;
+  /** Opaque cursor for the next page (null when no more pages). */
+  nextCursor: string | null;
+  /** Whether more pages exist. */
+  hasMore: boolean;
+  /** @deprecated Legacy page number — present only when `page` param is used. */
+  page?: number;
+  /** @deprecated Legacy total pages — present only when `page` param is used. */
+  totalPages?: number;
+  /** @deprecated Legacy total count — present only when `page` param is used. */
+  total?: number;
+  /** Observability metadata (development aid). */
+  _meta?: {
+    cacheHit?: boolean;
+    queryTimeMs?: number;
+    resultCount?: number;
+    cursorUsed?: boolean;
+  };
 }
 
 export interface TrendingHashtag {
-  _id: string;
+  hashtag: string;
   count: number;
 }

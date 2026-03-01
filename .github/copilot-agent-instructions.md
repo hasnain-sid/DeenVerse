@@ -20,6 +20,7 @@ These are loaded by the agent when your request matches the description.
 | `.github/instructions/api-endpoint.instructions.md` | new endpoint, backend route/controller/service | Route -> controller -> service -> model chain, ESM-only, AppError usage |
 | `.github/instructions/debugging.instructions.md` | debug, fix bug, runtime/build/type errors | Reproduce -> diagnose -> minimal fix workflow with DeenVerse-specific issue map |
 | `.github/instructions/refactoring.instructions.md` | refactor, split, extract, cleanup | Behavior-preserving refactor rules, extraction patterns, scope control |
+| `.github/instructions/multi-agent-coordination.instructions.md` | multi-agent, feature contract, handover, coordination, integrity check | Contract-first development, feature board, handover protocol, integrity checks |
 
 ## 3. Auto-Applied File Instruction
 

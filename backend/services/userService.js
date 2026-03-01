@@ -11,6 +11,8 @@ import {
   getCachedUserProfile,
   invalidateUserCache,
 } from './cacheService.js';
+import DailyLearning from '../models/DailyLearning.js';
+import { LearningProgress } from '../models/learningProgressSchema.js';
 
 export const registerUser = async (userData) => {
     const { name, username, email, password } = userData;
@@ -437,5 +439,26 @@ export const getPublicProfile = async (username, currentUserId) => {
             isFollowing,
         },
         statusCode: 200,
+    };
+};
+
+/**
+ * Returns aggregated home-page stats for the authenticated user.
+ * @param {string} userId
+ * @returns {Promise<{ versesLearned: number, activeCourses: number }>}
+ */
+export const getHomeStats = async (userId) => {
+    const [learnedRefs, activeCourses] = await Promise.all([
+        DailyLearning.distinct('referenceId', {
+            userId,
+            learningType: 'ayah',
+            isCompleted: true,
+        }),
+        LearningProgress.countDocuments({ userId }),
+    ]);
+
+    return {
+        versesLearned: learnedRefs.length,
+        activeCourses,
     };
 };

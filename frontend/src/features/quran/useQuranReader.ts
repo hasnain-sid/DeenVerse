@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { api } from '@/lib/api';
+import api from '@/lib/api';
 import type { AyahResponse, RukuResponse, JuzResponse } from './quranTypes';
 
 /** Fetch a single ayah by global number (1–6236) */

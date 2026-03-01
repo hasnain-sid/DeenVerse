@@ -19,6 +19,22 @@ const postSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
+    // Structured shared payload (used by card shares like ayah/hadith/juzz/mood)
+    sharedContent: {
+      kind: {
+        type: String,
+        enum: ["hadith", "ayah", "ruku", "juzz", "mood", "sign"],
+      },
+      title: { type: String },
+      sourceRef: { type: String },
+      sourceRoute: { type: String },
+      excerpt: { type: String },
+      arabic: { type: String },
+      translation: { type: String },
+      meta: { type: [String], default: [] },
+    },
+    // How many times this post's content was re-shared
+    shareCount: { type: Number, default: 0 },
     // Image URLs (max 4) — local paths or S3 URLs
     images: {
       type: [String],
@@ -69,5 +85,6 @@ const postSchema = new mongoose.Schema(
 postSchema.index({ createdAt: -1 });
 postSchema.index({ author: 1, createdAt: -1 });
 postSchema.index({ hashtags: 1, createdAt: -1 });
+postSchema.index({ "sharedContent.kind": 1, createdAt: -1 });
 
 export const Post = mongoose.model("Post", postSchema);

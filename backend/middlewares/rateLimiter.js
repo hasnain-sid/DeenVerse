@@ -105,6 +105,15 @@ export const createPostLimiter = rateLimiter({
   message: "Post limit reached. Please slow down.",
 });
 
+/** Share to feed: 20 per hour per user (slightly stricter than normal posts). */
+export const shareToFeedLimiter = rateLimiter({
+  points: 20,
+  duration: 60 * 60,
+  keyPrefix: "rl_share_to_feed",
+  keyGenerator: (req) => req.user || req.ip,
+  message: "Share limit reached. Please slow down.",
+});
+
 /** Feed: 60 requests per minute per user. */
 export const feedLimiter = rateLimiter({
   points: 60,
@@ -135,4 +144,56 @@ export const generalLimiter = rateLimiter({
   points: 100,
   duration: 60,
   keyPrefix: "rl_general",
+});
+
+/** Password reset: 5 requests per 15 minutes per IP (prevent token brute-force). */
+export const resetPasswordLimiter = rateLimiter({
+  points: 5,
+  duration: 15 * 60,
+  keyPrefix: "rl_reset_password",
+  message: "Too many password reset attempts. Please try again in 15 minutes.",
+});
+
+/** Stream creation: 5 per hour per user. */
+export const createStreamLimiter = rateLimiter({
+  points: 5,
+  duration: 60 * 60,
+  keyPrefix: "rl_create_stream",
+  keyGenerator: (req) => req.user || req.ip,
+  message: "Stream creation limit reached. Please try again later.",
+});
+
+/** Chat messages: 60 per minute per user. */
+export const chatMessageLimiter = rateLimiter({
+  points: 60,
+  duration: 60,
+  keyPrefix: "rl_chat_message",
+  keyGenerator: (req) => req.user || req.ip,
+  message: "Message limit reached. Please slow down.",
+});
+
+/** Chat conversations: 10 per hour per user. */
+export const createConversationLimiter = rateLimiter({
+  points: 10,
+  duration: 60 * 60,
+  keyPrefix: "rl_create_conversation",
+  keyGenerator: (req) => req.user || req.ip,
+  message: "Conversation creation limit reached. Please try again later.",
+});
+
+/** Analytics tracking: 120 per minute per IP (semi-public). */
+export const analyticsTrackLimiter = rateLimiter({
+  points: 120,
+  duration: 60,
+  keyPrefix: "rl_analytics_track",
+  message: "Too many tracking requests.",
+});
+
+/** Spiritual practice: 30 per hour per user. */
+export const practiceLimiter = rateLimiter({
+  points: 30,
+  duration: 60 * 60,
+  keyPrefix: "rl_practice",
+  keyGenerator: (req) => req.user || req.ip,
+  message: "Practice recording limit reached. Please try again later.",
 });

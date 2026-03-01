@@ -6,39 +6,51 @@ description: Summarize recent changes, open TODOs, and suggest next priorities f
 
 Provide a quick summary to help the user pick up right where they left off.
 
-## Step 1: Recent Changes
+## Step 1: Check the Feature Board
+* Open `.agents/feature-board.md` and review:
+  - **🔵 In Progress** — Are there tasks left mid-flight from last session?
+  - **⏳ Pending** — What's the highest priority task in your domain?
+  - **⚠️ Partial** features — Are any features half-built that need your attention?
+* Run `npm run check:integrity` to detect orphan frontend calls or unconsumed backend routes.
+
+## Step 2: Recent Changes
 // turbo
 * Run `git log --oneline -10` to see the last 10 commits.
 * Summarize what was worked on recently in plain language.
 
-## Step 2: Current State
+## Step 3: Current State
 // turbo
 * Run `git status` to check for any uncommitted changes.
 * Run `git branch` to identify the current branch.
 * Note any work-in-progress that needs attention.
 
-## Step 3: Open TODOs
-* Check for any `task.md` artifacts from recent conversations.
+## Step 4: Open TODOs
+* Check the **⏳ Pending** tasks on the feature board.
+* Check for any open contracts in `.agents/contracts/` with incomplete layers.
 * Look for `TODO`, `FIXME`, or `HACK` comments in recently modified files.
-* Check for any open issues or pending items in documentation.
 
-## Step 4: Next Priorities
-* Read `ROADMAP.md` to identify the next milestones.
-* Cross-reference with recent progress to suggest what to tackle next.
+## Step 5: Next Priorities
+* Read the feature board's pending tasks (prioritised) FIRST.
+* Cross-reference with `ROADMAP.md` for milestone context.
 * Prioritize items that are:
-  1. Blocking other work
-  2. Nearly complete (quick wins)
-  3. Next on the roadmap
+  1. Blocking other agents (features with ⚠️ or 🔴)
+  2. Nearly complete (one layer away from ✅)
+  3. Next on the pending task list
 
-## Step 5: Present Standup
+## Step 6: Present Standup
 Format the standup as:
 
 ### 🔙 Yesterday
 - What was accomplished
 
 ### 📌 Today's Priorities
-- Suggested tasks for today (ranked)
+- Tasks from the feature board **⏳ Pending** list (ranked)
+- Incomplete features where your layer is ⬜ but dependencies are ✅
 
 ### ⚠️ Blockers
 - Any unresolved issues or decisions needed
 - Uncommitted work that needs attention
+- Features flagged ⚠️ or 🔴 on the board
+
+### 📊 Integrity Check
+- Results from `npm run check:integrity` (orphan calls, unconsumed routes)

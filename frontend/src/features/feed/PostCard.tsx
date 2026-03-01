@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Heart, MessageCircle, Repeat2, Share, Trash2, MoreHorizontal } from 'lucide-react';
 import { Avatar } from '@/components/ui/avatar';
@@ -7,6 +7,8 @@ import { useAuthStore } from '@/stores/authStore';
 import { useToggleLike, useToggleRepost, useDeletePost } from './usePosts';
 import { formatDate } from '@/lib/utils';
 import type { Post } from '@/types/post';
+import { SharedContentCard } from './SharedContentCard';
+import toast from 'react-hot-toast';
 
 interface PostCardProps {
   post: Post;
@@ -20,6 +22,19 @@ export function PostCard({ post, compact = false }: PostCardProps) {
   const repostMutation = useToggleRepost();
   const deleteMutation = useDeletePost();
   const [showMenu, setShowMenu] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  // Close menu on outside click
+  useEffect(() => {
+    if (!showMenu) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+        setShowMenu(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showMenu]);
 
   const isLiked = user ? post.likes.includes(user._id) : false;
   const isReposted = user ? post.reposts.includes(user._id) : false;
@@ -31,9 +46,9 @@ export function PostCard({ post, compact = false }: PostCardProps) {
     navigate(`/post/${post._id}`);
   };
 
-  // Parse content for #hashtags and @mentions
+  // Parse content for #hashtags and @mentions (including Arabic characters)
   const renderContent = (text: string) => {
-    const parts = text.split(/(#\w+|@\w+)/g);
+    const parts = text.split(/(#[\w\u0600-\u06FF]+|@\w+)/g);
     return parts.map((part, i) => {
       if (part.startsWith('#')) {
         return (
@@ -65,7 +80,7 @@ export function PostCard({ post, compact = false }: PostCardProps) {
 
   return (
     <div
-      className="bg-card rounded-[20px] border border-border p-5 mb-5 hover:border-primary/50 transition-colors cursor-pointer"
+      className="py-6 group transition-colors hover:bg-muted/20 -mx-4 px-4 sm:rounded-lg sm:hover:bg-transparent sm:px-0 border-b border-border/40 cursor-pointer"
       onClick={handleCardClick}
     >
       {/* Reply indicator */}
@@ -91,6 +106,7 @@ export function PostCard({ post, compact = false }: PostCardProps) {
           to={`/user/${post.author.username}`}
           onClick={(e) => e.stopPropagation()}
           className="shrink-0"
+          aria-label={`View ${post.author.name}'s profile`}
         >
           <Avatar src={post.author.avatar} fallback={post.author.name?.[0] || '?'} size="md" />
         </Link>
@@ -122,7 +138,7 @@ export function PostCard({ post, compact = false }: PostCardProps) {
 
             {/* Menu */}
             {isOwner && (
-              <div className="relative">
+              <div className="relative" ref={menuRef}>
                 <Button
                   variant="ghost"
                   size="icon"
@@ -158,8 +174,10 @@ export function PostCard({ post, compact = false }: PostCardProps) {
             {renderContent(post.content)}
           </p>
 
+          {post.sharedContent && <SharedContentCard sharedContent={post.sharedContent} />}
+
           {/* Hadith reference badge */}
-          {post.hadithRef && (
+          {post.hadithRef && !post.sharedContent && (
             <div className="mt-3 text-xs text-primary mb-2 font-medium uppercase tracking-wider">
               📖 Hadith #{post.hadithRef}
             </div>
@@ -171,23 +189,23 @@ export function PostCard({ post, compact = false }: PostCardProps) {
             <Button
               variant="ghost"
               size="sm"
-              className="h-8 px-2 text-muted-foreground hover:text-primary gap-1.5 text-xs"
+              className="h-8 px-2 text-muted-foreground hover:text-blue-500 gap-1.5 text-xs transition-colors"
               onClick={(e) => {
                 e.stopPropagation();
                 navigate(`/post/${post._id}`);
               }}
             >
               <MessageCircle className="w-4 h-4" />
-              {post.replyCount > 0 && <span>{post.replyCount}</span>}
+              {post.replyCount > 0 ? <span>{post.replyCount}</span> : <span>Reply</span>}
             </Button>
 
             {/* Repost */}
             <Button
               variant="ghost"
               size="sm"
-              className={`h-8 px-2 gap-1.5 text-xs ${isReposted
-                  ? 'text-green-500 hover:text-green-600'
-                  : 'text-muted-foreground hover:text-green-500'
+              className={`h-8 px-2 gap-1.5 text-xs transition-colors ${isReposted
+                ? 'text-green-500 hover:text-green-600'
+                : 'text-muted-foreground hover:text-green-500'
                 }`}
               onClick={(e) => {
                 e.stopPropagation();
@@ -195,16 +213,16 @@ export function PostCard({ post, compact = false }: PostCardProps) {
               }}
             >
               <Repeat2 className="w-4 h-4" />
-              {post.repostCount > 0 && <span>{post.repostCount}</span>}
+              {post.repostCount > 0 ? <span>{post.repostCount}</span> : <span>Repost</span>}
             </Button>
 
             {/* Like */}
             <Button
               variant="ghost"
               size="sm"
-              className={`h-8 px-2 gap-1.5 text-xs ${isLiked
-                  ? 'text-red-500 hover:text-red-600'
-                  : 'text-muted-foreground hover:text-red-500'
+              className={`h-8 px-2 gap-1.5 text-xs transition-colors ${isLiked
+                ? 'text-red-500 hover:text-red-600'
+                : 'text-muted-foreground hover:text-rose-500'
                 }`}
               onClick={(e) => {
                 e.stopPropagation();
@@ -212,23 +230,24 @@ export function PostCard({ post, compact = false }: PostCardProps) {
               }}
             >
               <Heart className={`w-4 h-4 ${isLiked ? 'fill-current' : ''}`} />
-              {post.likeCount > 0 && <span>{post.likeCount}</span>}
+              {post.likeCount > 0 ? <span>{post.likeCount}</span> : <span>Like</span>}
             </Button>
 
             {/* Share */}
             <Button
               variant="ghost"
               size="sm"
-              className="h-8 px-2 text-muted-foreground hover:text-primary text-xs"
+              className="h-8 px-2 text-muted-foreground hover:text-green-500 gap-1.5 text-xs transition-colors"
               onClick={(e) => {
                 e.stopPropagation();
                 navigator.clipboard.writeText(
                   `${window.location.origin}/post/${post._id}`,
                 );
-                import('react-hot-toast').then((m) => m.default.success('Link copied!'));
+                toast.success('Link copied!');
               }}
             >
               <Share className="w-4 h-4" />
+              <span>Share</span>
             </Button>
           </div>
         </div>

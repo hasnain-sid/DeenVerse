@@ -85,7 +85,7 @@ export const saveUserReflection = async (req, res, next) => {
         });
 
         const savedReflection = await newReflection.save();
-        res.status(201).json(savedReflection);
+        res.status(201).json({ success: true, reflection: savedReflection });
     } catch (error) {
         logger.error("Error saving daily learning reflection:", error);
         next(new AppError("Failed to save reflection", 500));
@@ -108,7 +108,7 @@ export const getUserLearningHistory = async (req, res, next) => {
         }
 
         const reflections = await DailyLearning.find(filter).sort({ createdAt: -1 }).limit(50);
-        res.status(200).json(reflections);
+        res.status(200).json({ success: true, reflections });
     } catch (error) {
         logger.error("Error fetching learning history:", error);
         next(new AppError("Failed to fetch learning history", 500));

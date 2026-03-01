@@ -10,6 +10,12 @@ Perform a thorough code review on the specified files or the most recent changes
 * If the user specifies files, review those files.
 * If no files are specified, identify recently modified files using `git diff` or `git diff --staged`.
 
+## Step 1.5: Cross-Check Feature Board
+* Check `.agents/feature-board.md` to understand the context of changes:
+  - Does this code belong to a tracked feature? Is the feature board up to date?
+  - If new API calls were added — does the corresponding backend route exist? Run `npm run check:integrity`.
+  - If a layer was completed — was the feature board updated? Was a handover note left?
+
 ## Step 2: Review Checklist
 For each file, evaluate the following categories:
 
@@ -37,6 +43,12 @@ For each file, evaluate the following categories:
 - [ ] Proper TypeScript types (no `any` unless justified)
 - [ ] Meaningful variable/function names
 - [ ] Components are focused and not overly complex
+
+### Multi-Agent Coordination
+- [ ] Feature board (`.agents/feature-board.md`) reflects current state of this feature
+- [ ] No orphan frontend API calls (run `npm run check:integrity`)
+- [ ] If multi-layer feature: contract exists in `.agents/contracts/`
+- [ ] Handover notes left if other agents need to build on this
 
 ### Readability
 - [ ] Complex logic has comments explaining "why"

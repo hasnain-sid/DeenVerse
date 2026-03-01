@@ -1,5 +1,7 @@
 import { Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { ShareActionsMenu } from '@/features/share/ShareActionsMenu';
+import type { SharePayload } from '@/features/share/types';
 
 export type LearningUnitType = 'ayah' | 'ruku' | 'juzz';
 
@@ -140,6 +142,24 @@ export function ReflectionSplitView({ content, onComplete }: ReflectionSplitView
 
     const isMultiAyah = content.type !== 'ayah' && content.ayahs && content.ayahs.length > 0;
 
+    const shareKind = (content.type === 'ruku' ? 'ruku' : content.type) as SharePayload['kind'];
+    const sharePayload: SharePayload = {
+        kind: shareKind,
+        title: content.title,
+        text: content.translation,
+        url: `${window.location.origin}/daily-learning`,
+        feedCaption: `Sharing today's ${content.type} reflection: ${content.title}`,
+        sharedContent: {
+            kind: shareKind,
+            title: content.title,
+            sourceRef: content.referenceId,
+            sourceRoute: '/daily-learning',
+            excerpt: content.translation,
+            arabic: content.arabic,
+            meta: [content.surah, content.type.toUpperCase()],
+        },
+    };
+
     return (
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6 min-h-[600px] bg-[#0a0a0a] text-white p-6 md:p-10 rounded-3xl border border-zinc-800 shadow-2xl">
             {/* Left Panel: The Source */}
@@ -150,6 +170,9 @@ export function ReflectionSplitView({ content, onComplete }: ReflectionSplitView
 
             {/* Right Panel: Practical Context & Action */}
             <div className="md:col-span-7 bg-[#141414] rounded-2xl border border-zinc-800/60 p-6 md:p-8 flex flex-col">
+                <div className="mb-4 flex justify-end">
+                    <ShareActionsMenu payload={sharePayload} iconOnly={false} />
+                </div>
                 <h3 className="text-2xl font-bold text-white mb-4">{content.title}</h3>
 
                 <p className="text-zinc-400 text-lg leading-relaxed mb-8 flex-1">

@@ -36,7 +36,13 @@ When a bug is reported, follow this structured debugging process. Never jump str
 * Confirm the original bug no longer reproduces.
 * Check for related areas that might have the same issue.
 
-## Step 6: Summary
+## Step 6: Update Feature Board
+* If this fix relates to a feature tracked on `.agents/feature-board.md`:
+  - Update the feature's status if the fix resolves a ⚠️ or 🔴 state.
+  - Move the task from **🔵 In Progress** → **✅ Done Today** on the board.
+* If the fix involves an orphan API call detected by `npm run check:integrity`, verify the orphan is resolved.
+
+## Step 7: Summary
 Present a brief summary:
 - **Root Cause:** What caused the bug
 - **Fix:** What was changed and why

@@ -67,11 +67,17 @@ const userSchema = new mongoose.Schema({
     type:Boolean,
     default:false
   },
+  streakGoal:{
+    type:Number,
+    default:7,
+    min:1,
+    max:365
+  },
 },{timestamps:true});
 
 // ── Indexes (Phase 6 — Database Optimization) ────────
-userSchema.index({ email: 1 }, { unique: true });
-userSchema.index({ username: 1 }, { unique: true });
+// Note: email and username already have unique: true in the schema definition,
+// which auto-creates unique indexes. Only the text search index is defined here.
 userSchema.index(
   { name: 'text', username: 'text' },
   { weights: { username: 2, name: 1 }, name: 'user_text_search' }

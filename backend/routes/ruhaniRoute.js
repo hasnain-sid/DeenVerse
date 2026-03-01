@@ -15,6 +15,8 @@ import {
     getJournal,
     getStats,
 } from "../controller/ruhaniController.js";
+import { savePracticeValidationRules } from "../middlewares/validators.js";
+import { practiceLimiter } from "../middlewares/rateLimiter.js";
 
 const router = express.Router();
 
@@ -31,7 +33,7 @@ router.get("/tadabbur/today", getTodayTadabburAyah);
 router.get("/tadabbur/ayah/:verseKey", getTadabburAyahByVerseKey);
 
 // Protected Practice Routes (User specific)
-router.post("/practice", isAuthenticated, saveSpiritualPractice);
+router.post("/practice", isAuthenticated, practiceLimiter, savePracticeValidationRules(), saveSpiritualPractice);
 router.get("/practices", isAuthenticated, getUserPractices);
 router.get("/practices/:id", isAuthenticated, getPracticeById);
 router.get("/journal", isAuthenticated, getJournal);

@@ -109,6 +109,7 @@ const TadabburPage = lazy(() =>
 const RuhaniJournalPage = lazy(() =>
   import('@/features/ruhani/RuhaniJournalPage').then((m) => ({ default: m.RuhaniJournalPage }))
 );
+
 const PrivacyPolicy = lazy(() => import('@/features/legal/PrivacyPolicy'));
 const TermsOfService = lazy(() => import('@/features/legal/TermsOfService'));
 
@@ -150,6 +151,7 @@ export default function App() {
           <SessionRestorer>
             <Suspense fallback={<PageLoader />}>
               <Routes>
+
                 <Route element={<MainLayout />}>
                   <Route path="/" element={<HomePage />} />
                   <Route

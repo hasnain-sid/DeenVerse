@@ -37,7 +37,13 @@ When asked to debug or fix an issue, follow this systematic approach:
 | Component renders but looks wrong | Check Tailwind class order, `cn()` usage, and `globals.css` token values |
 | Socket events not received | Check `useSocket()` hook in `App.tsx` and `backend/socket/index.js` event names |
 
-## 5. Don't
+## 5. Check the Feature Board
+
+- If the bug is in a tracked feature, check `.agents/feature-board.md` for context (is another agent mid-work? Is a layer incomplete?).
+- If the bug is an orphan API call (frontend calling a non-existent route), run `npm run check:integrity` to confirm.
+- After fixing, update the board if the fix resolves a ⚠️ or 🔴 status.
+
+## 6. Don't
 
 - Don't add `try/catch` everywhere as a fix — find the root cause
 - Don't suppress TypeScript errors with `@ts-ignore` — fix the type

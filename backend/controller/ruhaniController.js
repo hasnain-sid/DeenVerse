@@ -170,24 +170,11 @@ export const getPracticeById = async (req, res, next) => {
 };
 
 /**
- * @desc    Get user's spiritual practices (journal)
+ * @desc    Get user's spiritual practices (journal) — alias for getUserPractices
  * @route   GET /api/v1/ruhani/journal
  * @access  Private
  */
-export const getJournal = async (req, res, next) => {
-    try {
-        const { type, limit = 20, page = 1 } = req.query;
-        const result = await ruhaniService.getPractices(req.user, {
-            type,
-            page: Number(page),
-            limit: Number(limit),
-        });
-        res.status(200).json(result);
-    } catch (error) {
-        logger.error("Error fetching Ruhani journal:", error);
-        next(new AppError("Failed to fetch journal", 500));
-    }
-};
+export const getJournal = getUserPractices;
 
 /**
  * @desc    Get user's spiritual practice stats

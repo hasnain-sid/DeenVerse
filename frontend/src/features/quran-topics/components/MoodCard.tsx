@@ -14,6 +14,7 @@ export function MoodCard({ mood }: MoodCardProps) {
         'group flex flex-col items-center gap-2 rounded-xl border border-border bg-card p-4',
         'transition-all hover:border-primary/40 hover:shadow-md text-center',
       )}
+      aria-label={`View mood: ${mood.name}`}
     >
       <span className="text-3xl" role="img" aria-label={mood.name}>
         {mood.emoji}

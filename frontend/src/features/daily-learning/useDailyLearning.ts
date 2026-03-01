@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { api } from '@/lib/api';
+import api from '@/lib/api';
 import toast from 'react-hot-toast';
 import type { LearningUnitType, DailyLearningContent } from './components/ReflectionSplitView';
 

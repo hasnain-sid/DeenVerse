@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -17,7 +18,8 @@ interface HadithCardProps {
   isLoading: boolean;
   isBookmarked: boolean;
   onBookmark: () => void;
-  onShare: () => void;
+  onShare?: () => void;
+  shareAction?: ReactNode;
   onPrev: () => void;
   onNext: () => void;
   currentIndex: number;
@@ -31,6 +33,7 @@ export function HadithCard({
   isBookmarked,
   onBookmark,
   onShare,
+  shareAction,
   onPrev,
   onNext,
   currentIndex,
@@ -136,14 +139,16 @@ export function HadithCard({
                 )}
               />
             </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8"
-              onClick={onShare}
-            >
-              <Share2 className="h-4 w-4" />
-            </Button>
+            {shareAction ?? (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                onClick={onShare}
+              >
+                <Share2 className="h-4 w-4" />
+              </Button>
+            )}
           </div>
 
           <div className="flex items-center gap-1">

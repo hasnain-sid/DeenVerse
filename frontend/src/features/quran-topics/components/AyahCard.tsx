@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import type { AyahItem } from '../types';
 import toast from 'react-hot-toast';
+import { ShareActionsMenu } from '@/features/share/ShareActionsMenu';
 
 interface AyahCardProps {
   ayah: AyahItem;
@@ -56,6 +57,23 @@ export function AyahCard({ ayah, index }: AyahCardProps) {
     toast.success('Passage marked as read! Added to your spaced repetition queue.', { icon: '🎓' });
   };
 
+  const sharePayload = {
+    kind: 'ayah' as const,
+    title: `${ayah.surah} ${ayah.surahNumber}:${ayah.ayahNumber}`,
+    text: ayah.translation,
+    url: window.location.href,
+    feedCaption: `Sharing ayah ${ayah.surahNumber}:${ayah.ayahNumber} from ${ayah.surah}`,
+    sharedContent: {
+      kind: 'ayah' as const,
+      title: `${ayah.surah} (${ayah.surahArabic})`,
+      sourceRef: `${ayah.surahNumber}:${ayah.ayahNumber}`,
+      sourceRoute: window.location.pathname,
+      excerpt: ayah.translation,
+      arabic: ayah.arabic,
+      meta: [`Juz ${ayah.juzNumber}`, `Page ${ayah.page}`],
+    },
+  };
+
   return (
     <div
       className={cn(
@@ -76,6 +94,7 @@ export function AyahCard({ ayah, index }: AyahCardProps) {
         </div>
         <div className="flex items-center gap-3">
           <span className="text-xs text-muted-foreground mr-2">#{index + 1}</span>
+          <ShareActionsMenu payload={sharePayload} />
           <Button
             variant={isPlayingAudio ? "secondary" : "outline"}
             size="sm"

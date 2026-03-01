@@ -8,6 +8,13 @@ Run all checks before deploying to ensure nothing is broken.
 
 // turbo-all
 
+## Step 0: Feature Board & Integrity Check
+* Run `npm run check:integrity` and verify:
+  - Zero orphan frontend API calls (frontend calling non-existent backend routes)
+  - Review unconsumed backend routes — confirm they're intentional
+* Check `.agents/feature-board.md` for any ⚠️ or 🔴 features — these should be resolved before deploying.
+* Ensure no features are listed as 🔵 In Progress — deploying mid-feature is risky.
+
 ## Step 1: Type Check
 * Run `npx tsc --noEmit` in the frontend directory.
 * Fix any type errors before proceeding.
@@ -35,6 +42,8 @@ Present a deployment readiness report:
 
 | Check | Status |
 |-------|--------|
+| Feature Integrity | ✅ / ❌ |
+| Feature Board (no ⚠️/🔴) | ✅ / ❌ |
 | TypeScript | ✅ / ❌ |
 | Lint | ✅ / ❌ |
 | Build | ✅ / ❌ |

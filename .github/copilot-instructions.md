@@ -149,3 +149,15 @@ Before implementing new features, run deep research and share a recommendation b
 - Prefer official docs, mature OSS repos, and concrete code examples over generic summaries.
 - Compare 2-3 implementation approaches with trade-offs, then recommend one based on current DeenVerse constraints.
 - Use `/research` prompt command for repeatable pre-implementation research workflows.
+
+---
+
+## Multi-Agent Coordination
+
+This project uses multiple AI agents simultaneously (Copilot, Antigravity, etc.). To prevent half-built features:
+
+- **Feature Board** (`.agents/feature-board.md`): Single source of truth for feature status across all layers (shared, backend, frontend, mobile). Every agent updates it.
+- **Feature Contracts** (`.agents/contracts/<feature>.md`): Before coding any multi-layer feature, create a contract from `_template.md` defining API shapes, data models, and layer ownership.
+- **Handover Protocol** (`.agents/workflows/feature-handover.md`): When you finish your layer, update the contract + board, and leave handover notes for the next agent.
+- **Integrity Check**: Run `npm run check:integrity` to detect orphan frontend API calls and unconsumed backend routes.
+- See `.github/instructions/multi-agent-coordination.instructions.md` for the full ruleset.

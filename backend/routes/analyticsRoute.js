@@ -7,11 +7,12 @@ import {
   dashboardOverview,
   profileInsights,
 } from "../controller/analyticsController.js";
+import { analyticsTrackLimiter } from "../middlewares/rateLimiter.js";
 
 const router = express.Router();
 
 // ── Track events (authenticated or anonymous) ────────
-router.post("/track", optionalAuth, track);
+router.post("/track", optionalAuth, analyticsTrackLimiter, track);
 
 // ── User: own profile insights ───────────────────────
 router.get("/insights", isAuthenticated, profileInsights);

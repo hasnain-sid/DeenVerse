@@ -18,6 +18,8 @@ import {
     getFollowSuggestions,
     getPublicProfile
 } from "../services/userService.js";
+import { getUserStreak, updateStreakGoal } from "../services/streakService.js";
+import { getHomeStats } from "../services/userService.js";
 import { getRefreshCookieOptions } from "../utils/tokenUtils.js";
 import { verifyRefreshToken } from "../utils/tokenUtils.js";
 
@@ -320,6 +322,34 @@ export const getPublicProfileHandler = async (req, res, next) => {
       user: result.user,
       success: true,
     });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getStreakHandler = async (req, res, next) => {
+  try {
+    const data = await getUserStreak(req.user);
+    return res.status(200).json({ success: true, ...data });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateStreakGoalHandler = async (req, res, next) => {
+  try {
+    const { goal } = req.body;
+    const data = await updateStreakGoal(req.user, goal);
+    return res.status(200).json({ success: true, ...data });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getHomeStatsHandler = async (req, res, next) => {
+  try {
+    const data = await getHomeStats(req.user);
+    return res.status(200).json({ success: true, ...data });
   } catch (error) {
     next(error);
   }

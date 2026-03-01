@@ -15,7 +15,7 @@ export function useDailySign() {
         queryKey: ['signs', 'daily'],
         queryFn: async (): Promise<Sign> => {
             if (USE_MOCK) return fetchMockDailySign();
-            const { data } = await api.get('/api/v1/signs/daily');
+            const { data } = await api.get('/signs/daily');
             return data.sign as Sign;
         },
         staleTime: STALE_TIME,
@@ -36,7 +36,7 @@ export function useSigns(category: SignCategory | 'all' = 'all', page = 1) {
             }
             const params: Record<string, string | number> = { page, limit: 12 };
             if (category !== 'all') params.category = category;
-            const { data } = await api.get('/api/v1/signs', { params });
+            const { data } = await api.get('/signs', { params });
             return data as SignsResponse;
         },
         staleTime: STALE_TIME,
@@ -47,7 +47,7 @@ export function useSignById(id: string) {
     return useQuery<Sign>({
         queryKey: ['signs', id],
         queryFn: async (): Promise<Sign> => {
-            const { data } = await api.get(`/api/v1/signs/${id}`);
+            const { data } = await api.get(`/signs/${id}`);
             return data.sign as Sign;
         },
         enabled: Boolean(id),
@@ -70,7 +70,7 @@ export function useSignCategories() {
                     count,
                 }));
             }
-            const { data } = await api.get('/api/v1/signs/categories');
+            const { data } = await api.get('/signs/categories');
             return data.categories as CategoryCount[];
         },
         staleTime: STALE_TIME,

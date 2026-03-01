@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -10,7 +9,6 @@ import { usePost } from './usePosts';
 export function PostDetailPage() {
   const { id } = useParams<{ id: string }>();
   const { data, isLoading, isError } = usePost(id);
-  const [showComposer, setShowComposer] = useState(true);
 
   if (isLoading) return <PostDetailSkeleton />;
   if (isError || !data) {
@@ -40,14 +38,11 @@ export function PostDetailPage() {
       <PostCard post={post} />
 
       {/* Reply composer */}
-      {showComposer && (
-        <CreatePostComposer
-          replyTo={post._id}
-          placeholder={`Reply to @${post.author.username}...`}
-          onSuccess={() => setShowComposer(true)}
-          compact
-        />
-      )}
+      <CreatePostComposer
+        replyTo={post._id}
+        placeholder={`Reply to @${post.author.username}...`}
+        compact
+      />
 
       {/* Replies */}
       {replies.length > 0 && (

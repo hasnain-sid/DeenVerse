@@ -18,7 +18,10 @@ import {
     getFollowersHandler,
     getFollowingHandler,
     getSuggestionsHandler,
-    getPublicProfileHandler
+    getPublicProfileHandler,
+    getStreakHandler,
+    updateStreakGoalHandler,
+    getHomeStatsHandler
 } from "../controller/userController.js";
 import isAuthenticated from "../config/auth.js";
 import { optionalAuth } from "../config/auth.js";
@@ -26,9 +29,12 @@ import {
     registerValidationRules,
     loginValidationRules,
     followUnfollowValidationRules,
-    mongoIdParamValidationRules
+    mongoIdParamValidationRules,
+    resetPasswordValidationRules,
+    updateProfileValidationRules,
+    changePasswordValidationRules
 } from "../middlewares/validators.js";
-import { loginLimiter, registerLimiter } from "../middlewares/rateLimiter.js";
+import { loginLimiter, registerLimiter, resetPasswordLimiter } from "../middlewares/rateLimiter.js";
 
 const router = express.Router();
 
@@ -38,7 +44,7 @@ router.route("/login").post(loginLimiter, loginValidationRules(), Login);
 router.route("/logout").post(Logout);
 router.route("/refresh").post(refresh);
 router.route("/forgot-password").post(loginLimiter, forgotPassword);
-router.route("/reset-password/:token").post(resetPassword);
+router.route("/reset-password/:token").post(resetPasswordLimiter, resetPasswordValidationRules(), resetPassword);
 
 // Session check - restore user from cookie
 router.route("/me").get(isAuthenticated, getMe);
@@ -58,8 +64,8 @@ router.route("/follow").post(isAuthenticated, followUnfollowValidationRules(), F
 router.route("/unfollow").post(isAuthenticated, followUnfollowValidationRules(), Unfollow);
 
 // Profile management
-router.route("/profile").put(isAuthenticated, updateProfile);
-router.route("/change-password").put(isAuthenticated, changePassword);
+router.route("/profile").put(isAuthenticated, updateProfileValidationRules(), updateProfile);
+router.route("/change-password").put(isAuthenticated, changePasswordValidationRules(), changePassword);
 
 // Followers / Following / Suggestions
 router.route("/followers/:id").get(optionalAuth, getFollowersHandler);
@@ -68,5 +74,12 @@ router.route("/suggestions").get(isAuthenticated, getSuggestionsHandler);
 
 // Public profile by username
 router.route("/username/:username").get(optionalAuth, getPublicProfileHandler);
+
+// Streak
+router.route("/streak").get(isAuthenticated, getStreakHandler);
+router.route("/streak/goal").put(isAuthenticated, updateStreakGoalHandler);
+
+// Home page aggregated stats
+router.route("/home-stats").get(isAuthenticated, getHomeStatsHandler);
 
 export default router;

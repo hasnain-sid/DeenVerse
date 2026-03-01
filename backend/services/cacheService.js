@@ -7,10 +7,10 @@ import { getRedisClient, isRedisConnected } from "../config/redis.js";
  * application works exactly the same — just without caching.
  *
  * Key naming convention:
- *   user:{id}           → user profile
- *   feed:{userId}:{tab}:{page} → feed page
- *   trending:hashtags   → trending hashtags
- *   notification:unread:{userId} → unread notification count
+ *   user:{id}                            → user profile
+ *   feed:{userId}:{tab}:{limit}:{cursor} → feed page (cursor = opaque token or "first")
+ *   trending:hashtags                     → trending hashtags
+ *   notification:unread:{userId}          → unread notification count
  */
 
 // ── Default TTLs (seconds) ────────────────────────────
@@ -118,14 +118,16 @@ export async function invalidateUserCache(userId) {
   await cacheDelPattern(`feed:${userId}:*`);
 }
 
-/** Cache feed page. */
-export async function cacheFeedPage(userId, tab, page, data) {
-  await cacheSet(`feed:${userId}:${tab}:${page}`, data, TTL.FEED);
+/** Cache feed page (cursor-aware key). */
+export async function cacheFeedPage(userId, tab, limit, cursor, data) {
+  const key = `feed:${userId}:${tab}:${limit}:${cursor}`;
+  await cacheSet(key, data, TTL.FEED);
 }
 
-/** Get cached feed page. */
-export async function getCachedFeedPage(userId, tab, page) {
-  return cacheGet(`feed:${userId}:${tab}:${page}`);
+/** Get cached feed page (cursor-aware key). */
+export async function getCachedFeedPage(userId, tab, limit, cursor) {
+  const key = `feed:${userId}:${tab}:${limit}:${cursor}`;
+  return cacheGet(key);
 }
 
 /** Invalidate feed cache for a user (e.g. after new post). */

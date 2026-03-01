@@ -6,6 +6,12 @@ description: Structured refactoring - analyze, identify code smells, propose, ap
 
 Follow this structured process to safely refactor code without introducing regressions.
 
+## Step 0: Check Feature Board
+* Before refactoring, check `.agents/feature-board.md`:
+  - Is this code part of a feature currently 🔵 In Progress by another agent? → Do NOT refactor — you'll cause merge conflicts.
+  - Is there a contract in `.agents/contracts/` that defines the interface? → Preserve the contract's API shapes.
+* If refactoring changes API paths or shared schemas, update the relevant contract.
+
 ## Step 1: Analyze Current State
 * Read the target code thoroughly.
 * Understand the full dependency chain — what calls this code, and what does it call?
@@ -43,6 +49,10 @@ Look for these common issues:
 * Manually verify UI if components were changed.
 * Confirm no regressions by comparing behavior before/after.
 
-## Step 6: Summary
+## Step 6: Update Board & Verify Integrity
+* Run `npm run check:integrity` — refactoring must not create orphan API calls.
+* If the refactored code is part of a tracked feature, update the board if status changed.
+
+## Step 7: Summary
 * List what was refactored and why.
 * Note any follow-up refactoring that could be done later.

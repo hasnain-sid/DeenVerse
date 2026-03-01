@@ -6,6 +6,14 @@ description: End-to-end feature development - research, plan, approve, implement
 
 Follow this structured process for any new feature development. Never jump straight into coding.
 
+## Step 0: Check the Feature Board (MANDATORY)
+* Open `.agents/feature-board.md` and check:
+  - Is this feature already tracked? → Update the existing row, don't duplicate.
+  - Is another agent already working on any layer? → Coordinate first.
+  - Is there a contract in `.agents/contracts/`? → Read it before coding.
+* If the feature is **multi-layer** (frontend + backend), create a contract from `.agents/contracts/_template.md` before proceeding.
+* Claim the task: move it from **⏳ Pending** → **🔵 In Progress** on the board (or add a new row).
+
 ## Step 1: Research & Understand
 * Fully understand the user's requirements — ask clarifying questions if ambiguous.
 * Study the existing codebase architecture (`ARCHITECTURE.md`, `ROADMAP.md`).
@@ -31,6 +39,7 @@ Follow this structured process for any new feature development. Never jump strai
 * Commit to the project's code style, naming conventions, and folder structure.
 * Create small, focused changes — don't mix unrelated modifications.
 * Add inline comments for any complex or non-obvious logic.
+* Ensure the final design is fully responsive and mobile-friendly after implementing both frontend and backend.
 
 ## Step 5: Test & Verify
 * Run linting and type checks (`npm run lint`, `tsc`).
@@ -38,7 +47,15 @@ Follow this structured process for any new feature development. Never jump strai
 * Write new tests for the feature if applicable.
 * Manually verify the feature works as expected (browser testing for UI).
 
-## Step 6: Walkthrough
+## Step 6: Update Feature Board & Handover
+* Update `.agents/feature-board.md`:
+  - Set your layer's status to ✅ in the Active Features table.
+  - Move the task from **🔵 In Progress** → **✅ Done Today**.
+* If other layers are still ⬜, follow the handover protocol (`.agents/workflows/feature-handover.md`).
+* Update the feature contract if one exists.
+* Run `npm run check:integrity` to verify no orphan API calls.
+
+## Step 7: Walkthrough
 * Create a `walkthrough.md` artifact summarizing:
   - What was built
   - Key files changed

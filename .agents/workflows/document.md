@@ -38,3 +38,8 @@ Follow these principles:
 * Ensure all file links and references are valid.
 * Verify code examples compile/run correctly.
 * Cross-check with actual behavior if possible.
+
+## Step 6: Update Feature Board (if applicable)
+* If documenting a feature, check that `.agents/feature-board.md` reflects the current state.
+* If documenting API endpoints, verify they match the feature contract in `.agents/contracts/`.
+* If the documentation reveals incomplete features (endpoints documented but not built), flag them as ⚠️ on the board.

@@ -41,3 +41,9 @@ For each option, document:
 * Save the research findings in the `docs/` directory.
 * Include links to all sources for future reference.
 * Format as a clean, scannable markdown document.
+
+## Step 6: Update Feature Board
+* If the research is for a new feature:
+  - Add a row to the **Upcoming Features** table in `.agents/feature-board.md`.
+  - Note the recommended approach in the Notes column.
+* If a contract is warranted (multi-layer feature), create one from `.agents/contracts/_template.md` and populate it with the researched API design.
