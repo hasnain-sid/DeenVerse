@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-04T17:40:42.764Z
+updated: 2026-03-04T17:40:51.527Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 13
+next_id: 14
 ---
 
 ## Agents
@@ -315,3 +315,27 @@ history:
 ```
 
 > Pre-commit report dated 2026-03-01 with Critical/Warning/Suggestion items. This doc should be updated to reflect which issues were resolved post-merge and which remain open. Go through each Critical (C1 open redirect, C2 missing auth guard, etc.) and Warning item and add a [RESOLVED] / [PENDING] badge. This is the most actionable audit doc — keeping it current tells agents what security/quality debt still exists.
+
+### TASK-013 · Update: quran-data-sources-research.md
+
+```yaml
+id: TASK-013
+status: backlog
+priority: high
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-04T17:40:51.527Z
+updated_at: 2026-03-04T17:40:51.527Z
+tags:
+  - docs
+  - quran
+  - daily-learning
+  - backend
+history:
+  - ts: 2026-03-04T17:40:51.527Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> This research doc covers replacing hardcoded content in dailyLearningController.js with dynamic AlQuran Cloud API data. Current known state: backend still has hardcoded 2 Ayahs, 1 Ruku, 1 Juzz, 1 Para. Update doc: add Implementation Status section. Mark research as complete based on this doc. Note that dynamic backend integration is NOT YET DONE (still hardcoded). Highlight the recommended approach (AlQuran Cloud /v1/juz/:n, /v1/ruku/:n etc.) and mark the specific next implementation steps clearly.
