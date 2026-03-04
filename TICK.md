@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-04T19:57:58.907Z
+updated: 2026-03-04T19:58:07.008Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 19
+next_id: 20
 ---
 
 ## Agents
@@ -644,3 +644,26 @@ history:
 ```
 
 > All 33 topics currently have pillar: 'General' and cluster: 'General' and relatedTopics: []. Apply the real 4-pillar taxonomy from the research doc (Heart & Soul → Emotional Healing/Inner Character, Faith & Worship → Core Beliefs/Acts of Worship, Life & Society → Relationships/Wealth & Ethics, Guidance & Growth → Life Direction/Boundaries) to every topic. Also populate relatedTopics[] for each topic with 2-4 slugs of semantically related topics. This data is required for the hub-and-spoke UI (already built) to show anything meaningful.
+
+### TASK-019 · Fix broken cross-link resolution in topicService.js
+
+```yaml
+id: TASK-019
+status: backlog
+priority: high
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-04T19:58:07.008Z
+updated_at: 2026-03-04T19:58:07.008Z
+tags:
+  - backend
+  - bug
+  - browse-topic
+history:
+  - ts: 2026-03-04T19:58:07.008Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> The cross-link code in topicService.js getTopicAyahs() is broken due to a data format mismatch. topic.ayahRefs stores references as arrays [[36, 38], [91, 1]], but tafakkurTopics[].quranRefs stores them as strings ['36:38', '91:1'], and tazkiaTraits[].primaryAyah is also a string '65:3'. So t.quranRefs.some(ref => topic.ayahRefs.includes(ref)) and topic.ayahRefs.includes(t.primaryAyah) will ALWAYS return false — crossLinks.tafakkur and crossLinks.tazkia are permanently empty. Fix: normalise ayahRefs to 'surah:ayah' string format before comparison. Also verify tadabburAyahs.verseKey format matches. The Deeper Dive section in TopicDetailPage will remain blank until this is fixed.
