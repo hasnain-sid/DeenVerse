@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-04T17:40:17.468Z
+updated: 2026-03-04T17:40:26.305Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 10
+next_id: 11
 ---
 
 ## Agents
@@ -239,3 +239,27 @@ history:
 ```
 
 > This doc is a reference dataset of global Islamic courses/degrees (not a feature design doc). Frontend: GlobalCoursesPage.tsx exists in features/courses. Update doc: add a header section noting this is a data reference document, what it feeds into (GlobalCoursesPage), current integration status (page exists but data integration status unknown), and whether this JSON data is served from backend or bundled static. Check doc/global_islamic_courses_database.json for the raw data.
+
+### TASK-010 · Update: iman-boost-feature-design.md
+
+```yaml
+id: TASK-010
+status: backlog
+priority: high
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-04T17:40:26.305Z
+updated_at: 2026-03-04T17:40:26.305Z
+tags:
+  - docs
+  - iman-boost
+  - frontend
+  - backend
+history:
+  - ts: 2026-03-04T17:40:26.305Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Iman Boost status: frontend exists (ImanBoostPage.tsx, useSigns.ts, mockData.ts, types.ts) but uses MOCK DATA only. Backend has signRoute.js, signController.js, signSchema.js, data/signsSeed.json, scripts/seedSigns.js — so backend is scaffolded. Update doc: add Implementation Progress section. Mark Phase 1 backend as partially done (model + seed exists). Mark frontend as partially done (page + mock). Note what remains: wire frontend to real API, seed the DB, category filter UI, daily rotation, sharing, bookmark. Update status header from 'Awaiting Implementation Approval' to 'In Progress - Partial'.
