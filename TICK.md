@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-04T17:40:51.527Z
+updated: 2026-03-04T17:40:59.291Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 14
+next_id: 15
 ---
 
 ## Agents
@@ -339,3 +339,27 @@ history:
 ```
 
 > This research doc covers replacing hardcoded content in dailyLearningController.js with dynamic AlQuran Cloud API data. Current known state: backend still has hardcoded 2 Ayahs, 1 Ruku, 1 Juzz, 1 Para. Update doc: add Implementation Status section. Mark research as complete based on this doc. Note that dynamic backend integration is NOT YET DONE (still hardcoded). Highlight the recommended approach (AlQuran Cloud /v1/juz/:n, /v1/ruku/:n etc.) and mark the specific next implementation steps clearly.
+
+### TASK-014 · Update: quran-learning-feature-solutions.md
+
+```yaml
+id: TASK-014
+status: backlog
+priority: medium
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-04T17:40:59.291Z
+updated_at: 2026-03-04T17:40:59.291Z
+tags:
+  - docs
+  - quran
+  - learn-quran
+  - frontend
+history:
+  - ts: 2026-03-04T17:40:59.291Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Doc outlines 5 Quran learning feature ideas: AI Tajweed Coach, Spaced Repetition Hifz, Community Tafseer, Quran Learning Path, and Daily Reflection Journal. Current state: learn-quran feature has LearnQuranHub.tsx; quran feature has QuranReaderPage.tsx with prototypes; spaced rep exists in quran-topics. Update doc: add Implementation Progress section per feature idea. Mark what exists (basic reader, spaced rep prototype), what is pending (AI Tajweed, Hifz tracker, community tafseer). Note which solutions are prioritized.
