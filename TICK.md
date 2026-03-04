@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-04T17:39:35.046Z
+updated: 2026-03-04T17:39:47.593Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 5
+next_id: 6
 ---
 
 ## Agents
@@ -122,3 +122,26 @@ history:
 ```
 
 > Systematically audit every doc in /docs/, add current implementation status, mark resolved findings, note remaining gaps, and ensure each doc accurately reflects the real state of DeenVerse as of March 2026. One child task per doc.
+
+### TASK-005 · Update: browse-by-topic-optimization-research.md
+
+```yaml
+id: TASK-005
+status: backlog
+priority: medium
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-04T17:39:47.593Z
+updated_at: 2026-03-04T17:39:47.593Z
+tags:
+  - docs
+  - browse-topic
+  - frontend
+history:
+  - ts: 2026-03-04T17:39:47.593Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> This research doc covers Tier-1/2/3 browse-by-topic enhancements. Current state: feature is implemented as quran-topics (QuranTopicsPage, TopicDetailPage, MoodDetailPage, SpacedRepetitionCard, SearchBar). Tier-1 frontend prototyping is in Review (TASK-001). Update doc to: mark implemented items (moods, category pills, topic cards, community reflections, spaced rep), note what Tier-1 items remain (personalization, trending signals), update status header to reflect prototype phase.
