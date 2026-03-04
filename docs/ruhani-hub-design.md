@@ -2,10 +2,53 @@
 
 > **Route**: `/ruhani`
 > **Concept**: An intentional, distraction-free spiritual workspace where users come when they have dedicated time and mental clarity for deep Islamic practices.
+> **Status**: 🟢 **Phase 1 & 2 Implemented** — Phase 3 (Guided Session) not yet built (March 2026)
 
 ---
 
-## Table of Contents
+## 🟢 Implementation Progress (Updated March 2026)
+
+### Frontend — ✅ All Core Pages Implemented
+| File | Status | Phase |
+|---|---|---|
+| `frontend/src/features/ruhani/RuhaniHubPage.tsx` | ✅ Done | Phase 1 |
+| `frontend/src/features/ruhani/TafakkurPage.tsx` | ✅ Done | Phase 1 |
+| `frontend/src/features/ruhani/TazkiaPage.tsx` | ✅ Done | Phase 1 |
+| `frontend/src/features/ruhani/TadabburPage.tsx` | ✅ Done | Phase 2 |
+| `frontend/src/features/ruhani/RuhaniJournalPage.tsx` | ✅ Done | Phase 1 |
+| `frontend/src/features/ruhani/ruhaniApi.ts` | ✅ Done | Phase 1 |
+| `frontend/src/features/ruhani/useRuhani.ts` | ✅ Done | Phase 1 |
+| `frontend/src/features/ruhani/ruhaniStore.ts` | ✅ Done | Phase 1 |
+| `frontend/src/features/ruhani/components/` | ✅ Done | Phase 1-2 |
+| `GuidedSessionPage.tsx` | ❌ Not built | Phase 3 |
+
+### Backend — ✅ Core API Implemented
+| File | Status | Notes |
+|---|---|---|
+| `backend/routes/ruhaniRoute.js` | ✅ Done | All content + practice endpoints |
+| `backend/controller/ruhaniController.js` | ✅ Done | `getTafakkurTopics`, `getTodayTafakkurTopic`, etc. |
+| `backend/services/ruhaniService.js` | ✅ Done | Encapsulates static data serving + practice CRUD |
+| `backend/models/spiritualPracticeSchema.js` | ✅ Done | Per-entry model for Tafakkur/Tadabbur/Tazkia |
+| `backend/data/tafakkurTopics.js` | ✅ Done | Creation-sign topics with guided questions |
+| `backend/data/tadabburAyahs.js` | ✅ Done | Curated Tadabbur ayahs with reflection prompts |
+| `backend/data/tazkiaTraits.js` | ✅ Done | ~20 character traits with muhasaba prompts |
+| `spiritualSessionSchema.js` | ❌ Not built | Required for Phase 3 Guided Session |
+
+### What Remains (Phase 3)
+- [ ] `GuidedSessionPage.tsx` — time-selection → sequential Tafakkur → Tadabbur → Tazkia stepper
+- [ ] `SessionTimer.tsx` — soft ambient countdown
+- [ ] `SessionSummaryCard.tsx` — end-of-session share card
+- [ ] `backend/models/spiritualSessionSchema.js` — session record model
+- [ ] `POST /api/v1/ruhani/session` and `PUT /api/v1/ruhani/session/:id` endpoints
+- [ ] Cross-link bridge prompts at practice transitions (Phase 2 enhancement)
+- [ ] "Enter Tadabbur mode" button in Quran reader (integration with `/quran` feature)
+
+### What Remains (Phase 4 — future)
+- Session intelligence / content rotation based on user history
+- Offline mode for journal entries
+- Public sharing of Ruhani entries to feed (schema supports it, UI not built)
+
+---
 
 1. [The Three Practices — What They Are and How They Relate](#1-the-three-practices)
 2. [The Core Insight: They Form a Spiral](#2-the-core-insight-they-form-a-spiral)

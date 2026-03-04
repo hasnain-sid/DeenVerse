@@ -1,7 +1,12 @@
+import { tafakkurTopics } from '../data/tafakkurTopics.js';
+import { tazkiaTraits } from '../data/tazkiaTraits.js';
+import { tadabburAyahs } from '../data/tadabburAyahs.js';
 import { TOPICS, MOODS, CATEGORIES, TOPIC_LESSONS, getTopicBySlug, getMoodById } from "../data/quranTopics.js";
 import { getAyah, findAyahIdBySurah } from "./quranService.js";
 import { cacheGet, cacheSet, TTL } from "./cacheService.js";
 import logger from "../config/logger.js";
+import { AnalyticsEvent } from "../models/analyticsEventSchema.js";
+import { TopicReflection } from "../models/topicReflectionSchema.js";
 
 const TOPIC_CACHE_TTL = TTL.QURAN; // 7 days — ayah text is immutable
 
@@ -17,13 +22,16 @@ const AUDIO_EDITION = process.env.QURAN_AUDIO_EDITION || "ar.alafasy";
  * Return the full topic catalogue (without ayah text — lightweight).
  */
 export function listTopics() {
-  return TOPICS.map(({ slug, name, nameArabic, icon, description, category, ayahRefs }) => ({
+  return TOPICS.map(({ slug, name, nameArabic, icon, description, category, pillar, cluster, relatedTopics, ayahRefs }) => ({
     slug,
     name,
     nameArabic,
     icon,
     description,
     category,
+    pillar,
+    cluster,
+    relatedTopics,
     ayahCount: ayahRefs.length,
   }));
 }
@@ -69,6 +77,23 @@ export async function getTopicAyahs(slug) {
 
   const lessons = TOPIC_LESSONS[slug] || null;
 
+  // CROSS-LINKING
+  // ayahRefs are [surah, ayah] arrays — normalise to "surah:ayah" strings for comparison
+  const topicRefStrings = new Set(topic.ayahRefs.map(ref => `${ref[0]}:${ref[1]}`));
+
+  const linkedTafakkur = tafakkurTopics.filter(t =>
+    t.quranRefs && t.quranRefs.some(ref => topicRefStrings.has(ref))
+  ).slice(0, 3); // Max 3
+
+  // For tazkia traits, check by matching ayah ref, slug overlap, or datasetTags
+  const linkedTazkia = tazkiaTraits.filter(t =>
+    topicRefStrings.has(t.primaryAyah) || topic.slug.includes(t.slug) || (topic.datasetTags && topic.datasetTags.includes(t.slug))
+  ).slice(0, 2);
+
+  const linkedTadabbur = tadabburAyahs.filter(t =>
+    topicRefStrings.has(t.verseKey)
+  ).slice(0, 3);
+
   const result = {
     slug: topic.slug,
     name: topic.name,
@@ -76,9 +101,17 @@ export async function getTopicAyahs(slug) {
     icon: topic.icon,
     description: topic.description,
     category: topic.category,
+    pillar: topic.pillar,
+    cluster: topic.cluster,
+    relatedTopics: topic.relatedTopics,
     ayahs,
     lessons,
     ayahCount: ayahs.length,
+    crossLinks: {
+      tafakkur: linkedTafakkur,
+      tazkia: linkedTazkia,
+      tadabbur: linkedTadabbur
+    }
   };
 
   await cacheSet(cacheKey, result, TOPIC_CACHE_TTL);
@@ -266,4 +299,67 @@ async function fetchTafsir(globalAyahNumber) {
 async function fetchAudioUrl(globalAyahNumber) {
   // AlQuran Cloud serves audio at a predictable CDN URL
   return `https://cdn.islamic.network/quran/audio/128/${AUDIO_EDITION}/${globalAyahNumber}.mp3`;
+}
+
+/**
+ * Return trending topics based on view count and reflection count for the past 7 days
+ */
+export async function getTrendingTopics() {
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+  // 1. Get view counts from AnalyticsEvent
+  const viewCounts = await AnalyticsEvent.aggregate([
+    { $match: { event: 'topic_view', createdAt: { $gte: sevenDaysAgo } } },
+    { $group: { _id: '$metadata.topicSlug', count: { $sum: 1 } } }
+  ]);
+
+  // 2. Get reflection counts from TopicReflection
+  const reflectionCounts = await TopicReflection.aggregate([
+    { $match: { createdAt: { $gte: sevenDaysAgo } } },
+    { $group: { _id: '$topicSlug', count: { $sum: 1 } } }
+  ]);
+
+  // 3. Combine scores
+  const scoreMap = {};
+  viewCounts.forEach(item => {
+    if (item._id) scoreMap[item._id] = { views: item.count, reflections: 0, score: item.count };
+  });
+  
+  reflectionCounts.forEach(item => {
+    if (item._id) {
+      if (!scoreMap[item._id]) scoreMap[item._id] = { views: 0, reflections: item.count, score: 0 };
+      else scoreMap[item._id].reflections += item.count;
+      // Weight reflections higher than views
+      scoreMap[item._id].score += item.count * 5; 
+    }
+  });
+
+  const allTopicsMap = TOPICS.reduce((acc, t) => {
+    acc[t.slug] = t;
+    return acc;
+  }, {});
+
+  const trendingSlugs = Object.keys(scoreMap)
+    .sort((a, b) => scoreMap[b].score - scoreMap[a].score)
+    .slice(0, 10); // top 10
+
+  const trendingTopics = trendingSlugs.map(slug => {
+    const t = allTopicsMap[slug];
+    if (!t) return null;
+    return {
+      slug: t.slug,
+      name: t.name,
+      icon: t.icon,
+      description: t.description,
+      category: t.category,
+      pillar: t.pillar,
+      cluster: t.cluster,
+      score: scoreMap[slug].score,
+      views: scoreMap[slug].views,
+      reflections: scoreMap[slug].reflections
+    };
+  }).filter(Boolean);
+
+  return trendingTopics;
 }

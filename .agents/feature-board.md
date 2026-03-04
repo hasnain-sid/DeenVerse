@@ -26,6 +26,7 @@
 
 | Feature | Shared | Backend | Frontend | Mobile | Owner(s) | Contract | Notes |
 |---------|--------|---------|----------|--------|----------|----------|-------|
+| Global Islamic Courses Viewer | ⬜ | — | ✅ | ⬜ | antigravity | — | Frontend only |
 | Auth (JWT + Refresh) | ✅ | ✅ | ✅ | ⬜ | copilot-1, copilot-2 | — | Mobile pending |
 | Feed / Posts | ✅ | ✅ | ✅ | ⬜ | copilot-1, copilot-2 | — | — |
 | Hadith Browse | ⬜ | ✅ | ✅ | ⬜ | copilot-1, copilot-2 | — | — |
@@ -39,6 +40,7 @@
 | Share to Feed | ✅ | ✅ | ✅ | ⬜ | copilot-1, copilot-2 | — | — |
 | Moderation / Reports | ⬜ | ✅ | ⚠️ | ⬜ | copilot-2 | — | Admin panel needed |
 | Analytics | ⬜ | ✅ | ⚠️ | ⬜ | copilot-2 | — | Dashboard needed |
+| Browse by Topic (Quran Topics) | ⬜ | ✅ | ✅ | ⬜ | copilot | — | Netflix-style UI, code-reviewed TASK-023 |
 
 ---
 
@@ -86,7 +88,7 @@
 
 | Task | Agent | Completed | Notes |
 |------|-------|-----------|-------|
-| — | — | — | *Nothing completed yet today* |
+| Global Islamic Courses Viewer UI | antigravity | 2026-03-01 | Added new route and navigation for viewing courses database |
 
 ### How to Use This Section
 

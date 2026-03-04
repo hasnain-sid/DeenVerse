@@ -7,6 +7,9 @@ export interface TopicItem {
   description: string;
   category: string;
   ayahCount: number;
+  pillar?: string;
+  cluster?: string;
+  relatedTopics?: string[];
 }
 
 /** Full ayah object resolved from AlQuran Cloud */
@@ -33,6 +36,23 @@ export interface TopicLesson {
   practicalActions: string[];
 }
 
+/** Cross-link item connecting a topic to Ruhani content */
+export interface CrossLinkItem {
+  slug: string;
+  title: string;
+  type?: 'tafakkur' | 'tazkia' | 'tadabbur';
+  icon?: string;
+  contemplate?: string;
+  description?: string;
+}
+
+/** Cross-links from a topic to related Ruhani content */
+export interface TopicCrossLinks {
+  tafakkur: CrossLinkItem[];
+  tazkia: CrossLinkItem[];
+  tadabbur: CrossLinkItem[];
+}
+
 /** Full topic detail returned by /topics/:slug */
 export interface TopicDetail {
   slug: string;
@@ -41,6 +61,10 @@ export interface TopicDetail {
   icon: string;
   description: string;
   category: string;
+  pillar?: string;
+  cluster?: string;
+  relatedTopics?: string[];
+  crossLinks?: TopicCrossLinks;
   ayahs: AyahItem[];
   lessons: TopicLesson | null;
   ayahCount: number;
@@ -139,4 +163,23 @@ export interface TopicsListResponse {
 /** Moods list response */
 export interface MoodsListResponse {
   moods: MoodItem[];
+}
+
+/** Trending topic item returned by /trending */
+export interface TrendingTopicItem {
+  slug: string;
+  name: string;
+  icon: string;
+  category: string;
+  pillar?: string;
+  cluster?: string;
+  description?: string;
+  score: number;
+  views: number;
+  reflections: number;
+}
+
+/** Trending topics response */
+export interface TrendingTopicsResponse {
+  trending: TrendingTopicItem[];
 }

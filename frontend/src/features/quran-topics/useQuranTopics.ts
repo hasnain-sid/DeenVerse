@@ -9,6 +9,7 @@ import type {
   ReflectionsResponse,
   Reflection,
   LearningProgress,
+  TrendingTopicsResponse,
 } from './types';
 
 /** Fetch the full topic catalogue with categories. */
@@ -179,5 +180,16 @@ export function useRecordReview(slug: string | undefined) {
       queryClient.invalidateQueries({ queryKey: ['quran-topic-progress', slug] });
       queryClient.invalidateQueries({ queryKey: ['quran-topic-due-reviews'] });
     },
+  });
+}
+
+export function useTrendingTopics() {
+  return useQuery<TrendingTopicsResponse>({
+    queryKey: ['quran-trending-topics'],
+    queryFn: async () => {
+      const { data } = await api.get('/quran-topics/trending');
+      return data;
+    },
+    staleTime: 30 * 60 * 1000,
   });
 }

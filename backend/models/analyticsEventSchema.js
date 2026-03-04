@@ -23,6 +23,7 @@ const analyticsEventSchema = new mongoose.Schema(
         "post_like",
         "post_repost",
         "post_view",
+        "topic_view",
         // Social
         "follow",
         "unfollow",

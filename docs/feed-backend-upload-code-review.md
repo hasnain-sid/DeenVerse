@@ -1,7 +1,25 @@
 # Feed Backend + Upload Code Review
 
-Date: 2026-02-28
-Reviewer: Copilot (GPT-5.3-Codex)
+> **Date**: 2026-02-28  
+> **Reviewer**: Copilot (GPT-5.3-Codex)  
+> **Updated**: March 2026 — fix statuses added post-merge
+
+---
+
+## 🟡 Fix Status Summary (March 2026)
+
+| Finding | Status |
+|---|---|
+| C1 — Upload presign fails when AWS creds missing | 🔴 PENDING — AWS env vars not yet configured in dev |
+| C2 — Invalid post ID returns 500 (CastError) | ✅ RESOLVED — ObjectId validator middleware wired to post routes |
+| W1 — No ObjectId validation on `/:id` post routes | ✅ RESOLVED — per C2 fix above |
+| W2 — `getPostById` increments views before returning | 🟡 ACKNOWLEDGED — accepted as-is (minor) |
+| W3 — Presign includes `ContentLength` | 🟡 PENDING — no change yet |
+| W4 — Stack traces in dev responses | ✅ EXPECTED — only in `NODE_ENV=development`, production confirmed safe |
+| Feed pagination (skip/limit) | ✅ RESOLVED — cursor pagination implemented (see feed-backend-optimization-research.md) |
+| Feed cache key collisions | ✅ RESOLVED — key now includes cursor + limit |
+
+---
 
 ## Scope
 

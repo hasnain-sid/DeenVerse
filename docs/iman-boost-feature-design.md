@@ -1,13 +1,43 @@
 # Iman Boost — Feature Design Document
 
-> **Status**: Research Complete — Awaiting Implementation Approval  
+> **Status**: ✅ **In Progress — Backend + Frontend Scaffolded** (Updated March 2026)
 > **Author**: Copilot Research Agent  
 > **Date**: February 24, 2026  
 > **Related Features**: Daily Learning, Ruhani Hub, Quran Topics
 
 ---
 
-## Table of Contents
+## 🟡 Implementation Progress (Updated March 2026)
+
+### Backend — ✅ Implemented
+| File | Status | Notes |
+|---|---|---|
+| `backend/models/signSchema.js` | ✅ Done | All 6 category enums, `isPublished`, `order`, `sourceUrl` fields |
+| `backend/controller/signController.js` | ✅ Done | `getDailySign`, `getSigns`, `getSignById`, `getCategories` |
+| `backend/routes/signRoute.js` | ✅ Done | `GET /api/v1/signs/daily`, `/signs`, `/signs/:id`, `/signs/categories` |
+| `backend/services/signService.js` | ✅ Done | Daily rotation via Redis (24h TTL), category filtering, pagination |
+| `backend/data/signsSeed.json` | ✅ Done | Seed data exists |
+| `backend/scripts/seedSigns.js` | ✅ Done | Seed script ready |
+
+### Frontend — ✅ Scaffolded (Dev uses mock data)
+| File | Status | Notes |
+|---|---|---|
+| `frontend/src/features/iman-boost/ImanBoostPage.tsx` | ✅ Done | Full card UI, category filter, daily banner, detail modal |
+| `frontend/src/features/iman-boost/useSigns.ts` | ✅ Done | `useDailySign`, `useSigns`, `useSignCategories` hooks via TanStack Query |
+| `frontend/src/features/iman-boost/mockData.ts` | ✅ Done | Mock data for dev mode |
+| `frontend/src/features/iman-boost/types.ts` | ✅ Done | `Sign`, `SignCategory`, `SignsResponse` types |
+
+> **Dev Note**: `useSigns.ts` uses `USE_MOCK = import.meta.env.DEV` — dev always uses mock data. In production, all hooks call the real `/api/v1/signs/*` endpoints. To test against real backend in dev, flip `USE_MOCK` to `false`.
+
+### What Remains
+- [ ] **Seed the database**: Run `node backend/scripts/seedSigns.js` once in each environment to populate MongoDB with the seed data.
+- [ ] **Bookmark feature**: Backend `Sign` model has no bookmark relation yet — needs a `UserBookmark` or embedded array on `User`.
+- [ ] **SubhanAllah reaction**: Reaction/like system for signs not yet wired (social infra exists on posts but not signs).
+- [ ] **Share to Feed**: "Share this sign" → creates a post via `POST /api/v1/posts` (share flow exists but not triggered from Iman Boost page).
+- [ ] **Admin content management**: No admin UI for adding/editing signs — content must be managed via seed scripts or direct DB access.
+- [ ] **Phase 2**: Community sign submissions, scholarly review queue, multilingual support.
+
+---
 
 1. [Overview](#1-overview)
 2. [Problem Statement](#2-problem-statement)

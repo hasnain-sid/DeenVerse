@@ -1,6 +1,7 @@
 # Pre-Commit Cleanup Report
 
-**Generated:** 2026-03-01
+**Generated:** 2026-03-01  
+**Updated:** March 2026 — fix statuses added after post-merge audit  
 **Scope:** 64 changed files (tracked + untracked) across backend, frontend, config, and docs
 **Branch status:** No prototype folders found — previously cleaned. No TypeScript compilation errors. No orphan API calls. All deleted file references successfully removed.
 
@@ -20,58 +21,58 @@
 
 ## 🔴 Critical — Must Fix Before Merge
 
-### C1. Open Redirect via `sourceRoute` (Security)
+### C1. Open Redirect via `sourceRoute` (Security) — 🟡 PARTIALLY RESOLVED
 | | |
 |---|---|
 | **Files** | `backend/middlewares/validators.js`, `backend/services/shareEnrichment.js`, `frontend/src/features/feed/SharedContentCard.tsx` |
-| **Issue** | `sharedContent.sourceRoute` is stored as any string (up to 500 chars). The frontend renders `<Link to={sharedContent.sourceRoute}>` which React Router can navigate to external URLs. An attacker can set `sourceRoute: "https://evil.com"` turning any shared card into a phishing link. |
+| **Status** | `shareEnrichment.js` has `startsWith("/")` guard ✅. Validators still lack `matches(/^\/[a-zA-Z0-9\-_/%.]*$/)` regex ⚠️. `SharedContentCard.tsx` renders `<Link to={...}>` without `startsWith('/')` defensive check ⚠️. |
 | **Fix (backend validators.js)** | Add `.matches(/^\/[a-zA-Z0-9\-_/%.]*$/).withMessage('sourceRoute must be an internal path')` |
 | **Fix (shareEnrichment.js)** | Guard: `sourceRoute: raw.sourceRoute?.startsWith("/") ? raw.sourceRoute.trim().slice(0, 500) : undefined` |
 | **Fix (SharedContentCard.tsx)** | Defensive check: `{sharedContent.sourceRoute?.startsWith('/') && <Link to={...}>}` |
 
-### C2. Reset Token Leaked in Non-Production Response
+### C2. Reset Token Leaked in Non-Production Response — 🔴 STILL PENDING
 | | |
 |---|---|
 | **Files** | `backend/controller/userController.js` (L246-252), `backend/services/userService.js` (L288) |
 | **Issue** | `forgotPassword` returns raw `resetToken` in the HTTP response when `NODE_ENV !== 'production'`. If `NODE_ENV` is unset (defaults to `undefined`), the token is exposed — this is an account-takeover vector. |
 | **Fix** | Never return `resetToken` in the response body. Use `logger.debug()` only. Remove the `DEV ONLY` block. |
 
-### C3. `getOtherUsersProfiles` Returns ALL Users (DoS + Data Leak)
+### C3. `getOtherUsersProfiles` Returns ALL Users (DoS + Data Leak) — 🔴 STILL PENDING
 | | |
 |---|---|
 | **File** | `backend/services/userService.js` (L113-116) |
 | **Issue** | `User.find({ _id: { $ne: currentUserId } }).select("-password")` returns every user with no `.limit()` or pagination. At scale this dumps the entire user table. |
 | **Fix** | Add `.limit(50)` and pagination, or remove if unused. |
 
-### C4. Business Logic in Controller (Architecture Violation)
+### C4. Business Logic in Controller (Architecture Violation) — 🔴 STILL PENDING
 | | |
 |---|---|
 | **File** | `backend/controller/dailyLearningController.js` (L57-88, L110) |
 | **Issue** | `saveUserReflection` directly does `new DailyLearning(...)` and `.save()`. `getUserLearningHistory` queries DB directly. Violates `routes → controller → service → model` pattern. |
 | **Fix** | Create `backend/services/dailyLearningService.js`, move DB operations there. |
 
-### C5. Missing Input Validation on `saved/:id` Route
+### C5. Missing Input Validation on `saved/:id` Route — 🔴 STILL PENDING
 | | |
 |---|---|
 | **File** | `backend/routes/userRoute.js` (L51) |
 | **Issue** | `PUT /saved/:id` has no validation middleware. Arbitrary strings stored in user's `saved` array — potential NoSQL injection or schema pollution. |
 | **Fix** | Add a validator ensuring `:id` matches expected hadith ID format (alphanumeric/integer). |
 
-### C6. `confirm()` Used Instead of Custom UI
+### C6. `confirm()` Used Instead of Custom UI — 🔴 STILL PENDING
 | | |
 |---|---|
 | **File** | `frontend/src/features/saved/SavedPage.tsx` (L251) |
 | **Issue** | `if (confirm(...))` violates project rule: use `react-hot-toast` or shadcn confirmation dialog, not browser `confirm()`/`alert()`. |
 | **Fix** | Replace with shadcn `<AlertDialog>` or a custom confirmation component. |
 
-### C7. Untyped `any` Without Justification
+### C7. Untyped `any` Without Justification — 🔴 STILL PENDING
 | | |
 |---|---|
 | **File** | `frontend/src/features/learn-quran/LearnQuranHub.tsx` (L99) |
 | **Issue** | `function FeatureCard({ feature }: { feature: any })` — violates `noUnusedLocals`/strict TS rules. |
 | **Fix** | Define a `FeatureItem` interface and type the prop. |
 
-### C8. Barrel Import Prevents Tree-Shaking (Bundle Size)
+### C8. Barrel Import Prevents Tree-Shaking (Bundle Size) — 🔴 STILL PENDING
 | | |
 |---|---|
 | **File** | `frontend/src/features/quran-topics/components/TopicCard.tsx` (L2) |
@@ -82,7 +83,9 @@
 
 ## 🟡 Warnings — Should Fix
 
-### W1. `/preview` Route Missing Validation and Rate Limiter
+> **March 2026 update**: Warnings W1–W20 below are **unresolved unless noted**. The feed-backend-optimization-research.md Phase 1 recommendations have been implemented (cursor pagination, cache key redesign) which resolves feeds-related items.
+
+### W1. `/preview` Route Missing Validation and Rate Limiter — 🟡 PENDING
 | **File** | `backend/routes/shareRoute.js` (L27), `backend/controller/shareController.js` (L31-35) |
 |---|---|
 | **Issue** | `POST /share/preview` has `isAuthenticated` but no validation middleware and no rate limiter. Unvalidated input hits the enrichment pipeline. |

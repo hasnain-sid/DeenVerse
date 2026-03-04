@@ -2,6 +2,34 @@
 
 > **Last updated:** February 2026  
 > **Purpose:** Research the best methods to build a feature where users can search and receive Quran Ayahs based on their mood, life situation, or specific topic (e.g., getting rid of interest/riba, patience, gratitude). The goal: read the relevant Quran passage, understand its meaning, and extract practical life lessons.
+> **Status**: ✅ **IMPLEMENTED** — Adopted as `quran-topics` feature (March 2026)
+
+---
+
+## 🟢 Implementation Progress (Updated March 2026)
+
+The recommended approach from this research was **fully implemented** as the `quran-topics` feature (`/quran-topics` route).
+
+### Recommended Approach Adopted
+This research evaluated multiple architectural approaches. The **Tier-1 recommended approach** (curated topic dataset + AlQuran Cloud API, no external AI dependency) was selected and implemented.
+
+### What Is Implemented
+| Research Item | Status | Implementation |
+|---|---|---|
+| Mood-based entry (10 moods) | ✅ Done | `MoodCard.tsx`, `MoodDetailPage.tsx` — each mood maps to 2-3 related quran-topics |
+| Topic-based browsing (28 topics, 8 categories) | ✅ Done | `QuranTopicsPage.tsx`, `TopicCard.tsx` |
+| Curated ayah references per topic (~300 total) | ✅ Done | `backend/data/quranTopics.js` → resolved via AlQuran Cloud API (7-day cache) |
+| Ayah display with Arabic + translation | ✅ Done | `AyahCard.tsx` |
+| Practical lessons per topic | ✅ Done | `LessonsSection.tsx` (12 lesson objects) |
+| Topic-level community reflections | ✅ Done | `CommunityReflections.tsx` (paginated, scholar-verified, with likes) |
+| Spaced repetition learning | ✅ Done | `SpacedRepetitionCard.tsx` + `learningProgressService.js` |
+| Fuse.js fuzzy search + AlQuran keyword search | ✅ Done | `useSmartSearch.ts`, `SearchBar.tsx`, `SearchResults.tsx` |
+
+### What Was Not Implemented (From Roadmap)
+- **AI / semantic search** (Tier 2-3): Natural language queries like "how to deal with loss" are not yet supported — search remains keyword-based
+- **Full passage context reader** (Tier 2): Users see individual ayahs; reading the full surrounding passage with surah context is not yet built
+- **Personalized mood recommendations** (Tier 3): Mood → topic mapping is still static; no dynamic mapping based on community engagement data
+- **User-specific ayah bookmarking per mood session**: Not implemented
 
 ---
 

@@ -1,6 +1,7 @@
 # Share-to-Feed Code Review Findings
 
-Date: 2026-02-25
+> **Date**: 2026-02-25  
+> **Updated**: March 2026 — all Critical and Warning items resolved or annotated with current status
 
 ## Scope
 Review covered the share-to-feed backend/frontend integration and related changed files:
@@ -21,27 +22,27 @@ Review covered the share-to-feed backend/frontend integration and related change
 
 ### 🔴 Critical
 
-1. **Frontend endpoint mismatch**
+1. **Frontend endpoint mismatch** ✅ **[RESOLVED]**
    - `useShareToFeed()` was calling `POST /posts` instead of the dedicated `POST /share/to-feed` endpoint.
    - Impact: bypassed dedicated validation and rate limiting designed for share-to-feed.
 
-2. **Incorrect payload typing for `content`**
+2. **Incorrect payload typing for `content`** ✅ **[RESOLVED]**
    - Frontend mutation typed `content` as required, but backend accepts optional caption and can auto-generate one.
    - Impact: unnecessary frontend constraint and mismatch with backend contract.
 
-3. **Frontend `Post` type missing `shareCount`**
+3. **Frontend `Post` type missing `shareCount`** ✅ **[RESOLVED]**
    - Backend schema includes `shareCount`, but frontend `Post` interface did not.
    - Impact: type drift between backend response and frontend model.
 
 ### 🟡 Warning
 
-4. **Double enrichment in share path**
+4. **Double enrichment in share path** ✅ **[RESOLVED]**
    - `shareToFeed()` enriched payload, and `createPost()` enriched it again.
    - Impact: redundant processing on each share request.
 
 ### 🟢 Suggestion
 
-5. **Accessibility improvement for shared card links**
+5. **Accessibility improvement for shared card links** ✅ **[RESOLVED]**
    - `SharedContentCard` link wrapper had no `aria-label`.
    - Impact: weaker screen-reader clarity.
 

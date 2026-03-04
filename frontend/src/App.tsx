@@ -87,6 +87,7 @@ const ImanBoostPage = lazy(() =>
 const QuranTopicsPage = lazy(() =>
   import('@/features/quran-topics/QuranTopicsPage').then((m) => ({ default: m.QuranTopicsPage }))
 );
+
 const TopicDetailPage = lazy(() =>
   import('@/features/quran-topics/TopicDetailPage').then((m) => ({ default: m.TopicDetailPage }))
 );
@@ -112,6 +113,10 @@ const RuhaniJournalPage = lazy(() =>
 
 const PrivacyPolicy = lazy(() => import('@/features/legal/PrivacyPolicy'));
 const TermsOfService = lazy(() => import('@/features/legal/TermsOfService'));
+
+const GlobalCoursesPage = lazy(() =>
+  import('@/features/courses/GlobalCoursesPage').then((m) => ({ default: m.GlobalCoursesPage }))
+);
 
 import CookieConsent from '@/components/CookieConsent';
 
@@ -252,6 +257,7 @@ export default function App() {
                   <Route path="/login" element={<LoginPage />} />
                   <Route path="/forgot-password" element={<ForgotPasswordPage />} />
                   <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
+                  <Route path="/global-courses" element={<GlobalCoursesPage />} />
                   <Route path="*" element={<NotFoundPage />} />
                 </Route>
               </Routes>

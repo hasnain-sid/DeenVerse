@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import api from '@/lib/api';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Loader2 } from 'lucide-react';
+import { ArrowLeft, Loader2, Compass, Star, Heart } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import { useTopicDetail, useTopicReflections, useTopicProgress } from './useQuranTopics';
 import { useAuthStore } from '@/stores/authStore';
 import { AyahCard } from './components/AyahCard';
@@ -19,6 +21,13 @@ export function TopicDetailPage() {
   const { data: reflectionsData } = useTopicReflections(slug);
   const { data: progressData } = useTopicProgress(isAuthenticated ? slug : undefined);
   const [activeTab, setActiveTab] = useState<'reading' | 'reflections'>('reading');
+
+  // Track topic view (fire-and-forget)
+  useEffect(() => {
+    if (topic && slug) {
+      api.post('/analytics/topic-view', { topicSlug: slug }).catch(() => {});
+    }
+  }, [topic, slug]);
 
   const reflections = reflectionsData?.reflections || [];
   const learningProgress = progressData?.progress || undefined;
@@ -116,6 +125,65 @@ export function TopicDetailPage() {
               </div>
             )}
           </section>
+
+          {/* Deeper Dive (Cross-Links & Related Topics) */}
+          <section className="space-y-4 pt-6 border-t">
+            <h2 className="text-xl font-bold text-foreground">Deeper Dive</h2>
+            
+            {((topic.relatedTopics?.length ?? 0) > 0) && (
+              <div className="space-y-2">
+                <h3 className="text-md font-semibold text-muted-foreground flex items-center gap-2">
+                  <Compass className="w-5 h-5 text-primary" /> Related Topics
+                </h3>
+                <div className="flex gap-2 flex-wrap">
+                  {topic.relatedTopics!.map(tSlug => (
+                    <Link key={tSlug} to={`/quran-topics/${tSlug}`} className="px-3 py-1.5 bg-secondary text-secondary-foreground rounded-full text-sm font-medium hover:bg-secondary/80 transition-colors">
+                      {tSlug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {((topic.crossLinks?.tafakkur?.length ?? 0) > 0) && (
+              <div className="space-y-3 mt-4 border border-border p-4 rounded-xl relative overflow-hidden bg-card">
+                  <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
+                      <Star className="w-24 h-24" />
+                  </div>
+                <h3 className="text-md font-semibold flex items-center gap-2">
+                  Contemplate This <Badge variant="secondary" className="ml-2 font-normal">Tafakkur</Badge>
+                </h3>
+                <div className="grid gap-3">
+                  {topic.crossLinks!.tafakkur.map(taf => (
+                    <div key={taf.slug} className="p-3 bg-muted/30 rounded-lg text-sm">
+                      <span className="font-semibold block mb-1">{taf.title} {taf.icon ?? ''}</span>
+                      <span className="text-muted-foreground">{taf.contemplate ?? ''}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {((topic.crossLinks?.tazkia?.length ?? 0) > 0) && (
+              <div className="space-y-3 mt-4 border border-border p-4 rounded-xl relative overflow-hidden bg-card">
+                 <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
+                      <Heart className="w-24 h-24" />
+                  </div>
+                <h3 className="text-md font-semibold flex items-center gap-2">
+                  Purify This Trait <Badge variant="secondary" className="ml-2 font-normal">Tazkia</Badge>
+                </h3>
+                <div className="grid gap-3">
+                  {topic.crossLinks!.tazkia.map(taz => (
+                    <div key={taz.slug} className="p-3 bg-muted/30 rounded-lg text-sm">
+                      <span className="font-semibold block mb-1">{taz.title}</span>
+                      <span className="text-muted-foreground">{taz.description ?? ''}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </section>
+
         </div>
       )}
 

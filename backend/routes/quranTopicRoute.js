@@ -3,6 +3,7 @@ import isAuthenticated from "../config/auth.js";
 import {
   getTopics,
   getTopicBySlug,
+  getTrendingTopics,
   getMoods,
   getMoodById,
   searchQuran,
@@ -27,7 +28,8 @@ router.get("/topics", getTopics);
 
 // GET /api/v1/quran-topics/topics/:slug → single topic with ayahs
 router.get("/topics/:slug", getTopicBySlug);
-
+// GET /api/v1/quran-topics/trending -> trending topics
+router.get("/trending", getTrendingTopics);
 // GET /api/v1/quran-topics/moods → list all moods
 router.get("/moods", getMoods);
 

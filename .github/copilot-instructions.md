@@ -161,3 +161,19 @@ This project uses multiple AI agents simultaneously (Copilot, Antigravity, etc.)
 - **Handover Protocol** (`.agents/workflows/feature-handover.md`): When you finish your layer, update the contract + board, and leave handover notes for the next agent.
 - **Integrity Check**: Run `npm run check:integrity` to detect orphan frontend API calls and unconsumed backend routes.
 - See `.github/instructions/multi-agent-coordination.instructions.md` for the full ruleset.
+
+---
+
+## Task Management — TICK.md
+
+All granular task tracking uses the **tick-md** protocol (`TICK.md` at project root). This is the primary system for organizing, assigning, and tracking work across multiple agents.
+
+- **CLI**: `tick` (installed globally via `npm install -g tick-md`)
+- **Add tasks**: `tick add "Title" --priority high --tags "backend,auth" --description "..."`
+- **Claim before working**: `tick claim TASK-001 copilot` — prevents agent collisions
+- **Track progress**: `tick comment TASK-001 copilot --note "Progress update"`
+- **Complete**: `tick done TASK-001 copilot` — auto-unblocks dependent tasks
+- **View status**: `tick status`, `tick list --tag frontend`, `tick graph`
+- **Archive done tasks**: `tick archive`
+- Registered agents: `hasna` (human owner), `copilot`, `copilot-2`, `antigravity` (bots)
+- See `.github/instructions/task-management.instructions.md` for the full protocol.

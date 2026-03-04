@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { Home, Search, Bookmark, Users, Newspaper, Bell, Radio, BookOpen, BookHeart, MessageCircle, User, GraduationCap, Moon, Sparkles, ChevronDown } from 'lucide-react';
+import { Home, Search, Bookmark, Users, Newspaper, Bell, Radio, BookOpen, BookHeart, MessageCircle, User, GraduationCap, Moon, Sparkles, ChevronDown, Globe } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useUIStore } from '@/stores/uiStore';
 import { useUnreadCount } from '@/features/notifications/useNotifications';
@@ -24,6 +24,7 @@ const extendedNav = [
   { name: 'Iman Boost', href: '/iman-boost', icon: Sparkles },
   { name: 'Ruhani Space', href: '/ruhani', icon: Moon },
   { name: 'Hadith', href: '/hadith', icon: BookOpen },
+  { name: 'Global Courses', href: '/global-courses', icon: Globe },
   { name: 'Streams', href: '/streams', icon: Radio },
   { name: 'Notifications', href: '/notifications', icon: Bell },
   { name: 'Messages', href: '/messages', icon: MessageCircle },
@@ -39,7 +40,7 @@ const extendedNavGroups = [
   },
   {
     title: 'Learning',
-    items: ['Learn Quran', 'Quran by Topic', 'Iman Boost', 'Ruhani Space', 'Hadith'],
+    items: ['Learn Quran', 'Quran by Topic', 'Iman Boost', 'Ruhani Space', 'Hadith', 'Global Courses'],
   },
   {
     title: 'Community',

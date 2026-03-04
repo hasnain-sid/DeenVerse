@@ -1,6 +1,33 @@
 # Feed Backend Optimization & Modernization Research Brief
 
-Date: 2026-02-26  
+> **Date**: 2026-02-26  
+> **Updated**: March 2026 — Phase 1 recommendations implemented  
+> **Status**: ✅ **Phase 1 Implemented** — cursor pagination, cache key redesign, validation caps done
+
+---
+
+## 🟢 Implementation Progress (Updated March 2026)
+
+### Phase 1 — ✅ Completed
+| Recommendation | Status | Notes |
+|---|---|---|
+| Cursor/keyset pagination for feed endpoints | ✅ Done | `postService.js`: `encodeCursor`, `decodeCursor`, `cursorFilter` implemented; `{ createdAt: -1, _id: -1 }` sort |
+| Cache key redesign (include limit + cursor) | ✅ Done | `cacheService.js`: key is now `feed:{userId}:{tab}:{limit}:{cursor}` |
+| Max limit caps (`MAX_LIMIT = 50`, `MAX_TRENDING_LIMIT = 30`) | ✅ Done | `postService.js` |
+| `nextCursor` returned in feed responses | ✅ Done | `postService.js` (`getFeed`, `getUserPosts`, `getPostsByHashtag`) |
+
+### Phase 2 — ⏳ Not Started
+- Hybrid fan-out timeline (Redis materialized timelines for normal users)
+- Background workers + retry/idempotency
+- Follower graph optimization (junction collection)
+
+### Still Open (from code review findings)
+- **W5 View count deduplication**: `$inc: { views: 1 }` still inflatable — Redis per-user+post set not yet added
+- **W6 In-memory follower pagination**: `following.slice()` still used in `userService.js`
+- **W7 Unbounded arrays** on `userSchema` and `postSchema`: `saved`, `followers`, `following`, `likes`, `reposts` still unbounded
+
+---
+
 Workspace: DeenVerse monorepo  
 Focus: Feed backend architecture, performance, correctness, and modernization strategy
 

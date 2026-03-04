@@ -5,6 +5,7 @@ import {
   getTopicAyahs,
   getMoodAyahs,
   searchQuranByKeyword,
+  getTrendingTopics as getTrendingTopicsService,
 } from "../services/topicService.js";
 import {
   getReflections,
@@ -303,5 +304,20 @@ export const getDueReviewsHandler = async (req, res, next) => {
   } catch (error) {
     logger.error("Error fetching due reviews:", error);
     next(new AppError("Failed to fetch due reviews", 500));
+  }
+};
+
+/**
+ * @desc    Get trending topics
+ * @route   GET /api/v1/quran-topics/trending
+ * @access  Public
+ */
+export const getTrendingTopics = async (_req, res, next) => {
+  try {
+    const trending = await getTrendingTopicsService();
+    res.status(200).json({ trending });
+  } catch (error) {
+    logger.error("Error fetching trending topics:", error);
+    next(new AppError("Failed to fetch trending topics", 500));
   }
 };

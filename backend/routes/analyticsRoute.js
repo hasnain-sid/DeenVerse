@@ -4,6 +4,7 @@ import { optionalAuth } from "../config/auth.js";
 import { isAdmin } from "../middlewares/admin.js";
 import {
   track,
+  trackTopicView,
   dashboardOverview,
   profileInsights,
 } from "../controller/analyticsController.js";
@@ -13,6 +14,9 @@ const router = express.Router();
 
 // ── Track events (authenticated or anonymous) ────────
 router.post("/track", optionalAuth, analyticsTrackLimiter, track);
+
+// ── Track topic view ────────
+router.post("/topic-view", optionalAuth, analyticsTrackLimiter, trackTopicView);
 
 // ── User: own profile insights ───────────────────────
 router.get("/insights", isAuthenticated, profileInsights);

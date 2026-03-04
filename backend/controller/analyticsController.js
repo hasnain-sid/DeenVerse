@@ -19,6 +19,19 @@ export const track = async (req, res, next) => {
   }
 };
 
+export const trackTopicView = async (req, res, next) => {
+  try {
+    const { topicSlug } = req.body;
+    if (!topicSlug) {
+      return res.status(400).json({ message: "topicSlug is required" });
+    }
+    await trackEvent(req.user, "topic_view", { topicSlug }, req);
+    res.status(201).json({ message: "Topic view tracked" });
+  } catch (err) {
+    next(err);
+  }
+};
+
 // ── Admin: Dashboard overview ────────────────────────
 
 export const dashboardOverview = async (req, res, next) => {

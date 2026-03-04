@@ -1,5 +1,30 @@
 # Quran Learning Features — Top 5 Solutions
 
+> **Status**: 🟡 **Partially implemented** — Solutions 2 & 3 (partially) done; Solutions 1, 4, 5 not started (March 2026)
+
+---
+
+## 🟡 Implementation Progress (Updated March 2026)
+
+| Solution | Status | Notes |
+|---|---|---|
+| **1. AI Tajweed Coach** | ❌ Not started | No audio pipeline, no Whisper integration yet |
+| **2. Daily Ayah + Practical Reflection** | ✅ Done | Implemented as `daily-learning` feature — dynamic ayah rotation, split view, reflection journal |
+| **3. Consistency Engine (Streaks + Paths)** | 🔄 Partial | `streakService.js` exists but not wired to UI; no learning path UI built yet |
+| **4. Community Tafseer Discussions** | 🔄 Partial | Community reflections exist on `quran-topics` (`CommunityReflections.tsx`) but not per-ayah in the Quran reader |
+| **5. Quran Reader + Spaced Repetition Hifz** | 🔄 Partial | `QuranReaderPage.tsx` exists (with prototypes); spaced rep is in `quran-topics` not the reader |
+
+### LearnQuranHub (`/learn-quran`)
+`frontend/src/features/learn-quran/LearnQuranHub.tsx` exists — this is the entry-point hub that links to the various Quran learning features. Its completeness depends on which sub-features exist.
+
+### Next Priorities
+1. **Streaks**: Wire `streakService.js` to Daily Learning completion → show streak counter on `DailyLearningPage`
+2. **Quran Reader prototypes**: `frontend/src/features/quran/prototypes/` has 5 design variants ready for review — pick one and promote
+3. **Per-ayah community reflections**: Add reflection thread to Quran reader for selected ayahs
+4. **AI Tajweed Coach**: Major undertaking — requires audio pipeline research before scoping
+
+---
+
 ## Purpose
 This document captures 5 feature ideas for DeenVerse to make Quran learning engaging, consistent, practical for daily life, and supportive for correct recitation/pronunciation.
 
