@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-04T17:40:34.858Z
+updated: 2026-03-04T17:40:42.764Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 12
+next_id: 13
 ---
 
 ## Agents
@@ -292,3 +292,26 @@ history:
 ```
 
 > This research covers mood-based/topic-based Quran ayah lookup. The feature is IMPLEMENTED as quran-topics: QuranTopicsPage has MoodCard components and MoodDetailPage. Backend: quranTopicRoute.js + quranTopicController.js. Data: quranTopics.js has 28 topics with mood mappings. Update doc: add Implementation Status section showing the recommended approach was adopted (curated topic dataset + AlQuran Cloud API). Cross-reference the implementation files. Mark research roadmap items as done/todo.
+
+### TASK-012 · Update: pre-commit-cleanup-report.md
+
+```yaml
+id: TASK-012
+status: backlog
+priority: medium
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-04T17:40:42.764Z
+updated_at: 2026-03-04T17:40:42.764Z
+tags:
+  - docs
+  - code-quality
+  - security
+history:
+  - ts: 2026-03-04T17:40:42.764Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Pre-commit report dated 2026-03-01 with Critical/Warning/Suggestion items. This doc should be updated to reflect which issues were resolved post-merge and which remain open. Go through each Critical (C1 open redirect, C2 missing auth guard, etc.) and Warning item and add a [RESOLVED] / [PENDING] badge. This is the most actionable audit doc — keeping it current tells agents what security/quality debt still exists.
