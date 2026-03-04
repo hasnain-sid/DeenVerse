@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-04T20:11:24.642Z
+updated: 2026-03-04T20:24:57.823Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 21
+next_id: 22
 ---
 
 ## Agents
@@ -749,3 +749,26 @@ history:
 ```
 
 > TOPIC_LESSONS in quranTopics.js currently only has entries for ~12 topics. The remaining 16 topics return null lessons and the LessonsSection in TopicDetailPage is hidden for them. Additionally, several topics (e.g. tawheed, hereafter, tawakkul) have no description-level datasetTags that would help cross-linking. Tasks: (1) Write lesson objects (title, explanation, practicalActions[]) for the 16 missing topics, (2) Ensure datasetTags for every topic align with the tazkia trait slugs (tawakkul, sabr, shukr, tawadu, khushoo, ikhlas, muraqaba, sidq) so that the tazkia cross-link fallback path (topic.datasetTags.includes(t.slug)) can match.
+
+### TASK-021 · Prototype: Browse by Topic UI Redesign (5 variants)
+
+```yaml
+id: TASK-021
+status: backlog
+priority: high
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-04T20:24:57.823Z
+updated_at: 2026-03-04T20:24:57.823Z
+tags:
+  - frontend
+  - quran-topics
+  - prototype
+history:
+  - ts: 2026-03-04T20:24:57.823Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> The current /quran-topics page is visually unappealing — icons on the front screen don't look good and the overall layout needs a design overhaul. Create 5 distinct prototype variants in frontend/src/features/quran-topics/prototypes/ following the prototyping workflow. Each variant should explore different approaches to topic cards, icon treatment, pillar/cluster layout, mood selector, and trending row. Include a PrototypesViewer.tsx with toolbar and register a temporary route at /prototypes/quran-topics. All data is mocked inline — no backend changes.
