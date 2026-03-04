@@ -2,7 +2,7 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-04T17:45:58.396Z
+updated: 2026-03-04T17:45:59.442Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
 next_id: 17
@@ -13,7 +13,7 @@ next_id: 17
 | Agent | Type | Role | Status | Working On | Last Active | Trust Level |
 |-------|------|------|--------|------------|-------------|-------------|
 | hasna | human | owner, architect | idle | - | 2026-03-04T13:55:56.279Z | trusted |
-| copilot | bot | developer, researcher | working | TASK-016 | 2026-03-04T17:45:58.396Z | trusted |
+| copilot | bot | developer, researcher | working | TASK-009 | 2026-03-04T17:45:59.442Z | trusted |
 | copilot-2 | bot | developer, reviewer | idle | - | 2026-03-04T13:56:09.000Z | trusted |
 | antigravity | bot | developer, researcher | idle | - | 2026-03-04T13:56:15.009Z | trusted |
 
@@ -256,13 +256,13 @@ history:
 
 ```yaml
 id: TASK-009
-status: backlog
+status: in_progress
 priority: low
 assigned_to: null
-claimed_by: null
+claimed_by: copilot
 created_by: "@hasnain-sid"
 created_at: 2026-03-04T17:40:17.468Z
-updated_at: 2026-03-04T17:40:17.468Z
+updated_at: 2026-03-04T17:45:59.442Z
 tags:
   - docs
   - courses
@@ -271,6 +271,11 @@ history:
   - ts: 2026-03-04T17:40:17.468Z
     who: "@hasnain-sid"
     action: created
+  - ts: 2026-03-04T17:45:59.442Z
+    who: copilot
+    action: claimed
+    from: backlog
+    to: in_progress
 ```
 
 > This doc is a reference dataset of global Islamic courses/degrees (not a feature design doc). Frontend: GlobalCoursesPage.tsx exists in features/courses. Update doc: add a header section noting this is a data reference document, what it feeds into (GlobalCoursesPage), current integration status (page exists but data integration status unknown), and whether this JSON data is served from backend or bundled static. Check doc/global_islamic_courses_database.json for the raw data.
