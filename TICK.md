@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-04T17:40:10.266Z
+updated: 2026-03-04T17:40:17.468Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 9
+next_id: 10
 ---
 
 ## Agents
@@ -216,3 +216,26 @@ history:
 ```
 
 > Code review dated 2026-02-28 covering feed + upload flow. Update doc: for each Critical/Warning/Suggestion finding, add a [RESOLVED] or [PENDING] status marker. Cross-reference share-to-feed-code-review.md and pre-commit-cleanup-report.md for what was fixed in the post-review cleanup. Mark findings that pre-commit report confirmed fixed.
+
+### TASK-009 · Update: global-islamic-courses-database.md
+
+```yaml
+id: TASK-009
+status: backlog
+priority: low
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-04T17:40:17.468Z
+updated_at: 2026-03-04T17:40:17.468Z
+tags:
+  - docs
+  - courses
+  - database
+history:
+  - ts: 2026-03-04T17:40:17.468Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> This doc is a reference dataset of global Islamic courses/degrees (not a feature design doc). Frontend: GlobalCoursesPage.tsx exists in features/courses. Update doc: add a header section noting this is a data reference document, what it feeds into (GlobalCoursesPage), current integration status (page exists but data integration status unknown), and whether this JSON data is served from backend or bundled static. Check doc/global_islamic_courses_database.json for the raw data.
