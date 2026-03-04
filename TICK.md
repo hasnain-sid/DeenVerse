@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-04T20:24:57.823Z
+updated: 2026-03-04T20:25:06.233Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 22
+next_id: 23
 ---
 
 ## Agents
@@ -772,3 +772,27 @@ history:
 ```
 
 > The current /quran-topics page is visually unappealing — icons on the front screen don't look good and the overall layout needs a design overhaul. Create 5 distinct prototype variants in frontend/src/features/quran-topics/prototypes/ following the prototyping workflow. Each variant should explore different approaches to topic cards, icon treatment, pillar/cluster layout, mood selector, and trending row. Include a PrototypesViewer.tsx with toolbar and register a temporary route at /prototypes/quran-topics. All data is mocked inline — no backend changes.
+
+### TASK-022 · Promote chosen Browse by Topic prototype to main app
+
+```yaml
+id: TASK-022
+status: backlog
+priority: high
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-04T20:25:06.233Z
+updated_at: 2026-03-04T20:25:06.233Z
+tags:
+  - frontend
+  - quran-topics
+depends_on:
+  - TASK-021
+history:
+  - ts: 2026-03-04T20:25:06.233Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> After the user selects a prototype variant from TASK-021, promote it to the main QuranTopicsPage.tsx and TopicDetailPage.tsx. Wire up real TanStack Query hooks (useTopics, useTrendingTopics, useTopicDetail, useMoods) replacing all mocked data. Delete the prototypes/ folder and the /prototypes/quran-topics route from App.tsx. Ensure all Tailwind, shadcn/ui, Framer Motion, and Lucide icon usage follows project conventions. Fix TypeScript errors and pass lint with zero warnings.
