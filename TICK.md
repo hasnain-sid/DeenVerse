@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-04T13:57:30.934Z
+updated: 2026-03-04T13:57:39.007Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 4
+next_id: 5
 ---
 
 ## Agents
@@ -90,3 +90,25 @@ history:
 ```
 
 > Create frontend/src/features/email-verification/ with VerifyEmailPage.tsx, useEmailVerification.ts hook, and verification success/error states. Use TanStack Query for API calls.
+
+### TASK-004 · Implement Google OAuth - research and contract
+
+```yaml
+id: TASK-004
+status: backlog
+priority: medium
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-04T13:57:39.007Z
+updated_at: 2026-03-04T13:57:39.007Z
+tags:
+  - fullstack
+  - auth
+history:
+  - ts: 2026-03-04T13:57:39.007Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Research Google OAuth integration options (passport-google-oauth20 vs googleapis). Create contract in .agents/contracts/google-oauth.md. Define shared schemas.
