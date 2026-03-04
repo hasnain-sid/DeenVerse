@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-04T18:07:26.622Z
+updated: 2026-03-04T18:24:08.597Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 17
+next_id: 18
 ---
 
 ## Agents
@@ -579,3 +579,26 @@ history:
 ```
 
 > Code review dated 2026-02-25 covering share-to-feed backend/frontend integration. Findings include critical endpoint mismatch, payload typing issue, and several warnings. Update doc: for each Critical/Warning/Suggestion finding, add [RESOLVED] or [PENDING] status based on what the pre-commit cleanup report confirms was fixed. Add a Post-Review Resolution section summarizing what was merged.
+
+### TASK-017 · Browse by Topic — Cleanup: remove prototypes, fix types, wire App.tsx
+
+```yaml
+id: TASK-017
+status: backlog
+priority: high
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-04T18:24:08.597Z
+updated_at: 2026-03-04T18:24:08.597Z
+tags:
+  - frontend
+  - cleanup
+  - browse-topic
+history:
+  - ts: 2026-03-04T18:24:08.597Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> 1. Remove phantom /prototypes/browse-topic route and PrototypesViewer import from App.tsx (browse-topic folder never existed on disk). 2. Fix types.ts: add pillar, cluster, relatedTopics, crossLinks fields to TopicDetail and TopicItem interfaces to match what backend returns and what TopicDetailPage.tsx already uses. 3. Audit docs/ folder for any prototype-era or stale browse-topic docs and remove/update them.
