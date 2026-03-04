@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-04T20:25:06.233Z
+updated: 2026-03-04T20:25:17.257Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 23
+next_id: 24
 ---
 
 ## Agents
@@ -796,3 +796,29 @@ history:
 ```
 
 > After the user selects a prototype variant from TASK-021, promote it to the main QuranTopicsPage.tsx and TopicDetailPage.tsx. Wire up real TanStack Query hooks (useTopics, useTrendingTopics, useTopicDetail, useMoods) replacing all mocked data. Delete the prototypes/ folder and the /prototypes/quran-topics route from App.tsx. Ensure all Tailwind, shadcn/ui, Framer Motion, and Lucide icon usage follows project conventions. Fix TypeScript errors and pass lint with zero warnings.
+
+### TASK-023 · Backend integration & code review: Browse by Topic
+
+```yaml
+id: TASK-023
+status: backlog
+priority: medium
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-04T20:25:17.257Z
+updated_at: 2026-03-04T20:25:17.257Z
+tags:
+  - backend
+  - frontend
+  - quran-topics
+  - code-review
+depends_on:
+  - TASK-022
+history:
+  - ts: 2026-03-04T20:25:17.257Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Full integration pass and code review for the Browse by Topic feature after the new UI is live. (1) Backend: verify all endpoints (/quran-topics, /quran-topics/:slug, /quran-topics/mood/:moodId, /quran-topics/trending) return correct payloads matching the new frontend types. Check Redis caching TTLs, error handling, and AppError usage. Validate cross-link resolution (tafakkur/tazkia/tadabbur) returns real data. (2) Code review: apply code-review.instructions.md — check for OWASP issues, unused imports, any, missing error boundaries, accessibility, and chunk size. (3) Run check:integrity script to verify no orphan API calls.
