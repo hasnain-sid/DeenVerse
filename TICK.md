@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-04T18:25:40.626Z
+updated: 2026-03-04T19:57:58.907Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 18
+next_id: 19
 ---
 
 ## Agents
@@ -621,3 +621,26 @@ history:
 ```
 
 > 1. Remove phantom /prototypes/browse-topic route and PrototypesViewer import from App.tsx (browse-topic folder never existed on disk). 2. Fix types.ts: add pillar, cluster, relatedTopics, crossLinks fields to TopicDetail and TopicItem interfaces to match what backend returns and what TopicDetailPage.tsx already uses. 3. Audit docs/ folder for any prototype-era or stale browse-topic docs and remove/update them.
+
+### TASK-018 · Populate pillar, cluster, relatedTopics in quranTopics.js
+
+```yaml
+id: TASK-018
+status: backlog
+priority: high
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-04T19:57:58.907Z
+updated_at: 2026-03-04T19:57:58.907Z
+tags:
+  - backend
+  - data
+  - browse-topic
+history:
+  - ts: 2026-03-04T19:57:58.907Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> All 33 topics currently have pillar: 'General' and cluster: 'General' and relatedTopics: []. Apply the real 4-pillar taxonomy from the research doc (Heart & Soul → Emotional Healing/Inner Character, Faith & Worship → Core Beliefs/Acts of Worship, Life & Society → Relationships/Wealth & Ethics, Guidance & Growth → Life Direction/Boundaries) to every topic. Also populate relatedTopics[] for each topic with 2-4 slugs of semantically related topics. This data is required for the hub-and-spoke UI (already built) to show anything meaningful.
