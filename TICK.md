@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-04T17:39:47.593Z
+updated: 2026-03-04T17:39:55.235Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 6
+next_id: 7
 ---
 
 ## Agents
@@ -145,3 +145,27 @@ history:
 ```
 
 > This research doc covers Tier-1/2/3 browse-by-topic enhancements. Current state: feature is implemented as quran-topics (QuranTopicsPage, TopicDetailPage, MoodDetailPage, SpacedRepetitionCard, SearchBar). Tier-1 frontend prototyping is in Review (TASK-001). Update doc to: mark implemented items (moods, category pills, topic cards, community reflections, spaced rep), note what Tier-1 items remain (personalization, trending signals), update status header to reflect prototype phase.
+
+### TASK-006 · Update: daily-learning-design.md
+
+```yaml
+id: TASK-006
+status: backlog
+priority: medium
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-04T17:39:55.235Z
+updated_at: 2026-03-04T17:39:55.235Z
+tags:
+  - docs
+  - daily-learning
+  - frontend
+  - backend
+history:
+  - ts: 2026-03-04T17:39:55.235Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Daily Learning feature is IMPLEMENTED: DailyLearningPage.tsx, DailyLearningTabs.tsx, ReflectionSplitView.tsx on frontend; DailyLearning.js model + dailyLearningController.js + dailyLearningRoute.js on backend. However backend still uses hardcoded content (see quran-data-sources-research.md). Update doc: mark implemented architecture, add Progress section noting hardcoded content and quran data sources research findings, note remaining work (dynamic content from AlQuran Cloud, streaks, public reflections).
