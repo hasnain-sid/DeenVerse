@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-04T13:57:17.976Z
+updated: 2026-03-04T13:57:30.934Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 3
+next_id: 4
 ---
 
 ## Agents
@@ -66,3 +66,27 @@ history:
 ```
 
 > Implement POST /api/v1/user/verify-email and POST /api/v1/user/resend-verification. Add verification token model, email sending via SES, rate limiting. Follow route->controller->service->model pattern.
+
+### TASK-003 · Build Email Verification frontend UI
+
+```yaml
+id: TASK-003
+status: backlog
+priority: high
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-04T13:57:30.934Z
+updated_at: 2026-03-04T13:57:30.934Z
+tags:
+  - frontend
+  - auth
+depends_on:
+  - TASK-001
+history:
+  - ts: 2026-03-04T13:57:30.934Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Create frontend/src/features/email-verification/ with VerifyEmailPage.tsx, useEmailVerification.ts hook, and verification success/error states. Use TanStack Query for API calls.
