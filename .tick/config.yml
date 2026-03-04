@@ -1,0 +1,18 @@
+# Tick Configuration
+# See https://tick.md/docs/config for full options
+
+# Git integration
+git:
+  auto_commit: true
+  commit_prefix: "[tick]"
+  push_on_sync: false
+
+# File locking
+locking:
+  enabled: true
+  timeout: 300  # seconds
+
+# Agent defaults
+agents:
+  default_trust: restricted
+  require_registration: true
