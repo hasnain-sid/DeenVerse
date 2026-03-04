@@ -2,7 +2,7 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-04T18:24:12.680Z
+updated: 2026-03-04T18:25:39.844Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
 next_id: 18
@@ -13,7 +13,7 @@ next_id: 18
 | Agent | Type | Role | Status | Working On | Last Active | Trust Level |
 |-------|------|------|--------|------------|-------------|-------------|
 | hasna | human | owner, architect | idle | - | 2026-03-04T13:55:56.279Z | trusted |
-| copilot | bot | developer, researcher | working | TASK-017 | 2026-03-04T18:24:12.680Z | trusted |
+| copilot | bot | developer, researcher | working | TASK-017 | 2026-03-04T18:25:39.844Z | trusted |
 | copilot-2 | bot | developer, reviewer | idle | - | 2026-03-04T13:56:09.000Z | trusted |
 | antigravity | bot | developer, researcher | idle | - | 2026-03-04T13:56:15.009Z | trusted |
 
@@ -590,7 +590,7 @@ assigned_to: null
 claimed_by: copilot
 created_by: "@hasnain-sid"
 created_at: 2026-03-04T18:24:08.597Z
-updated_at: 2026-03-04T18:24:12.680Z
+updated_at: 2026-03-04T18:25:39.844Z
 tags:
   - frontend
   - cleanup
@@ -604,6 +604,15 @@ history:
     action: claimed
     from: backlog
     to: in_progress
+  - ts: 2026-03-04T18:25:39.844Z
+    who: copilot
+    action: commented
+    note: "Removed phantom PrototypesViewer import and /prototypes/browse-topic
+      route from App.tsx (folder never existed on disk). Fixed types.ts: added
+      pillar, cluster, relatedTopics to TopicItem; added pillar, cluster,
+      relatedTopics, crossLinks, CrossLinkItem, TopicCrossLinks to TopicDetail.
+      Updated browse-by-topic-optimization-research.md status to reflect all
+      Tier-1 work done."
 ```
 
 > 1. Remove phantom /prototypes/browse-topic route and PrototypesViewer import from App.tsx (browse-topic folder never existed on disk). 2. Fix types.ts: add pillar, cluster, relatedTopics, crossLinks fields to TopicDetail and TopicItem interfaces to match what backend returns and what TopicDetailPage.tsx already uses. 3. Audit docs/ folder for any prototype-era or stale browse-topic docs and remove/update them.
