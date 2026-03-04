@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-04T17:13:30.864Z
+updated: 2026-03-04T17:39:35.046Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 4
+next_id: 5
 ---
 
 ## Agents
@@ -25,10 +25,10 @@ next_id: 4
 
 ```yaml
 id: TASK-001
-status: backlog
+status: review
 priority: high
-assigned_to: null
-claimed_by: null
+assigned_to: "@antigravity"
+claimed_by: "@antigravity"
 created_by: "@hasnain-sid"
 created_at: 2026-03-04T17:13:09.467Z
 updated_at: 2026-03-04T17:13:09.467Z
@@ -40,6 +40,12 @@ history:
   - ts: 2026-03-04T17:13:09.467Z
     who: "@hasnain-sid"
     action: created
+  - ts: 2026-03-04T22:46:53+05:30
+    who: "@antigravity"
+    action: claimed
+  - ts: 2026-03-04T22:52:00+05:30
+    who: "@antigravity"
+    action: moved_to_review
 ```
 
 > Based on docs/browse-by-topic-optimization-research.md Tier 1: Create 5 distinct prototype designs for the Browse by Topic page redesign. Prototypes should explore: (1) Hub-and-Spoke pillar/cluster hierarchy with 4 Pillars > Clusters > Topics, (2) Cross-linked topic graph with relatedTopics section, (3) Unified Ruhani knowledge links (Tafakkur/Tazkia/Tadabbur connected), (4) Trending/popular signals row. Each prototype in frontend/src/features/browse-topic/prototypes/PrototypeN.tsx with a PrototypesViewer.tsx and temp route at /prototypes/browse-topic. Frontend only — all data mocked inline. Use existing design system (shadcn/ui, Tailwind, Lucide, Framer Motion).
@@ -93,3 +99,26 @@ history:
 ```
 
 > Build backend support for the frontend design from TASK-002. Includes: (1) Add pillar, cluster, relatedTopics fields to quranTopics.js data and any relevant Mongoose schemas, (2) Create GET /api/v1/topics endpoint returning topics with pillar/cluster hierarchy and relatedTopics populated, (3) Add topicView analytics event to analyticsEventSchema.js and POST /api/v1/analytics/topic-view endpoint, (4) Create GET /api/v1/topics/trending endpoint that returns top topics by view count + reflection count for the past 7 days, (5) Build cross-link resolution: connect Quran Topics to Tafakkur/Tazkia/Tadabbur data via shared slugs and tags. Follow route->controller->service->model pattern. ESM only.
+
+### TASK-004 · Doc Audit & Update Campaign
+
+```yaml
+id: TASK-004
+status: backlog
+priority: high
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-04T17:39:35.046Z
+updated_at: 2026-03-04T17:39:35.046Z
+tags:
+  - docs
+  - maintenance
+  - all-agents
+history:
+  - ts: 2026-03-04T17:39:35.046Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Systematically audit every doc in /docs/, add current implementation status, mark resolved findings, note remaining gaps, and ensure each doc accurately reflects the real state of DeenVerse as of March 2026. One child task per doc.
