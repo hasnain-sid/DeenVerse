@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-04T13:57:39.007Z
+updated: 2026-03-04T13:57:48.194Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 5
+next_id: 6
 ---
 
 ## Agents
@@ -112,3 +112,25 @@ history:
 ```
 
 > Research Google OAuth integration options (passport-google-oauth20 vs googleapis). Create contract in .agents/contracts/google-oauth.md. Define shared schemas.
+
+### TASK-005 · Complete Ruhani Hub frontend pages
+
+```yaml
+id: TASK-005
+status: backlog
+priority: medium
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-04T13:57:48.194Z
+updated_at: 2026-03-04T13:57:48.194Z
+tags:
+  - frontend
+  - feature
+history:
+  - ts: 2026-03-04T13:57:48.194Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Build remaining frontend pages for Ruhani Hub feature: Tafakkur, Tazkia, Tadabbur pages in frontend/src/features/ruhani/. Backend is already complete.
