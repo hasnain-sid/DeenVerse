@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-05T10:23:37.255Z
+updated: 2026-03-05T10:23:45.711Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 37
+next_id: 38
 ---
 
 ## Agents
@@ -396,3 +396,28 @@ history:
 ```
 
 > Promote chosen Admin Scholar Review prototype. Create useAdminScholarReview hook (TanStack Query) for GET /api/v1/admin/scholars/applications and PUT /api/v1/admin/scholars/applications/:userId/review. Wire approve/reject actions. Add route to admin section.
+
+### TASK-037 · Phase 1: Integrate Badge + Scholar Profile across app
+
+```yaml
+id: TASK-037
+status: backlog
+priority: medium
+assigned_to: copilot-2
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-05T10:23:45.711Z
+updated_at: 2026-03-05T10:23:45.711Z
+tags:
+  - frontend
+  - scholar
+depends_on:
+  - TASK-025
+  - TASK-032
+history:
+  - ts: 2026-03-05T10:23:45.711Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Promote chosen badge design. Create ScholarBadge.tsx reusable component. Add badge display in: PostCard, CommentItem, ChatMessage, ProfileHeader, search results. Integrate ScholarProfilePage with useScholarProfile hook → GET /api/v1/scholars/:id/profile. Add route /scholars/:id.
