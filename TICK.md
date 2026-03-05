@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-05T13:12:03.305Z
+updated: 2026-03-05T13:12:13.824Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 50
+next_id: 51
 ---
 
 ## Agents
@@ -798,3 +798,27 @@ history:
 ```
 
 > Build quiz engine: POST /api/v1/quizzes/:id/start (create QuizAttempt, strip correct answers from questions, enforce maxAttempts), POST /api/v1/quizzes/:id/submit (grade answers server-side, enforce timeLimit + 30s grace, calculate score, set passed), GET /api/v1/quizzes/:id/results (return attempts + best score). CRUD for quizzes tied to courses (scholar can create quizzes for their course lessons).
+
+### TASK-050 · Phase 2: Discovery + Admin course review API
+
+```yaml
+id: TASK-050
+status: backlog
+priority: medium
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-05T13:12:13.824Z
+updated_at: 2026-03-05T13:12:13.824Z
+tags:
+  - backend
+  - course
+depends_on:
+  - TASK-047
+history:
+  - ts: 2026-03-05T13:12:13.824Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Build discovery endpoints: GET /api/v1/courses/featured (top-rated + most enrolled, cached in Redis), GET /api/v1/courses/teaching (scholar's own courses). Admin review: GET /api/v1/admin/courses?status=pending-review, PUT /api/v1/admin/courses/:slug/review (approve sets status=published, reject sets archived + reason). Increment instructor.scholarProfile.totalCourses on publish.
