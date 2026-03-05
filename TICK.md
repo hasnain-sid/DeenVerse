@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-05T10:21:48.073Z
+updated: 2026-03-05T10:21:55.854Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 25
+next_id: 26
 ---
 
 ## Agents
@@ -101,3 +101,27 @@ history:
 ```
 
 > Define Zod schemas in packages/shared/src/schemas/ for: scholarApplicationSchema, scholarProfileSchema, paymentSchema, earningsSchema. These are the integration contracts between backend and frontend.
+
+### TASK-025 · Phase 1: Extend userSchema + isScholar middleware
+
+```yaml
+id: TASK-025
+status: backlog
+priority: high
+assigned_to: copilot
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-05T10:21:55.854Z
+updated_at: 2026-03-05T10:21:55.854Z
+tags:
+  - backend
+  - scholar
+depends_on:
+  - TASK-024
+history:
+  - ts: 2026-03-05T10:21:55.854Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Extend backend/models/userSchema.js: add 'scholar' to role enum, add scholarProfile subdocument (verifiedAt, verifiedBy, specialties, credentials, bio, teachingLanguages, rating, applicationStatus, stripeConnectId etc). Create isScholar and isScholarOrAdmin middleware in backend/middlewares/admin.js.
