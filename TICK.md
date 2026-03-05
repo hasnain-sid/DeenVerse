@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-05T10:24:11.064Z
+updated: 2026-03-05T10:24:19.400Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 41
+next_id: 42
 ---
 
 ## Agents
@@ -496,3 +496,29 @@ history:
 ```
 
 > Write unit tests for: userSchema scholar fields validation, isScholar/isScholarOrAdmin middleware (role checks, edge cases), scholarService functions (apply, review, approve, reject). Use Jest or Vitest. Test: valid/invalid applications, role transitions, admin-only access, duplicate applications, rejection flow.
+
+### TASK-041 · Phase 1: Unit tests — Payment service + webhook handler
+
+```yaml
+id: TASK-041
+status: backlog
+priority: high
+assigned_to: copilot
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-05T10:24:19.400Z
+updated_at: 2026-03-05T10:24:19.400Z
+tags:
+  - backend
+  - testing
+  - payment
+depends_on:
+  - TASK-028
+  - TASK-029
+history:
+  - ts: 2026-03-05T10:24:19.400Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Write unit tests for: stripeService (checkout session creation, Connect onboarding, webhook signature verification), payment controller (idempotent enrollment, subscription create/cancel), webhook handler (all event types: checkout.session.completed, customer.subscription.updated/deleted, account.updated). Mock Stripe SDK calls.
