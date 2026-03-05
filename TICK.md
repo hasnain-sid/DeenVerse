@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-05T13:12:44.528Z
+updated: 2026-03-05T13:12:52.784Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 54
+next_id: 55
 ---
 
 ## Agents
@@ -897,3 +897,28 @@ history:
 ```
 
 > Create 5 prototype variants for Course Player (lesson viewer). Explore: sidebar nav + main content (Coursera-style), collapsible sidebar with progress bar, full-width video with floating module drawer, split view (video top + notes bottom), minimal focus mode with swipe navigation. Show: video/text lesson content, module sidebar, progress indicator, next/prev lesson, notes area. Temp route /prototypes/course-player. Mocked data.
+
+### TASK-054 · Phase 2: Course Builder (Scholar) — 5 prototypes
+
+```yaml
+id: TASK-054
+status: backlog
+priority: high
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-05T13:12:52.784Z
+updated_at: 2026-03-05T13:12:52.784Z
+tags:
+  - frontend
+  - prototype
+  - course
+depends_on:
+  - TASK-045
+history:
+  - ts: 2026-03-05T13:12:52.784Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Create 5 prototype variants for Course Builder (scholar creates/edits courses). Explore: multi-step wizard (info->modules->pricing->preview), single-page form with sections, drag-drop module/lesson builder, markdown-first editor (Notion-style), template-based quick-start. Show: course info fields, module/lesson CRUD, pricing config, preview, publish button. Temp route /prototypes/course-builder. Mocked data.
