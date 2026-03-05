@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-05T13:11:19.226Z
+updated: 2026-03-05T13:11:53.335Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 48
+next_id: 49
 ---
 
 ## Agents
@@ -750,3 +750,27 @@ history:
 ```
 
 > Build course CRUD: POST /api/v1/courses (create), GET /api/v1/courses (browse with filters/pagination/search), GET /api/v1/courses/:slug (detail), PUT /api/v1/courses/:slug (update), DELETE /api/v1/courses/:slug, PUT /api/v1/courses/:slug/publish, POST/PUT/DELETE modules. Files: courseRoute.js, courseController.js, courseService.js. Use slugify for URL-safe slugs. Ownership check middleware.
+
+### TASK-048 · Phase 2: Enrollment API + progress tracking
+
+```yaml
+id: TASK-048
+status: backlog
+priority: high
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-05T13:11:53.335Z
+updated_at: 2026-03-05T13:11:53.335Z
+tags:
+  - backend
+  - course
+depends_on:
+  - TASK-046
+history:
+  - ts: 2026-03-05T13:11:53.335Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Build enrollment flow: POST /api/v1/courses/:slug/enroll (free auto-enroll, paid verify payment), GET /api/v1/courses/:slug/progress, PUT /api/v1/courses/:slug/progress (mark lesson complete, recalculate percentComplete), GET /api/v1/courses/:slug/lessons/:lessonId (serve content, courseAccess middleware). GET /api/v1/courses/my-courses (student enrolled list). Increment course.enrollmentCount and instructor.scholarProfile.totalStudents on enroll.
