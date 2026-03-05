@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-05T13:13:24.900Z
+updated: 2026-03-05T13:13:32.365Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 59
+next_id: 60
 ---
 
 ## Agents
@@ -1022,3 +1022,28 @@ history:
 ```
 
 > Promote chosen Course Player prototype. Create CoursePlayerPage.tsx. Add useCourseProgress(slug), useUpdateProgress(), useLessonContent(slug, lessonId) hooks. Wire to progress + lesson APIs. Track lesson completion, auto-advance. Route /courses/:slug/learn. AuthGuard + enrollment check.
+
+### TASK-059 · Phase 2: Integrate Course Builder (Scholar)
+
+```yaml
+id: TASK-059
+status: backlog
+priority: high
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-05T13:13:32.365Z
+updated_at: 2026-03-05T13:13:32.365Z
+tags:
+  - frontend
+  - course
+depends_on:
+  - TASK-047
+  - TASK-054
+history:
+  - ts: 2026-03-05T13:13:32.365Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Promote chosen Course Builder prototype. Create CreateCoursePage.tsx + EditCoursePage.tsx. Add useCreateCourse(), useUpdateCourse(), useDeleteCourse(), usePublishCourse(), useAddModule(), useUpdateModule(), useDeleteModule(), useMyTeaching() hooks. Wire to course CRUD APIs. Routes: /scholar/courses/new, /scholar/courses/:slug/edit, /scholar/courses. AuthGuard + scholar check.
