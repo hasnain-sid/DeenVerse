@@ -2,7 +2,7 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-05T21:56:22.460Z
+updated: 2026-03-05T21:58:02.337Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
 next_id: 87
@@ -13,7 +13,7 @@ next_id: 87
 | Agent | Type | Role | Status | Working On | Last Active | Trust Level |
 |-------|------|------|--------|------------|-------------|-------------|
 | hasna | human | owner, architect | idle | - | 2026-03-04T13:55:56.279Z | trusted |
-| copilot | bot | developer, researcher | idle | - | 2026-03-05T21:56:22.460Z | trusted |
+| copilot | bot | developer, researcher | working | TASK-042 | 2026-03-05T21:58:02.337Z | trusted |
 | copilot-2 | bot | developer, reviewer | idle | - | 2026-03-05T20:30:08.141Z | trusted |
 | antigravity | bot | developer, researcher | idle | - | 2026-03-04T13:56:15.009Z | trusted |
 
@@ -743,13 +743,13 @@ history:
 
 ```yaml
 id: TASK-042
-status: backlog
+status: in_progress
 priority: high
 assigned_to: copilot
-claimed_by: null
+claimed_by: copilot
 created_by: "@hasnain-sid"
 created_at: 2026-03-05T10:24:28.389Z
-updated_at: 2026-03-05T10:24:28.389Z
+updated_at: 2026-03-05T21:58:02.337Z
 tags:
   - backend
   - testing
@@ -760,6 +760,11 @@ history:
   - ts: 2026-03-05T10:24:28.389Z
     who: "@hasnain-sid"
     action: created
+  - ts: 2026-03-05T21:58:02.337Z
+    who: copilot
+    action: claimed
+    from: backlog
+    to: in_progress
 ```
 
 > Write smoke/integration tests that hit all Phase 1 endpoints with real HTTP requests (supertest). Test: scholar application flow (apply → pending → admin approve → role change), Stripe checkout session creation, webhook processing, earnings retrieval. Verify auth guards (401 without token, 403 without correct role). Test edge cases: re-apply after rejection, double enrollment.
