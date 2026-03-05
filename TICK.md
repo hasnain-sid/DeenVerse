@@ -2,7 +2,7 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-05T10:54:36.991Z
+updated: 2026-03-05T11:09:56.824Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
 next_id: 45
@@ -13,7 +13,7 @@ next_id: 45
 | Agent | Type | Role | Status | Working On | Last Active | Trust Level |
 |-------|------|------|--------|------------|-------------|-------------|
 | hasna | human | owner, architect | idle | - | 2026-03-04T13:55:56.279Z | trusted |
-| copilot | bot | developer, researcher | idle | - | 2026-03-05T10:54:36.991Z | trusted |
+| copilot | bot | developer, researcher | working | TASK-025 | 2026-03-05T11:09:56.824Z | trusted |
 | copilot-2 | bot | developer, reviewer | idle | - | 2026-03-04T13:56:09.000Z | trusted |
 | antigravity | bot | developer, researcher | idle | - | 2026-03-04T13:56:15.009Z | trusted |
 
@@ -123,13 +123,13 @@ history:
 
 ```yaml
 id: TASK-025
-status: backlog
+status: in_progress
 priority: high
 assigned_to: copilot
-claimed_by: null
+claimed_by: copilot
 created_by: "@hasnain-sid"
 created_at: 2026-03-05T10:21:55.854Z
-updated_at: 2026-03-05T10:21:55.854Z
+updated_at: 2026-03-05T11:09:56.824Z
 tags:
   - backend
   - scholar
@@ -139,6 +139,11 @@ history:
   - ts: 2026-03-05T10:21:55.854Z
     who: "@hasnain-sid"
     action: created
+  - ts: 2026-03-05T11:09:56.824Z
+    who: copilot
+    action: claimed
+    from: backlog
+    to: in_progress
 ```
 
 > Extend backend/models/userSchema.js: add 'scholar' to role enum, add scholarProfile subdocument (verifiedAt, verifiedBy, specialties, credentials, bio, teachingLanguages, rating, applicationStatus, stripeConnectId etc). Create isScholar and isScholarOrAdmin middleware in backend/middlewares/admin.js.
