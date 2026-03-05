@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-05T10:22:11.543Z
+updated: 2026-03-05T10:22:19.302Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 28
+next_id: 29
 ---
 
 ## Agents
@@ -173,3 +173,27 @@ history:
 ```
 
 > Create backend/services/stripeService.js: Stripe Connect Express account creation (scholar onboarding URL), dashboard link generation, account status check. Create paymentSchema.js and scholarPaymentSchema.js models. Endpoints: POST /api/v1/scholars/stripe/connect, GET /api/v1/scholars/stripe/dashboard, GET /api/v1/scholars/stripe/status.
+
+### TASK-028 · Phase 1: Payment checkout + webhook + enrollment API
+
+```yaml
+id: TASK-028
+status: backlog
+priority: high
+assigned_to: copilot
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-05T10:22:19.302Z
+updated_at: 2026-03-05T10:22:19.302Z
+tags:
+  - backend
+  - payment
+depends_on:
+  - TASK-027
+history:
+  - ts: 2026-03-05T10:22:19.302Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Build payment flow: POST /api/v1/payments/checkout (Stripe Checkout session), POST /api/v1/payments/subscription, DELETE /api/v1/payments/subscription, GET /api/v1/payments/history. Stripe webhook handler: POST /api/v1/webhooks/stripe (raw body, signature verification, idempotent enrollment creation). Files: paymentRoute.js, paymentController.js, paymentService.js, webhookController.js.
