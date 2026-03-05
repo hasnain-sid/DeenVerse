@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-05T13:11:08.281Z
+updated: 2026-03-05T13:11:19.226Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 47
+next_id: 48
 ---
 
 ## Agents
@@ -726,3 +726,27 @@ history:
 ```
 
 > Create backend models: courseSchema.js (full schema from contract with indexes), enrollmentSchema.js (student+course compound unique index, progress tracking), quizSchema.js (questions, timeLimit, passingScore), quizAttemptSchema.js (answers, score, timing). Add courseAccess middleware in backend/middlewares/courseAccess.js (verify enrollment before serving paid content).
+
+### TASK-047 · Phase 2: Course CRUD API (routes/controller/service)
+
+```yaml
+id: TASK-047
+status: backlog
+priority: high
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-05T13:11:19.226Z
+updated_at: 2026-03-05T13:11:19.226Z
+tags:
+  - backend
+  - course
+depends_on:
+  - TASK-046
+history:
+  - ts: 2026-03-05T13:11:19.226Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Build course CRUD: POST /api/v1/courses (create), GET /api/v1/courses (browse with filters/pagination/search), GET /api/v1/courses/:slug (detail), PUT /api/v1/courses/:slug (update), DELETE /api/v1/courses/:slug, PUT /api/v1/courses/:slug/publish, POST/PUT/DELETE modules. Files: courseRoute.js, courseController.js, courseService.js. Use slugify for URL-safe slugs. Ownership check middleware.
