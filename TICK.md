@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-05T10:22:48.188Z
+updated: 2026-03-05T10:22:57.937Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 32
+next_id: 33
 ---
 
 ## Agents
@@ -271,3 +271,28 @@ history:
 ```
 
 > Create 5 distinct prototype variants for the Admin Scholar Review Panel in frontend/src/features/scholar/prototypes/. Explore: table-based review, kanban board, card detail view, split-pane (list+detail), timeline view. Show application details, credentials, approve/reject actions. Include PrototypesViewer.tsx + temp route /prototypes/scholar-review. All data mocked.
+
+### TASK-032 · Phase 1: Scholar Badge + Profile Page — 5 prototypes
+
+```yaml
+id: TASK-032
+status: backlog
+priority: medium
+assigned_to: antigravity
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-05T10:22:57.937Z
+updated_at: 2026-03-05T10:22:57.937Z
+tags:
+  - frontend
+  - prototype
+  - scholar
+depends_on:
+  - TASK-024
+history:
+  - ts: 2026-03-05T10:22:57.937Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Create 5 prototype variants exploring: scholar badge design (green crescent, star, checkmark styles), badge placement in posts/comments/profile, and Scholar Public Profile Page layout (credentials, courses, rating, bio). Include PrototypesViewer.tsx + temp route /prototypes/scholar-badge. All data mocked.
