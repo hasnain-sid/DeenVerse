@@ -1,0 +1,23 @@
+﻿npx : The value specified 
+in an AutoRun registry 
+key could not be parsed.
+At line:1 char:1
++ npx tsc --noEmit 2>&1 | 
+Out-File -FilePath 
+tsc-out.txt -Encoding utf8
++ ~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo        
+      : NotSpecified: (T  
+  he value speci... not   
+  be parsed.:String) [    
+], RemoteException
+    + FullyQualifiedError 
+   Id : NativeCommandErr  
+  or
+ 
+The value specified in an 
+AutoRun registry key 
+could not be parsed.
+src/features/scholar/prototypes/Prototype1.tsx(3,29): error TS6133: 'CardHeader' is declared but its value is never read.
+src/features/scholar/prototypes/Prototype1.tsx(3,41): error TS6133: 'CardTitle' is declared but its value is never read.
+src/features/scholar/prototypes/Prototype1.tsx(3,52): error TS6133: 'CardDescription' is declared but its value is never read.

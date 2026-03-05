@@ -942,5 +942,18 @@
 
 ---
 
-*Last updated: February 18, 2026*
+## Monetization & Education Layer Milestones
+
+> Tracked separately from the v2 redesign phases above. See PHASE-1-PLAYBOOK.md for the full roadmap.
+
+| Milestone | Status | Completed | Features |
+|-----------|--------|-----------|----------|
+| **M1 — Scholar Role System** | ✅ Complete | 2026-03-06 | Scholar verification workflow, RBAC middleware, application API, admin review panel, ScholarBadge component, ScholarApplicationPage, AdminScholarReviewPage |
+| **M2 — Payment System** | ✅ Complete | 2026-03-06 | Stripe Connect Express, course checkout, subscription management, webhook handler, scholar earnings dashboard, SubscriptionPage, PaymentHistoryPage, ScholarEarningsPage |
+| **M3 — Course System (LMS)** | ⬜ Pending | — | Course creation, enrollment, video lessons, progress tracking (Phase 2 — depends on M1+M2) |
+| **M4 — Virtual Classroom** | ⬜ Pending | — | LiveKit video, tldraw whiteboard, session recording (Phase 3 — depends on M3) |
+
+---
+
+*Last updated: 2026-03-06*
 *Branch: `redesign/v2-modern`*

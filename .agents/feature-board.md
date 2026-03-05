@@ -41,6 +41,10 @@
 | Moderation / Reports | ⬜ | ✅ | ⚠️ | ⬜ | copilot-2 | — | Admin panel needed |
 | Analytics | ⬜ | ✅ | ⚠️ | ⬜ | copilot-2 | — | Dashboard needed |
 | Browse by Topic (Quran Topics) | ⬜ | ✅ | ✅ | ⬜ | copilot | — | Netflix-style UI, code-reviewed TASK-023 |
+| Scholar Role System | ✅ | ✅ | ✅ | ⬜ | copilot (backend), antigravity (prototypes), copilot-2 (integration) | [scholar-role-system.md](contracts/scholar-role-system.md) | Phase 1 complete — TASK-024→028 (backend), TASK-040→042 (frontend) |
+| Payment System (Stripe) | ✅ | ✅ | ✅ | ⬜ | copilot (backend), antigravity (prototypes), copilot-2 (integration) | [payment-system.md](contracts/payment-system.md) | Phase 1 complete — TASK-029→034 (backend), TASK-040→042 (frontend) |
+| Course System (LMS) | ⬜ | ⬜ | ⬜ | ⬜ | copilot (backend), antigravity (prototypes), copilot-2 (integration) | [course-system.md](contracts/course-system.md) | Phase 2 — TASK-045 to TASK-065. Depends on Phase 1 (Scholar + Payment) |
+| Virtual Classroom (LiveKit + tldraw) | ⬜ | ⬜ | ⬜ | ⬜ | copilot (backend), antigravity (prototypes), copilot-2 (integration) | [virtual-classroom.md](contracts/virtual-classroom.md) | Phase 3 — TASK-066 to TASK-086. Depends on Phase 2 (Course System) |
 
 ---
 
@@ -89,6 +93,8 @@
 | Task | Agent | Completed | Notes |
 |------|-------|-----------|-------|
 | Global Islamic Courses Viewer UI | antigravity | 2026-03-01 | Added new route and navigation for viewing courses database |
+| Scholar Role System — Phase 1 complete | copilot + copilot-2 | 2026-03-06 | Shared schemas, backend API, frontend pages (application, admin review, earnings, badge) |
+| Payment System (Stripe) — Phase 1 complete | copilot + copilot-2 | 2026-03-06 | Stripe Connect, checkout, webhooks, subscription management, earnings dashboard |
 
 ### How to Use This Section
 
@@ -118,6 +124,11 @@
 | Feature | Priority | Contract Created | Assigned To | Target |
 |---------|----------|-----------------|-------------|--------|
 | Email Verification | High | ⬜ | — | — |
+| Course System (LMS) | High | ⬜ | — | Phase 2 — depends on Scholar Roles + Payments |
+| Virtual Classroom (LiveKit + tldraw) | High | ⬜ | — | Phase 3 — depends on Course System |
+| Interactive Quran Teaching | Medium | ⬜ | — | Phase 4 — depends on Virtual Classroom |
+| Certification System | Medium | ⬜ | — | Phase 5 — depends on Course System |
+| Dawah & Q&A Platform | Medium | ⬜ | — | Phase 6 — depends on Scholar Roles |
 | Google OAuth | Medium | ⬜ | — | — |
 | Mobile App (Expo) | High | ⬜ | antigravity | — |
 

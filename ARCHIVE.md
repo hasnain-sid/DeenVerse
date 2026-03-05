@@ -1,0 +1,240 @@
+# deenverse - Task Archive
+
+This file contains archived tasks from TICK.md.
+Tasks are archived when they are completed and older than the archive threshold.
+
+---
+
+## Archived 2026-03-05
+
+### TASK-002 · Browse by Topic — Implement chosen frontend design
+
+- **Status:** done
+- **Priority:** high
+- **Created:** 2026-03-04T17:13:20.018Z
+- **Completed:** 2026-03-04T18:07:26.622Z
+- **Archived:** 2026-03-05T10:17:38.904Z
+- **Tags:** frontend, implementation, browse-topic
+
+After user finalizes their preferred prototype from TASK-001, implement the chosen design as the real Browse by Topic page. Steps: (1) Promote selected prototype to frontend/src/features/browse-topic/ as the real page components, (2) Add pillar/cluster/relatedTopics fields to topic data types, (3) Wire up TanStack Query hooks for topic fetching, (4) Implement hub-and-spoke navigation, related topics section, trending row, and unified Ruhani knowledge links, (5) Delete the prototypes/ folder and remove the temp /prototypes/browse-topic route. All data should call real API endpoints (mocked with MSW or empty states until backend is ready).
+
+### TASK-003 · Browse by Topic — Implement backend for Tier-1 features
+
+- **Status:** done
+- **Priority:** high
+- **Created:** 2026-03-04T17:13:30.864Z
+- **Completed:** 2026-03-04T17:58:31.173Z
+- **Archived:** 2026-03-05T10:17:38.904Z
+- **Tags:** backend, implementation, browse-topic
+
+Build backend support for the frontend design from TASK-002. Includes: (1) Add pillar, cluster, relatedTopics fields to quranTopics.js data and any relevant Mongoose schemas, (2) Create GET /api/v1/topics endpoint returning topics with pillar/cluster hierarchy and relatedTopics populated, (3) Add topicView analytics event to analyticsEventSchema.js and POST /api/v1/analytics/topic-view endpoint, (4) Create GET /api/v1/topics/trending endpoint that returns top topics by view count + reflection count for the past 7 days, (5) Build cross-link resolution: connect Quran Topics to Tafakkur/Tazkia/Tadabbur data via shared slugs and tags. Follow route->controller->service->model pattern. ESM only.
+
+### TASK-004 · Doc Audit & Update Campaign
+
+- **Status:** done
+- **Priority:** high
+- **Created:** 2026-03-04T17:39:35.046Z
+- **Completed:** 2026-03-04T17:49:18.938Z
+- **Archived:** 2026-03-05T10:17:38.904Z
+- **Tags:** docs, maintenance, all-agents
+
+Systematically audit every doc in /docs/, add current implementation status, mark resolved findings, note remaining gaps, and ensure each doc accurately reflects the real state of DeenVerse as of March 2026. One child task per doc.
+
+### TASK-005 · Update: browse-by-topic-optimization-research.md
+
+- **Status:** done
+- **Priority:** medium
+- **Created:** 2026-03-04T17:39:47.593Z
+- **Completed:** 2026-03-04T17:45:45.244Z
+- **Archived:** 2026-03-05T10:17:38.904Z
+- **Tags:** docs, browse-topic, frontend
+
+This research doc covers Tier-1/2/3 browse-by-topic enhancements. Current state: feature is implemented as quran-topics (QuranTopicsPage, TopicDetailPage, MoodDetailPage, SpacedRepetitionCard, SearchBar). Tier-1 frontend prototyping is in Review (TASK-001). Update doc to: mark implemented items (moods, category pills, topic cards, community reflections, spaced rep), note what Tier-1 items remain (personalization, trending signals), update status header to reflect prototype phase.
+
+### TASK-006 · Update: daily-learning-design.md
+
+- **Status:** done
+- **Priority:** medium
+- **Created:** 2026-03-04T17:39:55.235Z
+- **Completed:** 2026-03-04T17:45:46.265Z
+- **Archived:** 2026-03-05T10:17:38.904Z
+- **Tags:** docs, daily-learning, frontend, backend
+
+Daily Learning feature is IMPLEMENTED: DailyLearningPage.tsx, DailyLearningTabs.tsx, ReflectionSplitView.tsx on frontend; DailyLearning.js model + dailyLearningController.js + dailyLearningRoute.js on backend. However backend still uses hardcoded content (see quran-data-sources-research.md). Update doc: mark implemented architecture, add Progress section noting hardcoded content and quran data sources research findings, note remaining work (dynamic content from AlQuran Cloud, streaks, public reflections).
+
+### TASK-007 · Update: feed-backend-optimization-research.md
+
+- **Status:** done
+- **Priority:** medium
+- **Created:** 2026-03-04T17:40:03.059Z
+- **Completed:** 2026-03-04T17:49:10.508Z
+- **Archived:** 2026-03-05T10:17:38.904Z
+- **Tags:** docs, feed, backend
+
+Research covers feed backend architecture, caching, pagination, share enrichment. Files reviewed are all present: postRoute.js, postController.js, postService.js, cacheService.js, shareService.js, shareEnrichment.js. Update doc: add Implementation Status section noting what has been reviewed and fixed per feed-backend-upload-code-review.md and share-to-feed-code-review.md. Mark resolved issues. Note remaining optimization items (pagination cursor, Redis cache warm-up strategy, etc.).
+
+### TASK-008 · Update: feed-backend-upload-code-review.md
+
+- **Status:** done
+- **Priority:** medium
+- **Created:** 2026-03-04T17:40:10.266Z
+- **Completed:** 2026-03-04T17:49:11.429Z
+- **Archived:** 2026-03-05T10:17:38.904Z
+- **Tags:** docs, feed, upload, code-review
+
+Code review dated 2026-02-28 covering feed + upload flow. Update doc: for each Critical/Warning/Suggestion finding, add a [RESOLVED] or [PENDING] status marker. Cross-reference share-to-feed-code-review.md and pre-commit-cleanup-report.md for what was fixed in the post-review cleanup. Mark findings that pre-commit report confirmed fixed.
+
+### TASK-009 · Update: global-islamic-courses-database.md
+
+- **Status:** done
+- **Priority:** low
+- **Created:** 2026-03-04T17:40:17.468Z
+- **Completed:** 2026-03-04T17:49:13.776Z
+- **Archived:** 2026-03-05T10:17:38.904Z
+- **Tags:** docs, courses, database
+
+This doc is a reference dataset of global Islamic courses/degrees (not a feature design doc). Frontend: GlobalCoursesPage.tsx exists in features/courses. Update doc: add a header section noting this is a data reference document, what it feeds into (GlobalCoursesPage), current integration status (page exists but data integration status unknown), and whether this JSON data is served from backend or bundled static. Check doc/global_islamic_courses_database.json for the raw data.
+
+### TASK-010 · Update: iman-boost-feature-design.md
+
+- **Status:** done
+- **Priority:** high
+- **Created:** 2026-03-04T17:40:26.305Z
+- **Completed:** 2026-03-04T17:43:53.005Z
+- **Archived:** 2026-03-05T10:17:38.904Z
+- **Tags:** docs, iman-boost, frontend, backend
+
+Iman Boost status: frontend exists (ImanBoostPage.tsx, useSigns.ts, mockData.ts, types.ts) but uses MOCK DATA only. Backend has signRoute.js, signController.js, signSchema.js, data/signsSeed.json, scripts/seedSigns.js — so backend is scaffolded. Update doc: add Implementation Progress section. Mark Phase 1 backend as partially done (model + seed exists). Mark frontend as partially done (page + mock). Note what remains: wire frontend to real API, seed the DB, category filter UI, daily rotation, sharing, bookmark. Update status header from 'Awaiting Implementation Approval' to 'In Progress - Partial'.
+
+### TASK-011 · Update: mood-based-ayah-research.md
+
+- **Status:** done
+- **Priority:** medium
+- **Created:** 2026-03-04T17:40:34.858Z
+- **Completed:** 2026-03-04T17:45:47.131Z
+- **Archived:** 2026-03-05T10:17:38.904Z
+- **Tags:** docs, mood, quran-topics, frontend
+
+This research covers mood-based/topic-based Quran ayah lookup. The feature is IMPLEMENTED as quran-topics: QuranTopicsPage has MoodCard components and MoodDetailPage. Backend: quranTopicRoute.js + quranTopicController.js. Data: quranTopics.js has 28 topics with mood mappings. Update doc: add Implementation Status section showing the recommended approach was adopted (curated topic dataset + AlQuran Cloud API). Cross-reference the implementation files. Mark research roadmap items as done/todo.
+
+### TASK-012 · Update: pre-commit-cleanup-report.md
+
+- **Status:** done
+- **Priority:** medium
+- **Created:** 2026-03-04T17:40:42.764Z
+- **Completed:** 2026-03-04T17:49:12.278Z
+- **Archived:** 2026-03-05T10:17:38.904Z
+- **Tags:** docs, code-quality, security
+
+Pre-commit report dated 2026-03-01 with Critical/Warning/Suggestion items. This doc should be updated to reflect which issues were resolved post-merge and which remain open. Go through each Critical (C1 open redirect, C2 missing auth guard, etc.) and Warning item and add a [RESOLVED] / [PENDING] badge. This is the most actionable audit doc — keeping it current tells agents what security/quality debt still exists.
+
+### TASK-013 · Update: quran-data-sources-research.md
+
+- **Status:** done
+- **Priority:** high
+- **Created:** 2026-03-04T17:40:51.527Z
+- **Completed:** 2026-03-04T17:43:51.948Z
+- **Archived:** 2026-03-05T10:17:38.904Z
+- **Tags:** docs, quran, daily-learning, backend
+
+This research doc covers replacing hardcoded content in dailyLearningController.js with dynamic AlQuran Cloud API data. Current known state: backend still has hardcoded 2 Ayahs, 1 Ruku, 1 Juzz, 1 Para. Update doc: add Implementation Status section. Mark research as complete based on this doc. Note that dynamic backend integration is NOT YET DONE (still hardcoded). Highlight the recommended approach (AlQuran Cloud /v1/juz/:n, /v1/ruku/:n etc.) and mark the specific next implementation steps clearly.
+
+### TASK-014 · Update: quran-learning-feature-solutions.md
+
+- **Status:** done
+- **Priority:** medium
+- **Created:** 2026-03-04T17:40:59.291Z
+- **Completed:** 2026-03-04T17:45:48.188Z
+- **Archived:** 2026-03-05T10:17:38.904Z
+- **Tags:** docs, quran, learn-quran, frontend
+
+Doc outlines 5 Quran learning feature ideas: AI Tajweed Coach, Spaced Repetition Hifz, Community Tafseer, Quran Learning Path, and Daily Reflection Journal. Current state: learn-quran feature has LearnQuranHub.tsx; quran feature has QuranReaderPage.tsx with prototypes; spaced rep exists in quran-topics. Update doc: add Implementation Progress section per feature idea. Mark what exists (basic reader, spaced rep prototype), what is pending (AI Tajweed, Hifz tracker, community tafseer). Note which solutions are prioritized.
+
+### TASK-015 · Update: ruhani-hub-design.md
+
+- **Status:** done
+- **Priority:** high
+- **Created:** 2026-03-04T17:41:07.669Z
+- **Completed:** 2026-03-04T17:43:54.173Z
+- **Archived:** 2026-03-05T10:17:38.904Z
+- **Tags:** docs, ruhani, frontend, backend
+
+Ruhani Hub is substantially IMPLEMENTED. Frontend: RuhaniHubPage, TafakkurPage, TadabburPage, TazkiaPage, RuhaniJournalPage, ruhaniApi.ts, useRuhani.ts, ruhaniStore.ts. Backend: ruhaniRoute.js, ruhaniController.js. Data: data/tafakkurTopics.js, data/tadabburAyahs.js, data/tazkiaTraits.js. Update doc significantly: change status from 'Design' to 'Implemented - vX'. Map each design section to the actual files. Add an Implementation Progress section showing which UX flows are live, which remain (guided session mode, cross-linking spiral, offline mode).
+
+### TASK-016 · Update: share-to-feed-code-review.md
+
+- **Status:** done
+- **Priority:** medium
+- **Created:** 2026-03-04T17:41:14.422Z
+- **Completed:** 2026-03-04T17:49:13.033Z
+- **Archived:** 2026-03-05T10:17:38.904Z
+- **Tags:** docs, share, feed, code-review
+
+Code review dated 2026-02-25 covering share-to-feed backend/frontend integration. Findings include critical endpoint mismatch, payload typing issue, and several warnings. Update doc: for each Critical/Warning/Suggestion finding, add [RESOLVED] or [PENDING] status based on what the pre-commit cleanup report confirms was fixed. Add a Post-Review Resolution section summarizing what was merged.
+
+### TASK-017 · Browse by Topic — Cleanup: remove prototypes, fix types, wire App.tsx
+
+- **Status:** done
+- **Priority:** high
+- **Created:** 2026-03-04T18:24:08.597Z
+- **Completed:** 2026-03-04T18:25:40.626Z
+- **Archived:** 2026-03-05T10:17:38.904Z
+- **Tags:** frontend, cleanup, browse-topic
+
+1. Remove phantom /prototypes/browse-topic route and PrototypesViewer import from App.tsx (browse-topic folder never existed on disk). 2. Fix types.ts: add pillar, cluster, relatedTopics, crossLinks fields to TopicDetail and TopicItem interfaces to match what backend returns and what TopicDetailPage.tsx already uses. 3. Audit docs/ folder for any prototype-era or stale browse-topic docs and remove/update them.
+
+### TASK-018 · Populate pillar, cluster, relatedTopics in quranTopics.js
+
+- **Status:** done
+- **Priority:** high
+- **Created:** 2026-03-04T19:57:58.907Z
+- **Completed:** 2026-03-04T20:01:47.640Z
+- **Archived:** 2026-03-05T10:17:38.904Z
+- **Tags:** backend, data, browse-topic
+
+All 33 topics currently have pillar: 'General' and cluster: 'General' and relatedTopics: []. Apply the real 4-pillar taxonomy from the research doc (Heart & Soul → Emotional Healing/Inner Character, Faith & Worship → Core Beliefs/Acts of Worship, Life & Society → Relationships/Wealth & Ethics, Guidance & Growth → Life Direction/Boundaries) to every topic. Also populate relatedTopics[] for each topic with 2-4 slugs of semantically related topics. This data is required for the hub-and-spoke UI (already built) to show anything meaningful.
+
+### TASK-019 · Fix broken cross-link resolution in topicService.js
+
+- **Status:** done
+- **Priority:** high
+- **Created:** 2026-03-04T19:58:07.008Z
+- **Completed:** 2026-03-04T20:02:52.879Z
+- **Archived:** 2026-03-05T10:17:38.904Z
+- **Tags:** backend, bug, browse-topic
+
+The cross-link code in topicService.js getTopicAyahs() is broken due to a data format mismatch. topic.ayahRefs stores references as arrays [[36, 38], [91, 1]], but tafakkurTopics[].quranRefs stores them as strings ['36:38', '91:1'], and tazkiaTraits[].primaryAyah is also a string '65:3'. So t.quranRefs.some(ref => topic.ayahRefs.includes(ref)) and topic.ayahRefs.includes(t.primaryAyah) will ALWAYS return false — crossLinks.tafakkur and crossLinks.tazkia are permanently empty. Fix: normalise ayahRefs to 'surah:ayah' string format before comparison. Also verify tadabburAyahs.verseKey format matches. The Deeper Dive section in TopicDetailPage will remain blank until this is fixed.
+
+### TASK-020 · Add lessons data for all 28 topics + fill content gaps in quranTopics.js
+
+- **Status:** done
+- **Priority:** medium
+- **Created:** 2026-03-04T19:58:17.197Z
+- **Completed:** 2026-03-04T20:11:24.642Z
+- **Archived:** 2026-03-05T10:17:38.904Z
+- **Tags:** backend, data, browse-topic, content
+
+TOPIC_LESSONS in quranTopics.js currently only has entries for ~12 topics. The remaining 16 topics return null lessons and the LessonsSection in TopicDetailPage is hidden for them. Additionally, several topics (e.g. tawheed, hereafter, tawakkul) have no description-level datasetTags that would help cross-linking. Tasks: (1) Write lesson objects (title, explanation, practicalActions[]) for the 16 missing topics, (2) Ensure datasetTags for every topic align with the tazkia trait slugs (tawakkul, sabr, shukr, tawadu, khushoo, ikhlas, muraqaba, sidq) so that the tazkia cross-link fallback path (topic.datasetTags.includes(t.slug)) can match.
+
+### TASK-022 · Promote chosen Browse by Topic prototype to main app
+
+- **Status:** done
+- **Priority:** high
+- **Created:** 2026-03-04T20:25:06.233Z
+- **Completed:** 2026-03-04T20:54:35.997Z
+- **Archived:** 2026-03-05T10:17:38.904Z
+- **Tags:** frontend, quran-topics
+
+After the user selects a prototype variant from TASK-021, promote it to the main QuranTopicsPage.tsx and TopicDetailPage.tsx. Wire up real TanStack Query hooks (useTopics, useTrendingTopics, useTopicDetail, useMoods) replacing all mocked data. Delete the prototypes/ folder and the /prototypes/quran-topics route from App.tsx. Ensure all Tailwind, shadcn/ui, Framer Motion, and Lucide icon usage follows project conventions. Fix TypeScript errors and pass lint with zero warnings.
+
+### TASK-023 · Backend integration & code review: Browse by Topic
+
+- **Status:** done
+- **Priority:** medium
+- **Created:** 2026-03-04T20:25:17.257Z
+- **Completed:** 2026-03-04T21:15:30.087Z
+- **Archived:** 2026-03-05T10:17:38.904Z
+- **Tags:** backend, frontend, quran-topics, code-review
+
+Full integration pass and code review for the Browse by Topic feature after the new UI is live. (1) Backend: verify all endpoints (/quran-topics, /quran-topics/:slug, /quran-topics/mood/:moodId, /quran-topics/trending) return correct payloads matching the new frontend types. Check Redis caching TTLs, error handling, and AppError usage. Validate cross-link resolution (tafakkur/tazkia/tadabbur) returns real data. (2) Code review: apply code-review.instructions.md — check for OWASP issues, unused imports, any, missing error boundaries, accessibility, and chunk size. (3) Run check:integrity script to verify no orphan API calls.
+

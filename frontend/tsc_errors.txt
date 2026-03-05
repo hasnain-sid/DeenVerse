@@ -1,0 +1,5 @@
+src/features/payments/prototypes/EarningsPrototype4.tsx(98,59): error TS2339: Property 'status' does not exist on type '{ id: string; type: "payout"; courseTitle: string; amount: number; date: string; netAmount?: undefined; } | { id: string; type: string; amount: number; date: string; status: string; courseTitle?: undefined; netAmount?: undefined; } | { ...; }'.
+  Property 'status' does not exist on type '{ id: string; type: "payout"; courseTitle: string; amount: number; date: string; netAmount?: undefined; }'.
+src/features/payments/prototypes/EarningsPrototype4.tsx(99,59): error TS2339: Property 'status' does not exist on type '{ id: string; type: "payout"; courseTitle: string; amount: number; date: string; netAmount?: undefined; } | { id: string; type: string; amount: number; date: string; status: string; courseTitle?: undefined; netAmount?: undefined; } | { ...; }'.
+  Property 'status' does not exist on type '{ id: string; type: "payout"; courseTitle: string; amount: number; date: string; netAmount?: undefined; }'.
+src/features/scholar/prototypes/AdminReviewPrototype5.tsx(34,35): error TS6133: 'i' is declared but its value is never read.
