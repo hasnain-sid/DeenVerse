@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-05T12:13:39.338Z
+updated: 2026-03-05T13:10:58.178Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 45
+next_id: 46
 ---
 
 ## Agents
@@ -680,3 +680,25 @@ history:
 ```
 
 > GitHub Dependabot flagged 51 vulnerabilities on the main branch after the March 5 push: 3 critical, 32 high, 8 moderate, 8 low. Steps: 1) Run 'npm audit' from repo root to get the full report. 2) Address critical CVEs first (likely in backend dependencies). 3) Run 'npm audit fix' for auto-fixable issues. 4) Manually update packages that require semver-major bumps (test for breaking changes). 5) Check frontend and mobile packages separately. 6) Verify no regressions after updates. 7) Push updated package-lock.json. Reference: https://github.com/hasnain-sid/DeenVerse/security/dependabot
+
+### TASK-045 · Phase 2: Create shared Zod schemas (course, enrollment, quiz)
+
+```yaml
+id: TASK-045
+status: backlog
+priority: high
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-05T13:10:58.178Z
+updated_at: 2026-03-05T13:10:58.178Z
+tags:
+  - shared
+  - course
+history:
+  - ts: 2026-03-05T13:10:58.178Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Define Zod schemas in packages/shared/src/schemas/course.ts: courseCategoryEnum, courseLevelEnum, courseTypeEnum, courseStatusEnum, coursePricingSchema, courseLessonSchema, courseModuleSchema, createCourseSchema, updateCourseSchema, enrollCourseSchema, quizAnswerSchema, submitQuizSchema, courseReviewSchema, courseFiltersSchema. Export types. Update index.ts barrel.
