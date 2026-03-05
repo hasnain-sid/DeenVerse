@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-05T13:13:32.365Z
+updated: 2026-03-05T13:13:39.937Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 60
+next_id: 61
 ---
 
 ## Agents
@@ -1047,3 +1047,28 @@ history:
 ```
 
 > Promote chosen Course Builder prototype. Create CreateCoursePage.tsx + EditCoursePage.tsx. Add useCreateCourse(), useUpdateCourse(), useDeleteCourse(), usePublishCourse(), useAddModule(), useUpdateModule(), useDeleteModule(), useMyTeaching() hooks. Wire to course CRUD APIs. Routes: /scholar/courses/new, /scholar/courses/:slug/edit, /scholar/courses. AuthGuard + scholar check.
+
+### TASK-060 · Phase 2: Integrate Quiz Player + My Courses page
+
+```yaml
+id: TASK-060
+status: backlog
+priority: high
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-05T13:13:39.937Z
+updated_at: 2026-03-05T13:13:39.937Z
+tags:
+  - frontend
+  - course
+depends_on:
+  - TASK-049
+  - TASK-055
+history:
+  - ts: 2026-03-05T13:13:39.937Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Promote chosen Quiz Player prototype. Create QuizPlayerPage.tsx + MyCoursesPage.tsx. Add useStartQuiz(), useSubmitQuiz(), useQuizResults(), useMyCourses() hooks. Wire to quiz and my-courses APIs. Routes: /courses/:slug/quiz/:quizId, /my-courses. AuthGuard.
