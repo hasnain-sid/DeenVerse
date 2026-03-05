@@ -2,7 +2,7 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-05T17:20:43.258Z
+updated: 2026-03-05T19:53:08.966Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
 next_id: 87
@@ -14,7 +14,7 @@ next_id: 87
 |-------|------|------|--------|------------|-------------|-------------|
 | hasna | human | owner, architect | idle | - | 2026-03-04T13:55:56.279Z | trusted |
 | copilot | bot | developer, researcher | idle | - | 2026-03-05T12:13:39.338Z | trusted |
-| copilot-2 | bot | developer, reviewer | idle | - | 2026-03-05T17:20:43.258Z | trusted |
+| copilot-2 | bot | developer, reviewer | idle | - | 2026-03-05T19:53:08.966Z | trusted |
 | antigravity | bot | developer, researcher | idle | - | 2026-03-04T13:56:15.009Z | trusted |
 
 ---
@@ -534,7 +534,7 @@ assigned_to: copilot-2
 claimed_by: copilot-2
 created_by: "@hasnain-sid"
 created_at: 2026-03-05T10:23:45.711Z
-updated_at: 2026-03-05T16:59:18.372Z
+updated_at: 2026-03-05T19:53:08.966Z
 tags:
   - frontend
   - scholar
@@ -550,6 +550,15 @@ history:
     action: claimed
     from: backlog
     to: in_progress
+  - ts: 2026-03-05T19:53:08.966Z
+    who: copilot-2
+    action: commented
+    note: ScholarBadge component created (Prototype 1 pill design, supports
+      scholar/admin/moderator roles, sm/md/lg sizes). Integrated into PostCard,
+      MessagesPage (chat header + conversation list), ProfilePage, and
+      SearchPage user results. ScholarProfilePage created at /scholars/:id wired
+      to useScholarProfile(id) hook with cover/bio/stats/credentials/specialties
+      layout. Route /scholars/:id registered. Badge prototypes folder deleted.
 ```
 
 > Promote chosen badge design. Create ScholarBadge.tsx reusable component. Add badge display in: PostCard, CommentItem, ChatMessage, ProfileHeader, search results. Integrate ScholarProfilePage with useScholarProfile hook → GET /api/v1/scholars/:id/profile. Add route /scholars/:id.
