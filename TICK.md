@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-05T10:23:45.711Z
+updated: 2026-03-05T10:23:52.832Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 38
+next_id: 39
 ---
 
 ## Agents
@@ -421,3 +421,28 @@ history:
 ```
 
 > Promote chosen badge design. Create ScholarBadge.tsx reusable component. Add badge display in: PostCard, CommentItem, ChatMessage, ProfileHeader, search results. Integrate ScholarProfilePage with useScholarProfile hook → GET /api/v1/scholars/:id/profile. Add route /scholars/:id.
+
+### TASK-038 · Phase 1: Integrate Payment/Checkout + Subscription flow
+
+```yaml
+id: TASK-038
+status: backlog
+priority: high
+assigned_to: copilot-2
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-05T10:23:52.832Z
+updated_at: 2026-03-05T10:23:52.832Z
+tags:
+  - frontend
+  - payment
+depends_on:
+  - TASK-028
+  - TASK-033
+history:
+  - ts: 2026-03-05T10:23:52.832Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Promote chosen Payment prototype. Create useCheckout, useSubscription, usePaymentHistory hooks (TanStack Query). Wire to Stripe Checkout redirect flow. Build SubscriptionPage with plan comparison, upgrade/downgrade. Add routes /checkout, /subscription, /payments/history.
