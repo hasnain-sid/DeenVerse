@@ -1,10 +1,11 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { Home, Search, Bookmark, Users, Newspaper, Bell, Radio, BookOpen, BookHeart, MessageCircle, User, GraduationCap, Moon, Sparkles, ChevronDown, Globe } from 'lucide-react';
+import { Home, Search, Bookmark, Users, Newspaper, Bell, Radio, BookOpen, BookHeart, MessageCircle, User, GraduationCap, Moon, Sparkles, ChevronDown, Globe, ShieldCheck } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useUIStore } from '@/stores/uiStore';
 import { useUnreadCount } from '@/features/notifications/useNotifications';
 import { useChatUnreadCount } from '@/features/messages/useChat';
 import { useState } from 'react';
+import { useAuthStore } from '@/stores/authStore';
 
 // Bottom nav is restricted to core items
 const bottomNav = [
@@ -51,6 +52,7 @@ const extendedNavGroups = [
 export function MobileNav() {
   const location = useLocation();
   const { mobileNavOpen, setMobileNavOpen } = useUIStore();
+  const { user, isAuthenticated } = useAuthStore();
   const { data: unreadData } = useUnreadCount();
   const unreadCount = unreadData?.count ?? 0;
   const { data: chatUnreadData } = useChatUnreadCount();
@@ -174,6 +176,25 @@ export function MobileNav() {
                 );
               })}
             </nav>
+
+            {/* Admin Panel — only visible to admins */}
+            {isAuthenticated && user?.role === 'admin' && (
+              <NavLink
+                to="/admin/scholars"
+                onClick={() => setMobileNavOpen(false)}
+                className={({ isActive }) =>
+                  cn(
+                    'mt-3 flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold transition-colors border',
+                    isActive
+                      ? 'bg-primary/10 text-primary border-primary/30'
+                      : 'bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 border-amber-200 dark:border-amber-800/50',
+                  )
+                }
+              >
+                <ShieldCheck className="h-5 w-5 shrink-0" />
+                Admin Panel
+              </NavLink>
+            )}
           </div>
         </div>
       )}

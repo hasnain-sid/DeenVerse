@@ -22,6 +22,10 @@ import {
   GraduationCap,
   Sparkles,
   Globe,
+  BadgeCheck,
+  ShieldCheck,
+  CreditCard,
+  TrendingUp,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Avatar } from '@/components/ui/avatar';
@@ -51,6 +55,7 @@ const navigation = [
   { name: 'Saved', href: '/saved', icon: Bookmark },
   { name: 'Community', href: '/community', icon: Users },
   { name: 'Profile', href: '/profile', icon: User },
+  { name: 'Subscription', href: '/subscription', icon: CreditCard },
 ];
 
 const navigationGroups = [
@@ -64,7 +69,7 @@ const navigationGroups = [
   },
   {
     title: 'Community',
-    items: ['Streams', 'Notifications', 'Messages', 'Saved', 'Community', 'Profile'],
+    items: ['Streams', 'Notifications', 'Messages', 'Saved', 'Community', 'Profile', 'Subscription'],
   },
 ] as const;
 
@@ -278,6 +283,72 @@ export function Sidebar() {
         </Tooltip>
 
         {/* User / Auth */}
+        {/* Admin Panel — only for admins */}
+        {isAuthenticated && user?.role === 'admin' && (
+          <Tooltip content="Admin: Scholar Review" side="right">
+            <NavLink
+              to="/admin/scholars"
+              className={({ isActive }) =>
+                cn(
+                  'flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors font-medium',
+                  isActive
+                    ? 'bg-primary/10 text-primary'
+                    : 'text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/30',
+                )
+              }
+            >
+              <ShieldCheck className="h-[18px] w-[18px] shrink-0" />
+              {!sidebarCollapsed && <span>Admin Panel</span>}
+            </NavLink>
+          </Tooltip>
+        )}
+
+        {/* Upgrade Plan CTA — for free users */}
+        {isAuthenticated && user && !(user as any)?.subscription?.plan && (
+          <Tooltip content="Upgrade Plan" side="right">
+            <NavLink
+              to="/subscription"
+              className="flex items-center gap-3 rounded-md px-3 py-2 text-sm text-primary hover:bg-primary/10 transition-colors font-medium"
+            >
+              <CreditCard className="h-[18px] w-[18px] shrink-0" />
+              {!sidebarCollapsed && <span>Upgrade Plan</span>}
+            </NavLink>
+          </Tooltip>
+        )}
+
+        {/* Earnings link — scholar only */}
+        {isAuthenticated && user && (user.role === 'scholar' || user.role === 'admin') && (
+          <Tooltip content="Earnings" side="right">
+            <NavLink
+              to="/scholar/earnings"
+              className={({ isActive }) =>
+                cn(
+                  'flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors',
+                  isActive
+                    ? 'bg-secondary text-secondary-foreground font-medium'
+                    : 'text-muted-foreground hover:bg-secondary hover:text-foreground',
+                )
+              }
+            >
+              <TrendingUp className="h-[18px] w-[18px] shrink-0" />
+              {!sidebarCollapsed && <span>Earnings</span>}
+            </NavLink>
+          </Tooltip>
+        )}
+
+        {/* Become a Scholar CTA — only for regular users */}
+        {isAuthenticated && user && user.role === 'user' && (
+          <Tooltip content="Become a Scholar" side="right">
+            <NavLink
+              to="/scholar/apply"
+              className="flex items-center gap-3 rounded-md px-3 py-2 text-sm text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 transition-colors font-medium"
+            >
+              <BadgeCheck className="h-[18px] w-[18px] shrink-0" />
+              {!sidebarCollapsed && <span>Become a Scholar</span>}
+            </NavLink>
+          </Tooltip>
+        )}
+
         {isAuthenticated && user ? (
           <div className="flex items-center gap-3 rounded-md px-3 py-2">
             <Avatar

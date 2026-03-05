@@ -14,6 +14,7 @@ import {
   Monitor,
   Save,
   ArrowLeft,
+  CreditCard,
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -53,7 +54,7 @@ type PasswordForm = z.infer<typeof passwordSchema>;
 
 // ── Section types ────────────────────────────────────
 
-type Section = 'profile' | 'appearance' | 'notifications' | 'reading' | 'password';
+type Section = 'profile' | 'appearance' | 'notifications' | 'reading' | 'password' | 'billing';
 
 const sections: { id: Section; label: string; icon: React.ElementType }[] = [
   { id: 'profile', label: 'Profile', icon: User },
@@ -61,6 +62,7 @@ const sections: { id: Section; label: string; icon: React.ElementType }[] = [
   { id: 'notifications', label: 'Notifications', icon: Bell },
   { id: 'reading', label: 'Reading', icon: BookOpen },
   { id: 'password', label: 'Password', icon: Lock },
+  { id: 'billing', label: 'Billing', icon: CreditCard },
 ];
 
 // ── Field Error ──────────────────────────────────────
@@ -114,6 +116,7 @@ export function SettingsPage() {
           {active === 'notifications' && <NotificationsSection />}
           {active === 'reading' && <ReadingSection />}
           {active === 'password' && <PasswordSection />}
+          {active === 'billing' && <BillingSection />}
         </div>
       </div>
     </div>
@@ -476,5 +479,33 @@ function PasswordSection() {
         </form>
       </CardContent>
     </Card>
+  );
+}
+
+// ── Billing Section ──────────────────────────────────
+
+function BillingSection() {
+  return (
+    <div className="space-y-4">
+      <Card>
+        <CardContent className="pt-6 space-y-4">
+          <h2 className="text-sm font-medium">Subscription & Billing</h2>
+          <p className="text-sm text-muted-foreground">
+            Manage your plan, upgrade to unlock courses and live sessions, or view past invoices.
+          </p>
+          <div className="flex flex-wrap gap-3">
+            <Button asChild>
+              <Link to="/subscription">
+                <CreditCard className="h-4 w-4 mr-2" />
+                Upgrade Plan
+              </Link>
+            </Button>
+            <Button variant="outline" asChild>
+              <Link to="/payments/history">View Billing History</Link>
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
 }

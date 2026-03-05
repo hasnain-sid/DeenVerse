@@ -18,6 +18,7 @@ export interface UserSearchResult {
   avatar?: string;
   bio?: string;
   followers: string[];
+  role?: string;
 }
 
 // ── Hadith Search ────────────────────────────────────

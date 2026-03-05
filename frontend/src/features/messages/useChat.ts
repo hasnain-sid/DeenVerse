@@ -7,6 +7,7 @@ export interface ConversationUser {
   name: string;
   username: string;
   avatar?: string;
+  role?: string;
 }
 
 export interface MessageData {

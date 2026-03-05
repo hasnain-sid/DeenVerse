@@ -7,6 +7,7 @@ import { Settings, BookOpen, Bookmark, Users, ChevronRight, Pencil, Flame } from
 import { formatDate } from '@/lib/utils';
 import { Link } from 'react-router-dom';
 import { EditProfileModal } from './EditProfileModal';
+import { ScholarBadge } from '@/components/ScholarBadge';
 
 export function ProfilePage() {
   const { user } = useAuthStore();
@@ -37,7 +38,10 @@ export function ProfilePage() {
             className="h-20 w-20 text-2xl border-2 border-border"
           />
           <div>
-            <h2 className="text-2xl font-bold tracking-tight text-foreground">{user.name}</h2>
+            <div className="flex items-center gap-2">
+              <h2 className="text-2xl font-bold tracking-tight text-foreground">{user.name}</h2>
+              {user.role && <ScholarBadge role={user.role} size="lg" />}
+            </div>
             <p className="text-muted-foreground">@{user.username}</p>
             {user.bio && <p className="text-sm mt-1 text-card-foreground">{user.bio}</p>}
           </div>

@@ -16,6 +16,7 @@ export interface Post {
     name: string;
     username: string;
     avatar?: string;
+    role?: string;
   };
   content: string;
   hadithRef?: string;

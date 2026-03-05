@@ -16,6 +16,7 @@ import {
   type ConversationData,
   type MessageData,
 } from './useChat';
+import { ScholarBadge } from '@/components/ScholarBadge';
 
 export function MessagesPage() {
   const [activeConversation, setActiveConversation] = useState<string | null>(null);
@@ -146,7 +147,10 @@ export function MessagesPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between">
-                      <p className="text-sm font-medium truncate">{other.name}</p>
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        <p className="text-sm font-medium truncate">{other.name}</p>
+                        {other.role && <ScholarBadge role={other.role} size="sm" />}
+                      </div>
                       {conv.lastMessage && (
                         <span className="text-[10px] text-muted-foreground">
                           {new Date(conv.updatedAt).toLocaleDateString()}
@@ -203,7 +207,10 @@ export function MessagesPage() {
                 )}
               </div>
               <div>
-                <p className="text-sm font-semibold">{activeOtherUser.name}</p>
+                <div className="flex items-center gap-1.5">
+                  <p className="text-sm font-semibold">{activeOtherUser.name}</p>
+                  {activeOtherUser.role && <ScholarBadge role={activeOtherUser.role} size="sm" />}
+                </div>
                 <p className="text-xs text-muted-foreground">
                   {isUserOnline(activeOtherUser._id) ? 'Online' : `@${activeOtherUser.username}`}
                 </p>

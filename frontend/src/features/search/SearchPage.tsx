@@ -7,6 +7,7 @@ import { Avatar } from '@/components/ui/avatar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 import { useHadithSearch, useUserSearch, useCategorySearch } from './useSearch';
+import { ScholarBadge } from '@/components/ScholarBadge';
 
 // ── Tabs ─────────────────────────────────────────────
 
@@ -245,9 +246,12 @@ export function SearchPage() {
                 <CardContent className="p-4 flex items-center gap-3">
                   <Avatar src={u.avatar} fallback={u.name} size="sm" />
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium group-hover:text-primary transition-colors">
-                      <Highlight text={u.name} query={debouncedQuery} />
-                    </p>
+                    <div className="flex items-center gap-1.5">
+                      <p className="text-sm font-medium group-hover:text-primary transition-colors">
+                        <Highlight text={u.name} query={debouncedQuery} />
+                      </p>
+                      {u.role && <ScholarBadge role={u.role} size="sm" />}
+                    </div>
                     <p className="text-xs text-muted-foreground">
                       @<Highlight text={u.username} query={debouncedQuery} />
                       {u.bio && <> · {u.bio.slice(0, 60)}{u.bio.length > 60 ? '…' : ''}</>}

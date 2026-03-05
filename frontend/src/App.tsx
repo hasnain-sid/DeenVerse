@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { AuthGuard } from '@/features/auth/AuthGuard';
+import { AdminGuard } from '@/features/auth/AdminGuard';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { useSession } from '@/features/auth/useAuth';
 import { CommandPalette } from '@/components/CommandPalette';
@@ -88,6 +89,25 @@ const QuranTopicsPage = lazy(() =>
   import('@/features/quran-topics/QuranTopicsPage').then((m) => ({ default: m.QuranTopicsPage }))
 );
 
+const ScholarApplyPrototypesViewer = lazy(() =>
+  import('@/features/scholar/prototypes/PrototypesViewer')
+);
+const ScholarEarningsPage = lazy(() =>
+  import('@/features/payments/ScholarEarningsPage').then((m) => ({ default: m.ScholarEarningsPage }))
+);
+const ScholarStripeSetupPage = lazy(() =>
+  import('@/features/payments/ScholarStripeSetupPage').then((m) => ({ default: m.ScholarStripeSetupPage }))
+);
+const AdminScholarReviewPage = lazy(() =>
+  import('@/features/scholar/AdminScholarReviewPage').then((m) => ({
+    default: m.AdminScholarReviewPage,
+  }))
+);
+const ScholarApplicationPage = lazy(() =>
+  import('@/features/scholar/ScholarApplicationPage').then((m) => ({
+    default: m.ScholarApplicationPage,
+  }))
+);
 const TopicDetailPage = lazy(() =>
   import('@/features/quran-topics/TopicDetailPage').then((m) => ({ default: m.TopicDetailPage }))
 );
@@ -116,6 +136,15 @@ const TermsOfService = lazy(() => import('@/features/legal/TermsOfService'));
 
 const GlobalCoursesPage = lazy(() =>
   import('@/features/courses/GlobalCoursesPage').then((m) => ({ default: m.GlobalCoursesPage }))
+);
+const SubscriptionPage = lazy(() =>
+  import('@/features/payments/SubscriptionPage').then((m) => ({ default: m.SubscriptionPage }))
+);
+const CheckoutPage = lazy(() =>
+  import('@/features/payments/CheckoutPage').then((m) => ({ default: m.CheckoutPage }))
+);
+const PaymentHistoryPage = lazy(() =>
+  import('@/features/payments/PaymentHistoryPage').then((m) => ({ default: m.PaymentHistoryPage }))
 );
 
 import CookieConsent from '@/components/CookieConsent';
@@ -258,8 +287,67 @@ export default function App() {
                   <Route path="/forgot-password" element={<ForgotPasswordPage />} />
                   <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
                   <Route path="/global-courses" element={<GlobalCoursesPage />} />
+                  <Route
+                    path="/subscription"
+                    element={
+                      <AuthGuard>
+                        <SubscriptionPage />
+                      </AuthGuard>
+                    }
+                  />
+                  <Route
+                    path="/checkout"
+                    element={
+                      <AuthGuard>
+                        <CheckoutPage />
+                      </AuthGuard>
+                    }
+                  />
+                  <Route
+                    path="/payments/history"
+                    element={
+                      <AuthGuard>
+                        <PaymentHistoryPage />
+                      </AuthGuard>
+                    }
+                  />
+                  <Route
+                    path="/scholar/apply"
+                    element={
+                      <AuthGuard>
+                        <ScholarApplicationPage />
+                      </AuthGuard>
+                    }
+                  />
+                  <Route
+                    path="/scholar/earnings"
+                    element={
+                      <AuthGuard>
+                        <ScholarEarningsPage />
+                      </AuthGuard>
+                    }
+                  />
+                  <Route
+                    path="/scholar/stripe-setup"
+                    element={
+                      <AuthGuard>
+                        <ScholarStripeSetupPage />
+                      </AuthGuard>
+                    }
+                  />
+                  <Route
+                    path="/admin/scholars"
+                    element={
+                      <AdminGuard>
+                        <AdminScholarReviewPage />
+                      </AdminGuard>
+                    }
+                  />
                   <Route path="*" element={<NotFoundPage />} />
                 </Route>
+                <Route path="/prototypes/scholar-review" element={<ScholarApplyPrototypesViewer />} />
+                <Route path="/prototypes/scholar-badge" element={<ScholarApplyPrototypesViewer />} />
+
               </Routes>
             </Suspense>
           </SessionRestorer>

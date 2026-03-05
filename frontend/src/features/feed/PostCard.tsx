@@ -9,6 +9,7 @@ import { formatDate } from '@/lib/utils';
 import type { Post } from '@/types/post';
 import { SharedContentCard } from './SharedContentCard';
 import toast from 'react-hot-toast';
+import { ScholarBadge } from '@/components/ScholarBadge';
 
 interface PostCardProps {
   post: Post;
@@ -123,6 +124,7 @@ export function PostCard({ post, compact = false }: PostCardProps) {
               >
                 {post.author.name}
               </Link>
+              {post.author.role && <ScholarBadge role={post.author.role} size="sm" />}
               <Link
                 to={`/user/${post.author.username}`}
                 className="text-muted-foreground text-sm truncate"
