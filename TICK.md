@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-05T10:23:17.434Z
+updated: 2026-03-05T10:23:29.798Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 35
+next_id: 36
 ---
 
 ## Agents
@@ -346,3 +346,28 @@ history:
 ```
 
 > Create 5 prototype variants for Scholar Earnings Dashboard: revenue charts, payout history, course breakdown, pending payouts, Stripe Connect status. Explore: dashbord with graphs, minimal list view, card-based metrics, split analytics/transactions, timeline. Include PrototypesViewer.tsx + temp route /prototypes/scholar-earnings. All data mocked.
+
+### TASK-035 · Phase 1: Integrate Scholar Application page + hooks
+
+```yaml
+id: TASK-035
+status: backlog
+priority: high
+assigned_to: copilot-2
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-05T10:23:29.798Z
+updated_at: 2026-03-05T10:23:29.798Z
+tags:
+  - frontend
+  - scholar
+depends_on:
+  - TASK-026
+  - TASK-030
+history:
+  - ts: 2026-03-05T10:23:29.798Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Promote the chosen Scholar Application prototype to production. Create useScholar.ts hook (TanStack Query) with useScholarApplication mutation and useApplicationStatus query. Wire to POST /api/v1/scholars/apply and GET /api/v1/scholars/application-status. Remove prototype files after promotion.
