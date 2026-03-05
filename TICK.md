@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-05T13:13:00.675Z
+updated: 2026-03-05T13:13:09.607Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 56
+next_id: 57
 ---
 
 ## Agents
@@ -947,3 +947,28 @@ history:
 ```
 
 > Create 3 prototype variants for Quiz/Assessment Player. Explore: one-question-per-page with progress bar, all-questions-visible scroll, timed exam mode with countdown and focus lock. Show: question text, MCQ/true-false/short-answer inputs, timer, submit button, results page with score + pass/fail. Temp route /prototypes/quiz-player. Mocked data.
+
+### TASK-056 · Phase 2: Integrate Course Discovery page + hooks
+
+```yaml
+id: TASK-056
+status: backlog
+priority: high
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-05T13:13:09.607Z
+updated_at: 2026-03-05T13:13:09.607Z
+tags:
+  - frontend
+  - course
+depends_on:
+  - TASK-047
+  - TASK-051
+history:
+  - ts: 2026-03-05T13:13:09.607Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Promote chosen Course Discovery prototype to production. Create frontend/src/features/courses/CoursesPage.tsx. Create useCourses.ts with TanStack Query hooks: useCourses(filters), useFeaturedCourses(). Wire to GET /api/v1/courses, /api/v1/courses/featured. Add route /courses. Add 'Courses' link to main navigation.
