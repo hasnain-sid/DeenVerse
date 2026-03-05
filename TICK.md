@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-05T10:17:38.904Z
+updated: 2026-03-05T10:21:48.073Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 24
+next_id: 25
 ---
 
 ## Agents
@@ -78,3 +78,26 @@ history:
 ```
 
 > The current /quran-topics page is visually unappealing — icons on the front screen don't look good and the overall layout needs a design overhaul. Create 5 distinct prototype variants in frontend/src/features/quran-topics/prototypes/ following the prototyping workflow. Each variant should explore different approaches to topic cards, icon treatment, pillar/cluster layout, mood selector, and trending row. Include a PrototypesViewer.tsx with toolbar and register a temporary route at /prototypes/quran-topics. All data is mocked inline — no backend changes.
+
+### TASK-024 · Phase 1: Create shared Zod schemas (scholar, payment)
+
+```yaml
+id: TASK-024
+status: backlog
+priority: high
+assigned_to: copilot
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-05T10:21:48.073Z
+updated_at: 2026-03-05T10:21:48.073Z
+tags:
+  - shared
+  - scholar
+  - payment
+history:
+  - ts: 2026-03-05T10:21:48.073Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Define Zod schemas in packages/shared/src/schemas/ for: scholarApplicationSchema, scholarProfileSchema, paymentSchema, earningsSchema. These are the integration contracts between backend and frontend.
