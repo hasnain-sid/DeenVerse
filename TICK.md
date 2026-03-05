@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-05T10:24:01.841Z
+updated: 2026-03-05T10:24:11.064Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 40
+next_id: 41
 ---
 
 ## Agents
@@ -471,3 +471,28 @@ history:
 ```
 
 > Promote chosen Earnings Dashboard prototype. Create useScholarEarnings, useStripeConnect hooks. Wire to GET /api/v1/scholars/earnings, /earnings/details, /stripe/status. Build Stripe Connect onboarding flow. Add routes /scholar/earnings, /scholar/stripe-setup.
+
+### TASK-040 · Phase 1: Unit tests — Scholar models + service + middleware
+
+```yaml
+id: TASK-040
+status: backlog
+priority: high
+assigned_to: copilot
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-05T10:24:11.064Z
+updated_at: 2026-03-05T10:24:11.064Z
+tags:
+  - backend
+  - testing
+  - scholar
+depends_on:
+  - TASK-026
+history:
+  - ts: 2026-03-05T10:24:11.064Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Write unit tests for: userSchema scholar fields validation, isScholar/isScholarOrAdmin middleware (role checks, edge cases), scholarService functions (apply, review, approve, reject). Use Jest or Vitest. Test: valid/invalid applications, role transitions, admin-only access, duplicate applications, rejection flow.
