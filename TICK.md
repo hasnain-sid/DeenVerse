@@ -2,7 +2,7 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-05T20:30:08.141Z
+updated: 2026-03-05T21:56:01.854Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
 next_id: 87
@@ -13,7 +13,7 @@ next_id: 87
 | Agent | Type | Role | Status | Working On | Last Active | Trust Level |
 |-------|------|------|--------|------------|-------------|-------------|
 | hasna | human | owner, architect | idle | - | 2026-03-04T13:55:56.279Z | trusted |
-| copilot | bot | developer, researcher | idle | - | 2026-03-05T12:13:39.338Z | trusted |
+| copilot | bot | developer, researcher | working | TASK-040 | 2026-03-05T21:56:01.854Z | trusted |
 | copilot-2 | bot | developer, reviewer | idle | - | 2026-03-05T20:30:08.141Z | trusted |
 | antigravity | bot | developer, researcher | idle | - | 2026-03-04T13:56:15.009Z | trusted |
 
@@ -665,13 +665,13 @@ history:
 
 ```yaml
 id: TASK-040
-status: backlog
+status: in_progress
 priority: high
 assigned_to: copilot
-claimed_by: null
+claimed_by: copilot
 created_by: "@hasnain-sid"
 created_at: 2026-03-05T10:24:11.064Z
-updated_at: 2026-03-05T10:24:11.064Z
+updated_at: 2026-03-05T21:56:01.854Z
 tags:
   - backend
   - testing
@@ -682,6 +682,11 @@ history:
   - ts: 2026-03-05T10:24:11.064Z
     who: "@hasnain-sid"
     action: created
+  - ts: 2026-03-05T21:56:01.854Z
+    who: copilot
+    action: claimed
+    from: backlog
+    to: in_progress
 ```
 
 > Write unit tests for: userSchema scholar fields validation, isScholar/isScholarOrAdmin middleware (role checks, edge cases), scholarService functions (apply, review, approve, reject). Use Jest or Vitest. Test: valid/invalid applications, role transitions, admin-only access, duplicate applications, rejection flow.
@@ -690,13 +695,13 @@ history:
 
 ```yaml
 id: TASK-041
-status: backlog
+status: done
 priority: high
 assigned_to: copilot
-claimed_by: null
+claimed_by: copilot
 created_by: "@hasnain-sid"
 created_at: 2026-03-05T10:24:19.400Z
-updated_at: 2026-03-05T10:24:19.400Z
+updated_at: 2026-03-06T00:00:00.000Z
 tags:
   - backend
   - testing
@@ -708,6 +713,17 @@ history:
   - ts: 2026-03-05T10:24:19.400Z
     who: "@hasnain-sid"
     action: created
+  - ts: 2026-03-06T00:00:00.000Z
+    who: copilot
+    action: claimed
+  - ts: 2026-03-06T00:00:00.000Z
+    who: copilot
+    action: comment
+    note: Unit tests for stripeService + webhookController written. Idempotency
+      tested.
+  - ts: 2026-03-06T00:00:00.000Z
+    who: copilot
+    action: done
 ```
 
 > Write unit tests for: stripeService (checkout session creation, Connect onboarding, webhook signature verification), payment controller (idempotent enrollment, subscription create/cancel), webhook handler (all event types: checkout.session.completed, customer.subscription.updated/deleted, account.updated). Mock Stripe SDK calls.
