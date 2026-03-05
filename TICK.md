@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-05T10:23:52.832Z
+updated: 2026-03-05T10:24:01.841Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 39
+next_id: 40
 ---
 
 ## Agents
@@ -446,3 +446,28 @@ history:
 ```
 
 > Promote chosen Payment prototype. Create useCheckout, useSubscription, usePaymentHistory hooks (TanStack Query). Wire to Stripe Checkout redirect flow. Build SubscriptionPage with plan comparison, upgrade/downgrade. Add routes /checkout, /subscription, /payments/history.
+
+### TASK-039 · Phase 1: Integrate Scholar Earnings Dashboard
+
+```yaml
+id: TASK-039
+status: backlog
+priority: medium
+assigned_to: copilot-2
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-05T10:24:01.841Z
+updated_at: 2026-03-05T10:24:01.841Z
+tags:
+  - frontend
+  - payment
+depends_on:
+  - TASK-029
+  - TASK-034
+history:
+  - ts: 2026-03-05T10:24:01.841Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Promote chosen Earnings Dashboard prototype. Create useScholarEarnings, useStripeConnect hooks. Wire to GET /api/v1/scholars/earnings, /earnings/details, /stripe/status. Build Stripe Connect onboarding flow. Add routes /scholar/earnings, /scholar/stripe-setup.
