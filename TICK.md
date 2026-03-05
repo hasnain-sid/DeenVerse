@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-05T13:13:56.277Z
+updated: 2026-03-05T13:14:04.524Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 63
+next_id: 64
 ---
 
 ## Agents
@@ -1121,3 +1121,29 @@ history:
 ```
 
 > Write unit tests for: courseSchema validation (required fields, enum values, slug uniqueness), enrollmentSchema (compound index, progress defaults), courseService functions (create, update, delete, publish, slug generation, ownership check). Use Jest. Mock mongoose models. Test: valid/invalid course creation, duplicate slugs, unauthorized update attempts, draft->pending-review->published flow.
+
+### TASK-063 · Phase 2: Unit tests — Enrollment + Quiz engine
+
+```yaml
+id: TASK-063
+status: backlog
+priority: high
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-05T13:14:04.524Z
+updated_at: 2026-03-05T13:14:04.524Z
+tags:
+  - backend
+  - testing
+  - course
+depends_on:
+  - TASK-048
+  - TASK-049
+history:
+  - ts: 2026-03-05T13:14:04.524Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Write unit tests for: enrollment service (enroll in free course, reject duplicate enrollment, progress tracking, percentComplete calculation, lesson completion), quiz service (start attempt enforces maxAttempts, submit grades correctly, timer enforcement, correct answer stripping). Mock mongoose + Stripe.
