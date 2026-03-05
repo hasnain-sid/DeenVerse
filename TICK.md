@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-05T13:14:04.524Z
+updated: 2026-03-05T13:14:17.151Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 64
+next_id: 65
 ---
 
 ## Agents
@@ -1147,3 +1147,29 @@ history:
 ```
 
 > Write unit tests for: enrollment service (enroll in free course, reject duplicate enrollment, progress tracking, percentComplete calculation, lesson completion), quiz service (start attempt enforces maxAttempts, submit grades correctly, timer enforcement, correct answer stripping). Mock mongoose + Stripe.
+
+### TASK-064 · Phase 2: Smoke tests — All Course API endpoints
+
+```yaml
+id: TASK-064
+status: backlog
+priority: high
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-05T13:14:17.151Z
+updated_at: 2026-03-05T13:14:17.151Z
+tags:
+  - backend
+  - testing
+  - course
+depends_on:
+  - TASK-062
+  - TASK-063
+history:
+  - ts: 2026-03-05T13:14:17.151Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Smoke/integration tests using supertest: scholar creates course (201), browse courses (200, paginated), get course by slug (200), update course (200, ownership enforced), enroll in free course (200), enroll in paid course without payment (402/400), get progress (200), complete lesson + check percentComplete, start quiz + submit + get results, admin review flow (pending-review->published). Auth guards: 401 without token, 403 without scholar role for create. Use mongodb-memory-server.
