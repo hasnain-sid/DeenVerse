@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-05T10:22:03.468Z
+updated: 2026-03-05T10:22:11.543Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 27
+next_id: 28
 ---
 
 ## Agents
@@ -149,3 +149,27 @@ history:
 ```
 
 > Build scholar application flow: POST /api/v1/scholars/apply (submit application), GET /api/v1/scholars/application-status (check own status), GET /api/v1/scholars/:id/profile (public profile). Admin endpoints: GET /api/v1/admin/scholars/applications, PUT /api/v1/admin/scholars/applications/:userId/review (approve/reject). Files: scholarRoute.js, scholarController.js, scholarService.js.
+
+### TASK-027 · Phase 1: Stripe Connect integration + service
+
+```yaml
+id: TASK-027
+status: backlog
+priority: high
+assigned_to: copilot
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-05T10:22:11.543Z
+updated_at: 2026-03-05T10:22:11.543Z
+tags:
+  - backend
+  - payment
+depends_on:
+  - TASK-025
+history:
+  - ts: 2026-03-05T10:22:11.543Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Create backend/services/stripeService.js: Stripe Connect Express account creation (scholar onboarding URL), dashboard link generation, account status check. Create paymentSchema.js and scholarPaymentSchema.js models. Endpoints: POST /api/v1/scholars/stripe/connect, GET /api/v1/scholars/stripe/dashboard, GET /api/v1/scholars/stripe/status.
