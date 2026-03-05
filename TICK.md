@@ -2,7 +2,7 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-05T15:34:51.744Z
+updated: 2026-03-05T15:47:38.070Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
 next_id: 87
@@ -14,7 +14,7 @@ next_id: 87
 |-------|------|------|--------|------------|-------------|-------------|
 | hasna | human | owner, architect | idle | - | 2026-03-04T13:55:56.279Z | trusted |
 | copilot | bot | developer, researcher | idle | - | 2026-03-05T12:13:39.338Z | trusted |
-| copilot-2 | bot | developer, reviewer | working | TASK-036 | 2026-03-05T15:34:51.744Z | trusted |
+| copilot-2 | bot | developer, reviewer | working | TASK-036 | 2026-03-05T15:47:38.070Z | trusted |
 | antigravity | bot | developer, researcher | idle | - | 2026-03-04T13:56:15.009Z | trusted |
 
 ---
@@ -479,7 +479,7 @@ assigned_to: copilot-2
 claimed_by: copilot-2
 created_by: "@hasnain-sid"
 created_at: 2026-03-05T10:23:37.255Z
-updated_at: 2026-03-05T15:34:51.744Z
+updated_at: 2026-03-05T15:47:38.070Z
 tags:
   - frontend
   - scholar
@@ -495,6 +495,13 @@ history:
     action: claimed
     from: backlog
     to: in_progress
+  - ts: 2026-03-05T15:47:38.070Z
+    who: copilot-2
+    action: commented
+    note: Admin Scholar Review Panel integrated. Admin route /admin/scholars live.
+      Created AdminGuard, AdminScholarReviewPage (promoted from Prototype 3),
+      added useAdminScholarApplications/useReviewApplication/useAdminScholarList
+      hooks. Deleted admin review prototypes and mock data.
 ```
 
 > Promote chosen Admin Scholar Review prototype. Create useAdminScholarReview hook (TanStack Query) for GET /api/v1/admin/scholars/applications and PUT /api/v1/admin/scholars/applications/:userId/review. Wire approve/reject actions. Add route to admin section.
