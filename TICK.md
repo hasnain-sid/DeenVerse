@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-05T13:10:58.178Z
+updated: 2026-03-05T13:11:08.281Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 46
+next_id: 47
 ---
 
 ## Agents
@@ -702,3 +702,27 @@ history:
 ```
 
 > Define Zod schemas in packages/shared/src/schemas/course.ts: courseCategoryEnum, courseLevelEnum, courseTypeEnum, courseStatusEnum, coursePricingSchema, courseLessonSchema, courseModuleSchema, createCourseSchema, updateCourseSchema, enrollCourseSchema, quizAnswerSchema, submitQuizSchema, courseReviewSchema, courseFiltersSchema. Export types. Update index.ts barrel.
+
+### TASK-046 · Phase 2: Course + Enrollment + Quiz + QuizAttempt models
+
+```yaml
+id: TASK-046
+status: backlog
+priority: high
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-05T13:11:08.281Z
+updated_at: 2026-03-05T13:11:08.281Z
+tags:
+  - backend
+  - course
+depends_on:
+  - TASK-045
+history:
+  - ts: 2026-03-05T13:11:08.281Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Create backend models: courseSchema.js (full schema from contract with indexes), enrollmentSchema.js (student+course compound unique index, progress tracking), quizSchema.js (questions, timeLimit, passingScore), quizAttemptSchema.js (answers, score, timing). Add courseAccess middleware in backend/middlewares/courseAccess.js (verify enrollment before serving paid content).
