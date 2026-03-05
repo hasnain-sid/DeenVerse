@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-05T13:14:27.421Z
+updated: 2026-03-05T14:18:12.306Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 66
+next_id: 87
 ---
 
 ## Agents
@@ -14,7 +14,7 @@ next_id: 66
 |-------|------|------|--------|------------|-------------|-------------|
 | hasna | human | owner, architect | idle | - | 2026-03-04T13:55:56.279Z | trusted |
 | copilot | bot | developer, researcher | idle | - | 2026-03-05T12:13:39.338Z | trusted |
-| copilot-2 | bot | developer, reviewer | idle | - | 2026-03-04T13:56:09.000Z | trusted |
+| copilot-2 | bot | developer, reviewer | working | TASK-035 | 2026-03-05T14:18:12.306Z | trusted |
 | antigravity | bot | developer, researcher | idle | - | 2026-03-04T13:56:15.009Z | trusted |
 
 ---
@@ -433,13 +433,13 @@ history:
 
 ```yaml
 id: TASK-035
-status: backlog
+status: in_progress
 priority: high
 assigned_to: copilot-2
-claimed_by: null
+claimed_by: copilot-2
 created_by: "@hasnain-sid"
 created_at: 2026-03-05T10:23:29.798Z
-updated_at: 2026-03-05T10:23:29.798Z
+updated_at: 2026-03-05T14:18:12.306Z
 tags:
   - frontend
   - scholar
@@ -450,6 +450,11 @@ history:
   - ts: 2026-03-05T10:23:29.798Z
     who: "@hasnain-sid"
     action: created
+  - ts: 2026-03-05T14:18:12.306Z
+    who: copilot-2
+    action: claimed
+    from: backlog
+    to: in_progress
 ```
 
 > Promote the chosen Scholar Application prototype to production. Create useScholar.ts hook (TanStack Query) with useScholarApplication mutation and useApplicationStatus query. Wire to POST /api/v1/scholars/apply and GET /api/v1/scholars/application-status. Remove prototype files after promotion.
@@ -1202,3 +1207,549 @@ history:
 ```
 
 > Update .agents/feature-board.md with Course System row (all layers complete). Mark course-system contract as complete. Update ROADMAP.md with Phase 2 completion. Run frontend lint, fix errors. Final code review. Commit with conventional commits: feat(courses), feat(enrollment), feat(quiz), feat(frontend), test(phase2), docs.
+
+### TASK-066 · Phase 3: Create shared Zod schemas (classroom)
+
+```yaml
+id: TASK-066
+status: backlog
+priority: high
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-05T14:00:00.000Z
+updated_at: 2026-03-05T14:00:00.000Z
+tags:
+  - shared
+  - classroom
+  - phase3
+history:
+  - ts: 2026-03-05T14:00:00.000Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Create packages/shared/src/schemas/classroom.ts: classroomTypeEnum, classroomStatusEnum, classroomAccessEnum, classroomParticipantRoleEnum, classroomSettingsSchema, createClassroomSchema, updateClassroomSchema, classroomFiltersSchema, updateClassroomSettingsSchema. Export inferred types. Update index.ts barrel.
+
+### TASK-067 · Phase 3: Classroom + ClassroomParticipant models + LiveKit service
+
+```yaml
+id: TASK-067
+status: backlog
+priority: high
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-05T14:00:00.000Z
+updated_at: 2026-03-05T14:00:00.000Z
+tags:
+  - backend
+  - classroom
+  - phase3
+depends_on:
+  - TASK-066
+history:
+  - ts: 2026-03-05T14:00:00.000Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Create backend/models/classroomSchema.js (host, title, course, type, scheduling, LiveKit fields, status, participants, settings, recordings, whiteboardSnapshot, tags) + backend/models/classroomParticipantSchema.js (classroom, user, role, timing, hand state). Create backend/services/livekitService.js (createRoom, deleteRoom, generateToken, listParticipants, muteParticipant, removeParticipant, startRecording, stopRecording). Install livekit-server-sdk. Graceful fallback when not configured.
+
+### TASK-068 · Phase 3: Classroom CRUD API (routes/controller/service)
+
+```yaml
+id: TASK-068
+status: backlog
+priority: high
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-05T14:00:00.000Z
+updated_at: 2026-03-05T14:00:00.000Z
+tags:
+  - backend
+  - classroom
+  - phase3
+depends_on:
+  - TASK-067
+history:
+  - ts: 2026-03-05T14:00:00.000Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Create backend/routes/classroomRoute.js, backend/controller/classroomController.js, backend/services/classroomService.js. CRUD: createClassroom (scholar only), browseClassrooms (public, paginated, filterable), getUpcomingClassrooms, getMySessions (host/student role filter), getClassroomById, updateClassroom (host ownership), deleteClassroom (host, prevent live deletion). Mount at /api/v1/classrooms.
+
+### TASK-069 · Phase 3: Classroom Lifecycle API (start/join/end/leave)
+
+```yaml
+id: TASK-069
+status: backlog
+priority: high
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-05T14:00:00.000Z
+updated_at: 2026-03-05T14:00:00.000Z
+tags:
+  - backend
+  - classroom
+  - phase3
+depends_on:
+  - TASK-068
+history:
+  - ts: 2026-03-05T14:00:00.000Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Add lifecycle endpoints to classroomRoute: POST /:id/start (host creates LiveKit room, returns token+serverUrl), POST /:id/join (access control: course-only enrollment check, followers check, public allow; token generation; participant tracking; peakParticipants update), POST /:id/end (host deletes room, updates all participants, sets ended), POST /:id/leave (update participant, decrement count). Socket.IO events: classroom:started, classroom:ended.
+
+### TASK-070 · Phase 3: Classroom Controls API (mute/kick/settings/raise hand)
+
+```yaml
+id: TASK-070
+status: backlog
+priority: high
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-05T14:00:00.000Z
+updated_at: 2026-03-05T14:00:00.000Z
+tags:
+  - backend
+  - classroom
+  - phase3
+depends_on:
+  - TASK-069
+history:
+  - ts: 2026-03-05T14:00:00.000Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Add control endpoints: POST /:id/mute/:participantId, POST /:id/kick/:participantId, PUT /:id/settings. Socket.IO events: classroom:raise-hand, classroom:lower-hand, classroom:grant-speak, classroom:join-room, classroom:leave-room. In-memory hand raise queue. Host-only authorization for mute/kick/settings.
+
+### TASK-071 · Phase 3: Session Recording API
+
+```yaml
+id: TASK-071
+status: backlog
+priority: high
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-05T14:00:00.000Z
+updated_at: 2026-03-05T14:00:00.000Z
+tags:
+  - backend
+  - classroom
+  - phase3
+depends_on:
+  - TASK-069
+history:
+  - ts: 2026-03-05T14:00:00.000Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Add recording endpoints: POST /:id/recording/start (host, live, recordingEnabled check; LiveKit Egress to S3), POST /:id/recording/stop (stop Egress, push to recordings array), GET /:id/recordings (host/participant access, pre-signed S3 URLs). Socket.IO: classroom:recording-started, classroom:recording-stopped for consent banner.
+
+### TASK-072 · Phase 3: Whiteboard Sync Backend
+
+```yaml
+id: TASK-072
+status: backlog
+priority: medium
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-05T14:00:00.000Z
+updated_at: 2026-03-05T14:00:00.000Z
+tags:
+  - backend
+  - classroom
+  - phase3
+depends_on:
+  - TASK-070
+history:
+  - ts: 2026-03-05T14:00:00.000Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Whiteboard snapshot persistence: PUT /:id/whiteboard (host saves tldraw snapshot), GET /:id/whiteboard (participants load snapshot for late-join). Socket.IO events: classroom:whiteboard-save (throttled 30s), classroom:whiteboard-load (callback with snapshot), classroom:whiteboard-clear (host broadcast). Primary sync via LiveKit data channels (client-side), backend is fallback.
+
+### TASK-073 · Phase 3: Classroom Lobby prototypes (5 variants)
+
+```yaml
+id: TASK-073
+status: backlog
+priority: high
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-05T14:00:00.000Z
+updated_at: 2026-03-05T14:00:00.000Z
+tags:
+  - frontend
+  - classroom
+  - prototype
+  - phase3
+depends_on:
+  - TASK-066
+history:
+  - ts: 2026-03-05T14:00:00.000Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> 5 Lobby prototypes: (1) Live-First Grid, (2) Calendar View, (3) Channel-Style, (4) Hero Carousel + Cards, (5) Dashboard Hub. In frontend/src/features/classroom/prototypes/. PrototypesViewer at /prototypes/classroom-lobby. Mocked data: 4 live, 6 upcoming, 3 ended classrooms. Include filters, search, type badges, live badges, responsive.
+
+### TASK-074 · Phase 3: Live Classroom prototypes (5 variants)
+
+```yaml
+id: TASK-074
+status: backlog
+priority: high
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-05T14:00:00.000Z
+updated_at: 2026-03-05T14:00:00.000Z
+tags:
+  - frontend
+  - classroom
+  - prototype
+  - phase3
+depends_on:
+  - TASK-066
+history:
+  - ts: 2026-03-05T14:00:00.000Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> 5 Live prototypes: (1) Zoom-Style Grid, (2) Lecture Mode, (3) Whiteboard-First, (4) Split Panel, (5) Floating Panels. Each includes: host video, participant grid, control bar (mic/cam/screen/hand/whiteboard/chat/record/leave), chat panel, participants panel, hand raise queue, whiteboard placeholder, recording indicator. Responsive.
+
+### TASK-075 · Phase 3: Schedule Classroom prototypes (5 variants)
+
+```yaml
+id: TASK-075
+status: backlog
+priority: medium
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-05T14:00:00.000Z
+updated_at: 2026-03-05T14:00:00.000Z
+tags:
+  - frontend
+  - classroom
+  - prototype
+  - phase3
+depends_on:
+  - TASK-066
+history:
+  - ts: 2026-03-05T14:00:00.000Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> 5 Schedule prototypes: (1) Multi-Step Wizard, (2) Single-Page Form, (3) Quick Schedule Card, (4) Calendar Integration, (5) Template-Based. Fields: title, description, type, scheduledAt, duration, timezone, course link, access, maxParticipants, settings toggles, tags. Both create and edit states.
+
+### TASK-076 · Phase 3: Whiteboard Panel prototypes (3 variants)
+
+```yaml
+id: TASK-076
+status: backlog
+priority: medium
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-05T14:00:00.000Z
+updated_at: 2026-03-05T14:00:00.000Z
+tags:
+  - frontend
+  - classroom
+  - prototype
+  - phase3
+depends_on:
+  - TASK-066
+history:
+  - ts: 2026-03-05T14:00:00.000Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> 3 Whiteboard prototypes: (1) Full Toolbar Canvas, (2) Minimal Teaching Mode (Arabic handwriting focus), (3) Slide-Based (multi-page). Mocked canvas. Drawing tools, color palette, undo/redo, participant cursors, clear button, zoom, fullscreen.
+
+### TASK-077 · Phase 3: Integrate Classroom Lobby page
+
+```yaml
+id: TASK-077
+status: backlog
+priority: high
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-05T14:00:00.000Z
+updated_at: 2026-03-05T14:00:00.000Z
+tags:
+  - frontend
+  - classroom
+  - phase3
+depends_on:
+  - TASK-068
+  - TASK-073
+history:
+  - ts: 2026-03-05T14:00:00.000Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Promote chosen Lobby prototype to ClassroomLobbyPage.tsx. Create useClassroom.ts with useClassrooms(filters) + useUpcomingClassrooms hooks. Route /classrooms. Nav link. Delete lobby prototypes.
+
+### TASK-078 · Phase 3: Integrate Live Classroom page + LiveKit
+
+```yaml
+id: TASK-078
+status: backlog
+priority: high
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-05T14:00:00.000Z
+updated_at: 2026-03-05T14:00:00.000Z
+tags:
+  - frontend
+  - classroom
+  - phase3
+depends_on:
+  - TASK-069
+  - TASK-070
+  - TASK-074
+history:
+  - ts: 2026-03-05T14:00:00.000Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Promote chosen Live prototype. Install @livekit/components-react, livekit-client, @livekit/components-styles. LiveKit integration: LiveKitRoom wrapper, VideoTrack, ParticipantTile, mic/cam/screen toggles. Add useStartClassroom, useJoinClassroom, useEndClassroom, useLeaveClassroom, useClassroomDetail hooks. Socket.IO chat + raise hand. Route /classrooms/:id/live.
+
+### TASK-079 · Phase 3: Integrate Schedule Classroom + My Sessions
+
+```yaml
+id: TASK-079
+status: backlog
+priority: high
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-05T14:00:00.000Z
+updated_at: 2026-03-05T14:00:00.000Z
+tags:
+  - frontend
+  - classroom
+  - phase3
+depends_on:
+  - TASK-068
+  - TASK-075
+history:
+  - ts: 2026-03-05T14:00:00.000Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Promote chosen Schedule prototype. Create ScheduleClassroomPage, EditClassroomPage, MySessionsPage. Hooks: useCreateClassroom, useUpdateClassroom, useDeleteClassroom, useMySessions. Course linking with lesson selector. Form validation with shared Zod schemas. Scholar routes: /scholar/classrooms, /scholar/classrooms/new, /scholar/classrooms/:id/edit.
+
+### TASK-080 · Phase 3: Integrate Whiteboard with tldraw
+
+```yaml
+id: TASK-080
+status: backlog
+priority: high
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-05T14:00:00.000Z
+updated_at: 2026-03-05T14:00:00.000Z
+tags:
+  - frontend
+  - classroom
+  - phase3
+depends_on:
+  - TASK-072
+  - TASK-076
+  - TASK-078
+history:
+  - ts: 2026-03-05T14:00:00.000Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Install @tldraw/tldraw. Create WhiteboardPanel.tsx. tldraw store API for state. Sync via LiveKit data channel. Snapshot persistence every 30s + late-join hydration. Hooks: useSaveWhiteboard, useWhiteboardSnapshot. Host full edit, participant read-only. Cursor sharing. Embed in ClassroomLivePage. Manual chunk in vite.config.ts.
+
+### TASK-081 · Phase 3: Student Sessions + Course integration
+
+```yaml
+id: TASK-081
+status: backlog
+priority: medium
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-05T14:00:00.000Z
+updated_at: 2026-03-05T14:00:00.000Z
+tags:
+  - frontend
+  - classroom
+  - phase3
+depends_on:
+  - TASK-078
+history:
+  - ts: 2026-03-05T14:00:00.000Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Create StudentSessionsPage (/my-sessions). Integrate into CourseDetailPage (upcoming sessions section) + CoursePlayerPage (live-session lesson type: join/countdown/recording). Hook: useStudentSessions. Nav link in user dropdown.
+
+### TASK-082 · Phase 3: Recording Viewer + Polish
+
+```yaml
+id: TASK-082
+status: backlog
+priority: medium
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-05T14:00:00.000Z
+updated_at: 2026-03-05T14:00:00.000Z
+tags:
+  - frontend
+  - classroom
+  - phase3
+depends_on:
+  - TASK-071
+  - TASK-078
+history:
+  - ts: 2026-03-05T14:00:00.000Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Recording hooks: useStartRecording, useStopRecording, useRecordings, useMuteParticipant, useKickParticipant, useUpdateSettings. Recording UI in live page (record button, banner, indicator). RecordingViewerPage (/classrooms/:id/recordings). Host moderation: mute/kick in participants panel, settings modal. Edge cases: reconnecting overlay, session ended overlay, classroom full message.
+
+### TASK-083 · Phase 3: Unit tests — Classroom + LiveKit
+
+```yaml
+id: TASK-083
+status: backlog
+priority: medium
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-05T14:00:00.000Z
+updated_at: 2026-03-05T14:00:00.000Z
+tags:
+  - backend
+  - classroom
+  - test
+  - phase3
+depends_on:
+  - TASK-068
+  - TASK-069
+history:
+  - ts: 2026-03-05T14:00:00.000Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Unit tests: Classroom model validation (required fields, enums, defaults, index uniqueness). LiveKit service (isConfigured, generateToken host vs participant grants, createRoom, deleteRoom, graceful fallback). Classroom service (create, browse pagination, start lifecycle, join access control, reconnection token, end, leave, ownership checks). Use jest.mock() for models and livekit-server-sdk.
+
+### TASK-084 · Phase 3: Unit tests — Controls + Recording + Whiteboard
+
+```yaml
+id: TASK-084
+status: backlog
+priority: medium
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-05T14:00:00.000Z
+updated_at: 2026-03-05T14:00:00.000Z
+tags:
+  - backend
+  - classroom
+  - test
+  - phase3
+depends_on:
+  - TASK-070
+  - TASK-071
+  - TASK-072
+history:
+  - ts: 2026-03-05T14:00:00.000Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Unit tests: Controls (mute host-only, kick host/admin-only, updateSettings merge, hand queue). Recording (start validations: host/live/enabled, stop + URL generation, getRecordings access control). Whiteboard (save host-only, get snapshot for participants, Mixed type storage). Mock models, livekitService, Socket.IO.
+
+### TASK-085 · Phase 3: Smoke tests — All Classroom APIs
+
+```yaml
+id: TASK-085
+status: backlog
+priority: medium
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-05T14:00:00.000Z
+updated_at: 2026-03-05T14:00:00.000Z
+tags:
+  - backend
+  - classroom
+  - test
+  - phase3
+depends_on:
+  - TASK-083
+  - TASK-084
+history:
+  - ts: 2026-03-05T14:00:00.000Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> 29 smoke tests with supertest + mongodb-memory-server: CRUD (401/403 auth guards, 201 create, browse+filter, detail, update ownership, delete), Lifecycle (start host-only, start already-live 400, join enrolled, join non-enrolled 403, join public, join full 403, end, leave), Controls (mute host-only, kick host-only, settings), Recording (start/stop/get), Whiteboard (save/get), Discovery (upcoming, my-sessions). Mock LiveKit.
+
+### TASK-086 · Phase 3: Update feature-board, contracts, docs + final commit
+
+```yaml
+id: TASK-086
+status: backlog
+priority: medium
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-05T14:00:00.000Z
+updated_at: 2026-03-05T14:00:00.000Z
+tags:
+  - docs
+  - devops
+  - phase3
+depends_on:
+  - TASK-077
+  - TASK-078
+  - TASK-079
+  - TASK-080
+  - TASK-081
+  - TASK-082
+history:
+  - ts: 2026-03-05T14:00:00.000Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Run frontend lint, fix errors. Update feature-board.md: Virtual Classroom row Shared ✅ Backend ✅ Frontend ✅, move to Active, contract ✅. Mark virtual-classroom contract complete. Update ROADMAP.md. Commit with conventional commits: feat(shared), feat(classroom), feat(frontend), test(phase3), docs.
