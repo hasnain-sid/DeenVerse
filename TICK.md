@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-05T13:13:17.001Z
+updated: 2026-03-05T13:13:24.900Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 58
+next_id: 59
 ---
 
 ## Agents
@@ -997,3 +997,28 @@ history:
 ```
 
 > Promote chosen Course Detail prototype. Create CourseDetailPage.tsx. Add useCourseDetail(slug), useEnrollCourse() hooks to useCourses.ts. Wire to GET /api/v1/courses/:slug, POST /api/v1/courses/:slug/enroll. Show enroll CTA for non-enrolled, 'Continue Learning' for enrolled. Route /courses/:slug.
+
+### TASK-058 · Phase 2: Integrate Course Player + progress
+
+```yaml
+id: TASK-058
+status: backlog
+priority: high
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-05T13:13:24.900Z
+updated_at: 2026-03-05T13:13:24.900Z
+tags:
+  - frontend
+  - course
+depends_on:
+  - TASK-048
+  - TASK-053
+history:
+  - ts: 2026-03-05T13:13:24.900Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Promote chosen Course Player prototype. Create CoursePlayerPage.tsx. Add useCourseProgress(slug), useUpdateProgress(), useLessonContent(slug, lessonId) hooks. Wire to progress + lesson APIs. Track lesson completion, auto-advance. Route /courses/:slug/learn. AuthGuard + enrollment check.
