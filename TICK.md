@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-05T13:11:53.335Z
+updated: 2026-03-05T13:12:03.305Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 49
+next_id: 50
 ---
 
 ## Agents
@@ -774,3 +774,27 @@ history:
 ```
 
 > Build enrollment flow: POST /api/v1/courses/:slug/enroll (free auto-enroll, paid verify payment), GET /api/v1/courses/:slug/progress, PUT /api/v1/courses/:slug/progress (mark lesson complete, recalculate percentComplete), GET /api/v1/courses/:slug/lessons/:lessonId (serve content, courseAccess middleware). GET /api/v1/courses/my-courses (student enrolled list). Increment course.enrollmentCount and instructor.scholarProfile.totalStudents on enroll.
+
+### TASK-049 · Phase 2: Quiz engine API (start, submit, results)
+
+```yaml
+id: TASK-049
+status: backlog
+priority: high
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-05T13:12:03.305Z
+updated_at: 2026-03-05T13:12:03.305Z
+tags:
+  - backend
+  - course
+depends_on:
+  - TASK-046
+history:
+  - ts: 2026-03-05T13:12:03.305Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Build quiz engine: POST /api/v1/quizzes/:id/start (create QuizAttempt, strip correct answers from questions, enforce maxAttempts), POST /api/v1/quizzes/:id/submit (grade answers server-side, enforce timeLimit + 30s grace, calculate score, set passed), GET /api/v1/quizzes/:id/results (return attempts + best score). CRUD for quizzes tied to courses (scholar can create quizzes for their course lessons).
