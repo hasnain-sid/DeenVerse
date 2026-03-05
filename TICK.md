@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-05T10:24:28.389Z
+updated: 2026-03-05T10:24:37.586Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 43
+next_id: 44
 ---
 
 ## Agents
@@ -547,3 +547,31 @@ history:
 ```
 
 > Write smoke/integration tests that hit all Phase 1 endpoints with real HTTP requests (supertest). Test: scholar application flow (apply → pending → admin approve → role change), Stripe checkout session creation, webhook processing, earnings retrieval. Verify auth guards (401 without token, 403 without correct role). Test edge cases: re-apply after rejection, double enrollment.
+
+### TASK-043 · Phase 1: Update feature-board, contracts, docs + final commit
+
+```yaml
+id: TASK-043
+status: backlog
+priority: medium
+assigned_to: copilot-2
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-05T10:24:37.586Z
+updated_at: 2026-03-05T10:24:37.586Z
+tags:
+  - docs
+  - devops
+depends_on:
+  - TASK-035
+  - TASK-036
+  - TASK-037
+  - TASK-038
+  - TASK-039
+history:
+  - ts: 2026-03-05T10:24:37.586Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Update .agents/feature-board.md with Scholar Role System and Payment System feature rows (all layers). Mark contracts as complete. Update ROADMAP.md with Phase 1 completion. Final code review, lint check, commit with conventional commit messages.
