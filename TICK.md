@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-05T13:12:26.032Z
+updated: 2026-03-05T13:12:35.345Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 52
+next_id: 53
 ---
 
 ## Agents
@@ -847,3 +847,28 @@ history:
 ```
 
 > Create 5 prototype variants for Course Discovery/Browse page in frontend/src/features/courses/prototypes/. Explore: grid with filters sidebar, Netflix-style carousels by category, search-first with instant results, card masonry layout, map/timeline view. Include PrototypesViewer.tsx + temp route /prototypes/course-discovery. All data mocked.
+
+### TASK-052 · Phase 2: Course Detail Page — 5 prototypes
+
+```yaml
+id: TASK-052
+status: backlog
+priority: high
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-05T13:12:35.345Z
+updated_at: 2026-03-05T13:12:35.345Z
+tags:
+  - frontend
+  - prototype
+  - course
+depends_on:
+  - TASK-045
+history:
+  - ts: 2026-03-05T13:12:35.345Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Create 5 prototype variants for Course Detail page. Explore: long-scroll landing page (Udemy-style), tabbed layout (overview/syllabus/reviews/instructor), split panel (info left + syllabus right), video hero header with floating enroll card, minimalist single-column. Show: title, instructor, rating, price, enroll CTA, module list, requirements, outcomes. Temp route /prototypes/course-detail. Mocked data.
