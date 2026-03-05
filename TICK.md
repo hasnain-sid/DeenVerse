@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-05T10:22:57.937Z
+updated: 2026-03-05T10:23:07.423Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 33
+next_id: 34
 ---
 
 ## Agents
@@ -296,3 +296,28 @@ history:
 ```
 
 > Create 5 prototype variants exploring: scholar badge design (green crescent, star, checkmark styles), badge placement in posts/comments/profile, and Scholar Public Profile Page layout (credentials, courses, rating, bio). Include PrototypesViewer.tsx + temp route /prototypes/scholar-badge. All data mocked.
+
+### TASK-033 · Phase 1: Payment + Subscription pages — 5 prototypes
+
+```yaml
+id: TASK-033
+status: backlog
+priority: medium
+assigned_to: antigravity
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-05T10:23:07.423Z
+updated_at: 2026-03-05T10:23:07.423Z
+tags:
+  - frontend
+  - prototype
+  - payment
+depends_on:
+  - TASK-024
+history:
+  - ts: 2026-03-05T10:23:07.423Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Create 5 prototype variants for: Checkout confirmation/redirect page, Subscription plans page (Free/Student/Premium tiers with pricing cards), Payment history list. Explore: pricing card layouts, comparison table, feature checklist. Include PrototypesViewer.tsx + temp route /prototypes/payments. All data mocked.
