@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-05T13:13:47.445Z
+updated: 2026-03-05T13:13:56.277Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 62
+next_id: 63
 ---
 
 ## Agents
@@ -1096,3 +1096,28 @@ history:
 ```
 
 > Create AdminCourseReviewPage.tsx. Add useAdminCourses(status, page), useReviewCourse() hooks. Wire to GET /api/v1/admin/courses, PUT /api/v1/admin/courses/:slug/review. Show pending courses with approve/reject actions. Route /admin/courses. AuthGuard + admin check.
+
+### TASK-062 · Phase 2: Unit tests — Course models + service
+
+```yaml
+id: TASK-062
+status: backlog
+priority: high
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-05T13:13:56.277Z
+updated_at: 2026-03-05T13:13:56.277Z
+tags:
+  - backend
+  - testing
+  - course
+depends_on:
+  - TASK-047
+history:
+  - ts: 2026-03-05T13:13:56.277Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Write unit tests for: courseSchema validation (required fields, enum values, slug uniqueness), enrollmentSchema (compound index, progress defaults), courseService functions (create, update, delete, publish, slug generation, ownership check). Use Jest. Mock mongoose models. Test: valid/invalid course creation, duplicate slugs, unauthorized update attempts, draft->pending-review->published flow.
