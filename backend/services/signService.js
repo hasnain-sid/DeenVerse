@@ -8,6 +8,33 @@ const DAILY_SIGN_TTL = 24 * 60 * 60;
 /** 5 minutes — category list and general sign pages */
 const SIGNS_TTL = 5 * 60;
 
+/**
+ * Static fallback shown when the Sign collection has not been seeded yet.
+ * This prevents a 404 on first deploy before `node scripts/seedSigns.js` is run.
+ * Remove once production data is stable.
+ */
+const FALLBACK_SIGN = {
+  _id: "fallback_qs_01",
+  category: "quran_science",
+  title: "Human Embryonic Development",
+  summary:
+    "The Qur'an describes the sequential stages of embryo formation over 1,400 years before modern embryology confirmed them.",
+  explanation:
+    "In Surah Al-Mu'minun (23:12–14), the Qur'an outlines the developmental stages of a human embryo: nutfah (drop of fluid), 'alaqah (clinging substance, resembling a leech), mudghah (chewed lump of flesh), then bones clothed with flesh. These stages align remarkably with the modern sequence of embryonic development described by Dr. Keith Moore, a leading embryologist, who stated that the Qur'anic descriptions are accurate to our current scientific knowledge.\n\nNote: These are signs (ayat) for reflection — correlations between Qur'anic language and modern discovery.",
+  arabicText:
+    "وَلَقَدْ خَلَقْنَا الْإِنسَانَ مِن سُلَالَةٍ مِّن طِينٍ ثُمَّ جَعَلْنَاهُ نُطْفَةً فِي قَرَارٍ مَّكِينٍ",
+  translation:
+    "And certainly did We create man from an extract of clay. Then We placed him as a sperm-drop in a firm lodging.",
+  reference: "Quran 23:12–14",
+  sourceUrl:
+    "https://yaqeeninstitute.org/read/paper/the-quran-and-modern-science-compatible-or-incompatible",
+  hadithGrade: null,
+  order: 1,
+  isPublished: true,
+  tags: ["embryology", "creation", "science"],
+  createdAt: new Date("2026-01-01T00:00:00.000Z"),
+};
+
 // ── Helpers ──────────────────────────────────────────────────────
 
 /**
@@ -49,7 +76,9 @@ export async function getSignOfTheDay() {
 
   const total = await Sign.countDocuments({ isPublished: true });
   if (total === 0) {
-    throw new AppError("No published signs available yet.", 404);
+    // Collection not yet seeded — surface a static fallback so the page
+    // stays functional instead of returning a 404.
+    return FALLBACK_SIGN;
   }
 
   const index = getTodaySignIndex(total);

@@ -91,8 +91,8 @@ export function ImanBoostPage() {
     const [subhanAllahMap, setSubhanAllahMap] = useState<Record<string, number>>({});
     const [copiedId, setCopiedId] = useState<string | null>(null);
 
-    const { data: dailySign, isLoading: loadingDaily } = useDailySign();
-    const { data: signsResponse, isLoading: loadingSigns } = useSigns(activeCategory, page);
+    const { data: dailySign, isLoading: loadingDaily, isError: isDailyError } = useDailySign();
+    const { data: signsResponse, isLoading: loadingSigns, isError: isSignsError } = useSigns(activeCategory, page);
     const { data: categoryCounts } = useSignCategories();
 
     const totalPages = signsResponse?.totalPages ?? 1;
@@ -194,6 +194,12 @@ export function ImanBoostPage() {
                 <h2 className="text-2xl font-semibold mb-4">Sign of the Day</h2>
                 {loadingDaily ? (
                     <Skeleton className="w-full h-[350px] rounded-2xl" />
+                ) : isDailyError ? (
+                    <div className="flex flex-col items-center justify-center text-center p-10 rounded-2xl border border-dashed bg-card/50 text-muted-foreground gap-3">
+                        <Sparkles className="w-10 h-10 opacity-40" />
+                        <p className="text-base font-medium">Sign of the Day is temporarily unavailable.</p>
+                        <p className="text-sm opacity-70">Check back shortly — new signs are on their way.</p>
+                    </div>
                 ) : dailySign ? (
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
@@ -295,6 +301,12 @@ export function ImanBoostPage() {
                         {[1, 2, 3, 4, 5, 6].map((i) => (
                             <Skeleton key={i} className="h-64 rounded-2xl" />
                         ))}
+                    </div>
+                ) : isSignsError ? (
+                    <div className="text-center py-24 text-muted-foreground border border-dashed rounded-2xl bg-card/50">
+                        <Sparkles className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                        <p className="text-lg font-medium">Signs are temporarily unavailable.</p>
+                        <p className="text-sm mt-1 opacity-70">Please try again later.</p>
                     </div>
                 ) : allSigns.length === 0 ? (
                     <div className="text-center py-24 text-muted-foreground border border-dashed rounded-2xl bg-card/50">

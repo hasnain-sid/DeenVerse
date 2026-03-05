@@ -19,6 +19,7 @@ export function useDailySign() {
             return data.sign as Sign;
         },
         staleTime: STALE_TIME,
+        retry: false,
     });
 }
 
@@ -40,6 +41,7 @@ export function useSigns(category: SignCategory | 'all' = 'all', page = 1) {
             return data as SignsResponse;
         },
         staleTime: STALE_TIME,
+        retry: false,
     });
 }
 
@@ -74,5 +76,6 @@ export function useSignCategories() {
             return data.categories as CategoryCount[];
         },
         staleTime: STALE_TIME,
+        retry: false,
     });
 }
