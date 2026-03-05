@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-05T13:13:09.607Z
+updated: 2026-03-05T13:13:17.001Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 57
+next_id: 58
 ---
 
 ## Agents
@@ -972,3 +972,28 @@ history:
 ```
 
 > Promote chosen Course Discovery prototype to production. Create frontend/src/features/courses/CoursesPage.tsx. Create useCourses.ts with TanStack Query hooks: useCourses(filters), useFeaturedCourses(). Wire to GET /api/v1/courses, /api/v1/courses/featured. Add route /courses. Add 'Courses' link to main navigation.
+
+### TASK-057 · Phase 2: Integrate Course Detail page
+
+```yaml
+id: TASK-057
+status: backlog
+priority: high
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-05T13:13:17.001Z
+updated_at: 2026-03-05T13:13:17.001Z
+tags:
+  - frontend
+  - course
+depends_on:
+  - TASK-047
+  - TASK-052
+history:
+  - ts: 2026-03-05T13:13:17.001Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Promote chosen Course Detail prototype. Create CourseDetailPage.tsx. Add useCourseDetail(slug), useEnrollCourse() hooks to useCourses.ts. Wire to GET /api/v1/courses/:slug, POST /api/v1/courses/:slug/enroll. Show enroll CTA for non-enrolled, 'Continue Learning' for enrolled. Route /courses/:slug.
