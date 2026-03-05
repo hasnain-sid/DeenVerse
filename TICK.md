@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-05T10:23:07.423Z
+updated: 2026-03-05T10:23:17.434Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 34
+next_id: 35
 ---
 
 ## Agents
@@ -321,3 +321,28 @@ history:
 ```
 
 > Create 5 prototype variants for: Checkout confirmation/redirect page, Subscription plans page (Free/Student/Premium tiers with pricing cards), Payment history list. Explore: pricing card layouts, comparison table, feature checklist. Include PrototypesViewer.tsx + temp route /prototypes/payments. All data mocked.
+
+### TASK-034 · Phase 1: Scholar Earnings Dashboard — 5 prototypes
+
+```yaml
+id: TASK-034
+status: backlog
+priority: medium
+assigned_to: antigravity
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-05T10:23:17.434Z
+updated_at: 2026-03-05T10:23:17.434Z
+tags:
+  - frontend
+  - prototype
+  - payment
+depends_on:
+  - TASK-024
+history:
+  - ts: 2026-03-05T10:23:17.434Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Create 5 prototype variants for Scholar Earnings Dashboard: revenue charts, payout history, course breakdown, pending payouts, Stripe Connect status. Explore: dashbord with graphs, minimal list view, card-based metrics, split analytics/transactions, timeline. Include PrototypesViewer.tsx + temp route /prototypes/scholar-earnings. All data mocked.
