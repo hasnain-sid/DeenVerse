@@ -31,3 +31,34 @@ export const isAdmin = async (req, _res, next) => {
     next(err);
   }
 };
+
+/**
+ * Scholar middleware — checks if the authenticated user has scholar or admin role.
+ * Requires `isAuthenticated` to run first (so req.user is set).
+ */
+export const isScholar = async (req, _res, next) => {
+  try {
+    // Admins always pass
+    const adminIds = (process.env.ADMIN_IDS || "").split(",").map((s) => s.trim()).filter(Boolean);
+    if (adminIds.includes(req.user?.toString())) {
+      return next();
+    }
+
+    const user = await User.findById(req.user).select("role").lean();
+    if (!user) {
+      return next(new AppError("User not found", 404));
+    }
+    if (user.role === "scholar" || user.role === "admin") {
+      return next();
+    }
+
+    return next(new AppError("Access denied. Scholar privileges required.", 403));
+  } catch (err) {
+    next(err);
+  }
+};
+
+/**
+ * Alias for isScholar — semantic name for routes that accept both scholars and admins.
+ */
+export const isScholarOrAdmin = isScholar;

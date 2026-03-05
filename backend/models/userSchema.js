@@ -48,8 +48,32 @@ const userSchema = new mongoose.Schema({
   },
   role:{
     type:String,
-    enum:['user','admin','moderator'],
+    enum:['user','scholar','moderator','admin'],
     default:'user'
+  },
+  scholarProfile:{
+    verifiedAt:{ type:Date, default:undefined },
+    verifiedBy:{ type:mongoose.Schema.Types.ObjectId, ref:'User', default:undefined },
+    specialties:[{ type:String }],
+    credentials:[{
+      title:{ type:String },
+      institution:{ type:String },
+      year:{ type:Number },
+      documentUrl:{ type:String }
+    }],
+    bio:{ type:String, default:'' },
+    teachingLanguages:[{ type:String }],
+    rating:{
+      average:{ type:Number, default:0 },
+      count:{ type:Number, default:0 }
+    },
+    totalStudents:{ type:Number, default:0 },
+    totalCourses:{ type:Number, default:0 },
+    stripeConnectId:{ type:String, default:undefined },
+    payoutSchedule:{ type:String, enum:['weekly','biweekly','monthly'], default:'monthly' },
+    applicationStatus:{ type:String, enum:['none','pending','approved','rejected'], default:'none' },
+    applicationDate:{ type:Date, default:undefined },
+    rejectionReason:{ type:String, default:undefined }
   },
   banned:{
     type:Boolean,
@@ -72,6 +96,13 @@ const userSchema = new mongoose.Schema({
     default:7,
     min:1,
     max:365
+  },
+  stripeCustomerId:{ type:String, default:undefined, index:true, sparse:true },
+  subscription:{
+    plan:{ type:String, enum:['student','premium'], default:undefined },
+    stripeSubscriptionId:{ type:String, default:undefined },
+    currentPeriodEnd:{ type:Date, default:undefined },
+    status:{ type:String, default:undefined }, // active, canceled, past_due, etc.
   },
 },{timestamps:true});
 

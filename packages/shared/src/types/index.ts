@@ -1,11 +1,11 @@
-export type { User, UserProfile, FollowSuggestion } from './user';
+export type { User, UserProfile, FollowSuggestion } from './user.js';
 export type {
   Post,
   Notification,
   FeedResponse,
   TrendingHashtag,
-} from './post';
-export type { Stream, StreamChatMessage } from './stream';
+} from './post.js';
+export type { Stream, StreamChatMessage } from './stream.js';
 export type {
   ApiResponse,
   PaginatedResponse,
@@ -14,4 +14,4 @@ export type {
   ApiError,
   Conversation,
   Message,
-} from './api';
+} from './api.js';

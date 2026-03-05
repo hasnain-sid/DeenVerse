@@ -236,3 +236,54 @@ export const changePasswordValidationRules = () => [
         .isLength({ min: 6 }).withMessage('New password must be at least 6 characters long'),
     handleValidationErrors
 ];
+
+// ── Scholar application validation ────────────────────
+const SCHOLAR_SPECIALTIES = ['tafseer', 'hadith', 'fiqh', 'arabic', 'tajweed', 'aqeedah', 'seerah', 'dawah'];
+
+export const scholarApplicationValidationRules = () => [
+    body('credentials')
+        .isArray({ min: 1 }).withMessage('At least one credential is required'),
+    body('credentials.*.title')
+        .notEmpty().withMessage('Credential title is required')
+        .isString().isLength({ max: 200 }),
+    body('credentials.*.institution')
+        .notEmpty().withMessage('Credential institution is required')
+        .isString().isLength({ max: 200 }),
+    body('credentials.*.year')
+        .isInt({ min: 1900, max: new Date().getFullYear() }).withMessage('Invalid credential year'),
+    body('credentials.*.documentUrl')
+        .optional()
+        .isURL().withMessage('Document URL must be a valid URL'),
+    body('specialties')
+        .isArray({ min: 1 }).withMessage('At least one specialty is required'),
+    body('specialties.*')
+        .isIn(SCHOLAR_SPECIALTIES).withMessage(`Specialty must be one of: ${SCHOLAR_SPECIALTIES.join(', ')}`),
+    body('bio')
+        .notEmpty().withMessage('Bio is required')
+        .isString()
+        .isLength({ min: 50, max: 2000 }).withMessage('Bio must be between 50 and 2000 characters'),
+    body('teachingLanguages')
+        .isArray({ min: 1 }).withMessage('At least one teaching language is required'),
+    body('teachingLanguages.*')
+        .isString().notEmpty(),
+    body('videoIntroUrl')
+        .optional()
+        .isURL().withMessage('Video intro URL must be a valid URL'),
+    handleValidationErrors
+];
+
+// ── Scholar review validation (admin) ─────────────────
+export const scholarReviewValidationRules = () => [
+    body('decision')
+        .isIn(['approved', 'rejected']).withMessage("Decision must be 'approved' or 'rejected'"),
+    body('rejectionReason')
+        .optional()
+        .isString().isLength({ min: 1 }),
+    body('specialties')
+        .optional()
+        .isArray(),
+    body('specialties.*')
+        .optional()
+        .isIn(SCHOLAR_SPECIALTIES).withMessage(`Specialty must be one of: ${SCHOLAR_SPECIALTIES.join(', ')}`),
+    handleValidationErrors
+];
