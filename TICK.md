@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-05T10:24:37.586Z
+updated: 2026-03-05T10:50:39.062Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 44
+next_id: 45
 ---
 
 ## Agents
@@ -575,3 +575,26 @@ history:
 ```
 
 > Update .agents/feature-board.md with Scholar Role System and Payment System feature rows (all layers). Mark contracts as complete. Update ROADMAP.md with Phase 1 completion. Final code review, lint check, commit with conventional commit messages.
+
+### TASK-044 · Resolve Dependabot security vulnerabilities (3 critical, 32 high)
+
+```yaml
+id: TASK-044
+status: backlog
+priority: high
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-05T10:50:39.062Z
+updated_at: 2026-03-05T10:50:39.062Z
+tags:
+  - security
+  - dependencies
+  - maintenance
+history:
+  - ts: 2026-03-05T10:50:39.062Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> GitHub Dependabot flagged 51 vulnerabilities on the main branch after the March 5 push: 3 critical, 32 high, 8 moderate, 8 low. Steps: 1) Run 'npm audit' from repo root to get the full report. 2) Address critical CVEs first (likely in backend dependencies). 3) Run 'npm audit fix' for auto-fixable issues. 4) Manually update packages that require semver-major bumps (test for breaking changes). 5) Check frontend and mobile packages separately. 6) Verify no regressions after updates. 7) Push updated package-lock.json. Reference: https://github.com/hasnain-sid/DeenVerse/security/dependabot
