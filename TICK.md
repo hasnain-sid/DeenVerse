@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-05T10:24:19.400Z
+updated: 2026-03-05T10:24:28.389Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 42
+next_id: 43
 ---
 
 ## Agents
@@ -522,3 +522,28 @@ history:
 ```
 
 > Write unit tests for: stripeService (checkout session creation, Connect onboarding, webhook signature verification), payment controller (idempotent enrollment, subscription create/cancel), webhook handler (all event types: checkout.session.completed, customer.subscription.updated/deleted, account.updated). Mock Stripe SDK calls.
+
+### TASK-042 · Phase 1: Smoke tests — All Phase 1 API endpoints
+
+```yaml
+id: TASK-042
+status: backlog
+priority: high
+assigned_to: copilot
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-05T10:24:28.389Z
+updated_at: 2026-03-05T10:24:28.389Z
+tags:
+  - backend
+  - testing
+depends_on:
+  - TASK-040
+  - TASK-041
+history:
+  - ts: 2026-03-05T10:24:28.389Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Write smoke/integration tests that hit all Phase 1 endpoints with real HTTP requests (supertest). Test: scholar application flow (apply → pending → admin approve → role change), Stripe checkout session creation, webhook processing, earnings retrieval. Verify auth guards (401 without token, 403 without correct role). Test edge cases: re-apply after rejection, double enrollment.
