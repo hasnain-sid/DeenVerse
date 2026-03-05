@@ -2,7 +2,7 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-05T11:09:57.866Z
+updated: 2026-03-05T11:09:58.686Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
 next_id: 45
@@ -13,7 +13,7 @@ next_id: 45
 | Agent | Type | Role | Status | Working On | Last Active | Trust Level |
 |-------|------|------|--------|------------|-------------|-------------|
 | hasna | human | owner, architect | idle | - | 2026-03-04T13:55:56.279Z | trusted |
-| copilot | bot | developer, researcher | working | TASK-025 | 2026-03-05T11:09:57.866Z | trusted |
+| copilot | bot | developer, researcher | idle | - | 2026-03-05T11:09:58.686Z | trusted |
 | copilot-2 | bot | developer, reviewer | idle | - | 2026-03-04T13:56:09.000Z | trusted |
 | antigravity | bot | developer, researcher | idle | - | 2026-03-04T13:56:15.009Z | trusted |
 
@@ -123,13 +123,13 @@ history:
 
 ```yaml
 id: TASK-025
-status: in_progress
+status: done
 priority: high
 assigned_to: copilot
-claimed_by: copilot
+claimed_by: null
 created_by: "@hasnain-sid"
 created_at: 2026-03-05T10:21:55.854Z
-updated_at: 2026-03-05T11:09:57.866Z
+updated_at: 2026-03-05T11:09:58.686Z
 tags:
   - backend
   - scholar
@@ -149,6 +149,11 @@ history:
     action: commented
     note: userSchema extended with scholarProfile subdoc + 'scholar' role. isScholar
       and isScholarOrAdmin middleware added.
+  - ts: 2026-03-05T11:09:58.686Z
+    who: copilot
+    action: completed
+    from: in_progress
+    to: done
 ```
 
 > Extend backend/models/userSchema.js: add 'scholar' to role enum, add scholarProfile subdocument (verifiedAt, verifiedBy, specialties, credentials, bio, teachingLanguages, rating, applicationStatus, stripeConnectId etc). Create isScholar and isScholarOrAdmin middleware in backend/middlewares/admin.js.
