@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-05T13:12:35.345Z
+updated: 2026-03-05T13:12:44.528Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 53
+next_id: 54
 ---
 
 ## Agents
@@ -872,3 +872,28 @@ history:
 ```
 
 > Create 5 prototype variants for Course Detail page. Explore: long-scroll landing page (Udemy-style), tabbed layout (overview/syllabus/reviews/instructor), split panel (info left + syllabus right), video hero header with floating enroll card, minimalist single-column. Show: title, instructor, rating, price, enroll CTA, module list, requirements, outcomes. Temp route /prototypes/course-detail. Mocked data.
+
+### TASK-053 · Phase 2: Course Player Page — 5 prototypes
+
+```yaml
+id: TASK-053
+status: backlog
+priority: high
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-05T13:12:44.528Z
+updated_at: 2026-03-05T13:12:44.528Z
+tags:
+  - frontend
+  - prototype
+  - course
+depends_on:
+  - TASK-045
+history:
+  - ts: 2026-03-05T13:12:44.528Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Create 5 prototype variants for Course Player (lesson viewer). Explore: sidebar nav + main content (Coursera-style), collapsible sidebar with progress bar, full-width video with floating module drawer, split view (video top + notes bottom), minimal focus mode with swipe navigation. Show: video/text lesson content, module sidebar, progress indicator, next/prev lesson, notes area. Temp route /prototypes/course-player. Mocked data.
