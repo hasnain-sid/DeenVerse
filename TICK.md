@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-05T13:12:13.824Z
+updated: 2026-03-05T13:12:26.032Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 51
+next_id: 52
 ---
 
 ## Agents
@@ -822,3 +822,28 @@ history:
 ```
 
 > Build discovery endpoints: GET /api/v1/courses/featured (top-rated + most enrolled, cached in Redis), GET /api/v1/courses/teaching (scholar's own courses). Admin review: GET /api/v1/admin/courses?status=pending-review, PUT /api/v1/admin/courses/:slug/review (approve sets status=published, reject sets archived + reason). Increment instructor.scholarProfile.totalCourses on publish.
+
+### TASK-051 · Phase 2: Course Discovery Page — 5 prototypes
+
+```yaml
+id: TASK-051
+status: backlog
+priority: high
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-05T13:12:26.032Z
+updated_at: 2026-03-05T13:12:26.032Z
+tags:
+  - frontend
+  - prototype
+  - course
+depends_on:
+  - TASK-045
+history:
+  - ts: 2026-03-05T13:12:26.032Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Create 5 prototype variants for Course Discovery/Browse page in frontend/src/features/courses/prototypes/. Explore: grid with filters sidebar, Netflix-style carousels by category, search-first with instant results, card masonry layout, map/timeline view. Include PrototypesViewer.tsx + temp route /prototypes/course-discovery. All data mocked.
