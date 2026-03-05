@@ -18,7 +18,7 @@ export interface PaginatedResponse<T> {
 export interface LoginResponse {
   success: boolean;
   message: string;
-  user: import('./user').User;
+  user: import('./user.js').User;
   accessToken: string;
 }
 

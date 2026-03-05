@@ -1,5 +1,9 @@
 import { z } from 'zod';
 
+// Re-export feature schemas
+export * from './scholar.js';
+export * from './payment.js';
+
 // ===== Authentication Schemas =====
 
 export const loginSchema = z.object({

@@ -26,6 +26,9 @@ import quranTopicRoute from "./routes/quranTopicRoute.js";
 import ruhaniRoute from "./routes/ruhaniRoute.js";
 import signRoute from "./routes/signRoute.js";
 import shareRoute from "./routes/shareRoute.js";
+import scholarRoute from "./routes/scholarRoute.js";
+import paymentRoute from "./routes/paymentRoute.js";
+import webhookRoute from "./routes/webhookRoute.js";
 import cors from "cors";
 import errorHandler from "./middlewares/errorHandler.js";
 import { securityHeaders, sanitizeInput } from "./middlewares/security.js";
@@ -91,6 +94,12 @@ app.use(
   })
 );
 
+// ── Webhook routes (raw body — MUST be before express.json) ────
+// express.raw() is applied per-route inside webhookRoute.js, but mounting
+// the router here before the global express.json() ensures Stripe's raw
+// body is preserved for signature verification.
+app.use("/api/v1/webhooks", webhookRoute);
+
 // ── Body parsing ─────────────────────────────────────
 app.use(express.urlencoded({ extended: true, limit: "1mb" }));
 app.use(express.json({ limit: "1mb" }));
@@ -128,6 +137,8 @@ app.use("/api/v1/quran-topics", quranTopicRoute);
 app.use("/api/v1/ruhani", ruhaniRoute);
 app.use("/api/v1/signs", signRoute);
 app.use("/api/v1/share", shareRoute);
+app.use("/api/v1/scholars", scholarRoute);
+app.use("/api/v1/payments", paymentRoute);
 
 // Centralized Error Handler
 // This should be defined AFTER all other app.use() and routes calls
