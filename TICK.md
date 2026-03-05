@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-05T10:21:55.854Z
+updated: 2026-03-05T10:22:03.468Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 26
+next_id: 27
 ---
 
 ## Agents
@@ -125,3 +125,27 @@ history:
 ```
 
 > Extend backend/models/userSchema.js: add 'scholar' to role enum, add scholarProfile subdocument (verifiedAt, verifiedBy, specialties, credentials, bio, teachingLanguages, rating, applicationStatus, stripeConnectId etc). Create isScholar and isScholarOrAdmin middleware in backend/middlewares/admin.js.
+
+### TASK-026 · Phase 1: Scholar Application API (routes/controller/service)
+
+```yaml
+id: TASK-026
+status: backlog
+priority: high
+assigned_to: copilot
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-05T10:22:03.468Z
+updated_at: 2026-03-05T10:22:03.468Z
+tags:
+  - backend
+  - scholar
+depends_on:
+  - TASK-025
+history:
+  - ts: 2026-03-05T10:22:03.468Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Build scholar application flow: POST /api/v1/scholars/apply (submit application), GET /api/v1/scholars/application-status (check own status), GET /api/v1/scholars/:id/profile (public profile). Admin endpoints: GET /api/v1/admin/scholars/applications, PUT /api/v1/admin/scholars/applications/:userId/review (approve/reject). Files: scholarRoute.js, scholarController.js, scholarService.js.
