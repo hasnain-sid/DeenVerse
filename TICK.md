@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-05T13:13:39.937Z
+updated: 2026-03-05T13:13:47.445Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 61
+next_id: 62
 ---
 
 ## Agents
@@ -1072,3 +1072,27 @@ history:
 ```
 
 > Promote chosen Quiz Player prototype. Create QuizPlayerPage.tsx + MyCoursesPage.tsx. Add useStartQuiz(), useSubmitQuiz(), useQuizResults(), useMyCourses() hooks. Wire to quiz and my-courses APIs. Routes: /courses/:slug/quiz/:quizId, /my-courses. AuthGuard.
+
+### TASK-061 · Phase 2: Integrate Admin Course Review panel
+
+```yaml
+id: TASK-061
+status: backlog
+priority: medium
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-05T13:13:47.445Z
+updated_at: 2026-03-05T13:13:47.445Z
+tags:
+  - frontend
+  - course
+depends_on:
+  - TASK-050
+history:
+  - ts: 2026-03-05T13:13:47.445Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Create AdminCourseReviewPage.tsx. Add useAdminCourses(status, page), useReviewCourse() hooks. Wire to GET /api/v1/admin/courses, PUT /api/v1/admin/courses/:slug/review. Show pending courses with approve/reject actions. Route /admin/courses. AuthGuard + admin check.
