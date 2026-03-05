@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-05T10:22:19.302Z
+updated: 2026-03-05T10:22:25.972Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 29
+next_id: 30
 ---
 
 ## Agents
@@ -197,3 +197,27 @@ history:
 ```
 
 > Build payment flow: POST /api/v1/payments/checkout (Stripe Checkout session), POST /api/v1/payments/subscription, DELETE /api/v1/payments/subscription, GET /api/v1/payments/history. Stripe webhook handler: POST /api/v1/webhooks/stripe (raw body, signature verification, idempotent enrollment creation). Files: paymentRoute.js, paymentController.js, paymentService.js, webhookController.js.
+
+### TASK-029 · Phase 1: Scholar earnings overview API
+
+```yaml
+id: TASK-029
+status: backlog
+priority: medium
+assigned_to: copilot
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-05T10:22:25.972Z
+updated_at: 2026-03-05T10:22:25.972Z
+tags:
+  - backend
+  - payment
+depends_on:
+  - TASK-027
+history:
+  - ts: 2026-03-05T10:22:25.972Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Scholar earnings endpoints: GET /api/v1/scholars/earnings (summary with totalRevenue, platformFee, netEarnings by period), GET /api/v1/scholars/earnings/details (paginated transaction list). Admin: GET /api/v1/admin/payments/overview, POST /api/v1/admin/scholars/:id/stipend.
