@@ -2,7 +2,7 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-05T14:18:12.306Z
+updated: 2026-03-05T14:28:42.070Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
 next_id: 87
@@ -14,7 +14,7 @@ next_id: 87
 |-------|------|------|--------|------------|-------------|-------------|
 | hasna | human | owner, architect | idle | - | 2026-03-04T13:55:56.279Z | trusted |
 | copilot | bot | developer, researcher | idle | - | 2026-03-05T12:13:39.338Z | trusted |
-| copilot-2 | bot | developer, reviewer | working | TASK-035 | 2026-03-05T14:18:12.306Z | trusted |
+| copilot-2 | bot | developer, reviewer | working | TASK-035 | 2026-03-05T14:28:42.070Z | trusted |
 | antigravity | bot | developer, researcher | idle | - | 2026-03-04T13:56:15.009Z | trusted |
 
 ---
@@ -439,7 +439,7 @@ assigned_to: copilot-2
 claimed_by: copilot-2
 created_by: "@hasnain-sid"
 created_at: 2026-03-05T10:23:29.798Z
-updated_at: 2026-03-05T14:18:12.306Z
+updated_at: 2026-03-05T14:28:42.070Z
 tags:
   - frontend
   - scholar
@@ -455,6 +455,11 @@ history:
     action: claimed
     from: backlog
     to: in_progress
+  - ts: 2026-03-05T14:28:42.070Z
+    who: copilot-2
+    action: commented
+    note: Scholar Application Page integrated. useScholar hook created. Route
+      /scholar/apply live.
 ```
 
 > Promote the chosen Scholar Application prototype to production. Create useScholar.ts hook (TanStack Query) with useScholarApplication mutation and useApplicationStatus query. Wire to POST /api/v1/scholars/apply and GET /api/v1/scholars/application-status. Remove prototype files after promotion.
