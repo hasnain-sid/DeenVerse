@@ -2,7 +2,7 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-06T10:52:49.020Z
+updated: 2026-03-06T10:52:54.288Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
 next_id: 87
@@ -13,7 +13,7 @@ next_id: 87
 | Agent | Type | Role | Status | Working On | Last Active | Trust Level |
 |-------|------|------|--------|------------|-------------|-------------|
 | hasna | human | owner, architect | idle | - | 2026-03-04T13:55:56.279Z | trusted |
-| copilot | bot | developer, researcher | working | TASK-049 | 2026-03-06T10:52:49.020Z | trusted |
+| copilot | bot | developer, researcher | idle | - | 2026-03-06T10:52:54.288Z | trusted |
 | copilot-2 | bot | developer, reviewer | idle | - | 2026-03-05T22:36:16.601Z | trusted |
 | antigravity | bot | developer, researcher | idle | - | 2026-03-04T13:56:15.009Z | trusted |
 
@@ -1004,13 +1004,13 @@ history:
 
 ```yaml
 id: TASK-049
-status: in_progress
+status: done
 priority: high
 assigned_to: null
-claimed_by: copilot
+claimed_by: null
 created_by: "@hasnain-sid"
 created_at: 2026-03-05T13:12:03.305Z
-updated_at: 2026-03-06T10:52:49.020Z
+updated_at: 2026-03-06T10:52:54.288Z
 tags:
   - backend
   - course
@@ -1031,6 +1031,11 @@ history:
     note: "Quiz engine API complete: CRUD for scholars, start/submit/results for
       students. Server-side grading, time enforcement, max attempts, answer
       stripping."
+  - ts: 2026-03-06T10:52:54.288Z
+    who: copilot
+    action: completed
+    from: in_progress
+    to: done
 ```
 
 > Build quiz engine: POST /api/v1/quizzes/:id/start (create QuizAttempt, strip correct answers from questions, enforce maxAttempts), POST /api/v1/quizzes/:id/submit (grade answers server-side, enforce timeLimit + 30s grace, calculate score, set passed), GET /api/v1/quizzes/:id/results (return attempts + best score). CRUD for quizzes tied to courses (scholar can create quizzes for their course lessons).
