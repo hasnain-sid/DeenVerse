@@ -2,7 +2,7 @@
 
 > **Created by**: copilot (Opus 4.6)
 > **Date**: 2026-03-05
-> **Status**: 📋 Planning
+> **Status**: ✅ Complete (2026-03-07)
 
 ---
 
@@ -15,9 +15,9 @@
 
 | Layer | Required? | Owner Agent | Status |
 |-------|-----------|-------------|--------|
-| Shared (types/schemas) | Yes | copilot (Opus) | ⬜ |
-| Backend (API) | Yes | copilot (Opus) | ⬜ |
-| Frontend (UI) | Yes | antigravity (prototypes) → copilot-2 (integration) | ⬜ |
+| Shared (types/schemas) | Yes | copilot (Opus) | ✅ |
+| Backend (API) | Yes | copilot (Opus) | ✅ |
+| Frontend (UI) | Yes | antigravity (prototypes) → copilot-2 (integration) | ✅ |
 | Mobile | No | — | — |
 
 ---
