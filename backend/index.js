@@ -28,6 +28,9 @@ import signRoute from "./routes/signRoute.js";
 import shareRoute from "./routes/shareRoute.js";
 import scholarRoute from "./routes/scholarRoute.js";
 import paymentRoute from "./routes/paymentRoute.js";
+import courseRoute from "./routes/courseRoute.js";
+import quizRoute from "./routes/quizRoute.js";
+import adminCourseRoute from "./routes/adminCourseRoute.js";
 import webhookRoute from "./routes/webhookRoute.js";
 import cors from "cors";
 import errorHandler from "./middlewares/errorHandler.js";
@@ -139,6 +142,9 @@ app.use("/api/v1/signs", signRoute);
 app.use("/api/v1/share", shareRoute);
 app.use("/api/v1/scholars", scholarRoute);
 app.use("/api/v1/payments", paymentRoute);
+app.use("/api/v1/courses", courseRoute);
+app.use("/api/v1/quizzes", quizRoute);
+app.use("/api/v1/admin/courses", adminCourseRoute);
 
 // Centralized Error Handler
 // This should be defined AFTER all other app.use() and routes calls
