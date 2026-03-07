@@ -2,7 +2,7 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-07T12:17:33.944Z
+updated: 2026-03-07T12:17:43.978Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
 next_id: 87
@@ -14,7 +14,7 @@ next_id: 87
 |-------|------|------|--------|------------|-------------|-------------|
 | hasna | human | owner, architect | idle | - | 2026-03-04T13:55:56.279Z | trusted |
 | copilot | bot | developer, researcher | idle | - | 2026-03-06T11:02:21.140Z | trusted |
-| copilot-2 | bot | developer, reviewer | working | TASK-056 | 2026-03-07T12:17:33.944Z | trusted |
+| copilot-2 | bot | developer, reviewer | working | TASK-056 | 2026-03-07T12:17:43.978Z | trusted |
 | antigravity | bot | developer, researcher | idle | - | 2026-03-04T13:56:15.009Z | trusted |
 
 ---
@@ -1219,7 +1219,7 @@ assigned_to: null
 claimed_by: copilot-2
 created_by: "@hasnain-sid"
 created_at: 2026-03-05T13:13:09.607Z
-updated_at: 2026-03-07T12:17:33.944Z
+updated_at: 2026-03-07T12:17:43.978Z
 tags:
   - frontend
   - course
@@ -1235,6 +1235,13 @@ history:
     action: claimed
     from: backlog
     to: in_progress
+  - ts: 2026-03-07T12:17:43.978Z
+    who: copilot-2
+    action: commented
+    note: Course Discovery page integrated. useCourses hook created with filters +
+      featured. Route /courses live. Nav link added to Sidebar and MobileNav
+      (Learning group). DiscoveryPrototype files deleted. @deenverse/shared
+      rebuilt to include course types.
 ```
 
 > Promote chosen Course Discovery prototype to production. Create frontend/src/features/courses/CoursesPage.tsx. Create useCourses.ts with TanStack Query hooks: useCourses(filters), useFeaturedCourses(). Wire to GET /api/v1/courses, /api/v1/courses/featured. Add route /courses. Add 'Courses' link to main navigation.
