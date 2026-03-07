@@ -92,6 +92,9 @@ const QuranTopicsPage = lazy(() =>
 const ScholarApplyPrototypesViewer = lazy(() =>
   import('@/features/scholar/prototypes/PrototypesViewer')
 );
+const CoursePrototypesViewer = lazy(() =>
+  import('@/features/courses/prototypes/PrototypesViewer')
+);
 const ScholarEarningsPage = lazy(() =>
   import('@/features/payments/ScholarEarningsPage').then((m) => ({ default: m.ScholarEarningsPage }))
 );
@@ -101,6 +104,11 @@ const ScholarStripeSetupPage = lazy(() =>
 const AdminScholarReviewPage = lazy(() =>
   import('@/features/scholar/AdminScholarReviewPage').then((m) => ({
     default: m.AdminScholarReviewPage,
+  }))
+);
+const AdminCourseReviewPage = lazy(() =>
+  import('@/features/courses/AdminCourseReviewPage').then((m) => ({
+    default: m.AdminCourseReviewPage,
   }))
 );
 const ScholarApplicationPage = lazy(() =>
@@ -134,8 +142,28 @@ const RuhaniJournalPage = lazy(() =>
 const PrivacyPolicy = lazy(() => import('@/features/legal/PrivacyPolicy'));
 const TermsOfService = lazy(() => import('@/features/legal/TermsOfService'));
 
+const CourseDiscoveryPrototypesViewer = lazy(() =>
+  import('@/features/courses/prototypes/PrototypesViewer')
+);
+
+const CoursePlayerPage = lazy(() =>
+  import('@/features/courses/CoursePlayerPage').then((m) => ({ default: m.CoursePlayerPage }))
+);
+
 const GlobalCoursesPage = lazy(() =>
   import('@/features/courses/GlobalCoursesPage').then((m) => ({ default: m.GlobalCoursesPage }))
+);
+const CoursesPage = lazy(() =>
+  import('@/features/courses/CoursesPage').then((m) => ({ default: m.CoursesPage }))
+);
+const CourseDetailPage = lazy(() =>
+  import('@/features/courses/CourseDetailPage').then((m) => ({ default: m.CourseDetailPage }))
+);
+const QuizPlayerPage = lazy(() =>
+  import('@/features/courses/QuizPlayerPage').then((m) => ({ default: m.QuizPlayerPage }))
+);
+const MyCoursesPage = lazy(() =>
+  import('@/features/courses/MyCoursesPage').then((m) => ({ default: m.MyCoursesPage }))
 );
 const SubscriptionPage = lazy(() =>
   import('@/features/payments/SubscriptionPage').then((m) => ({ default: m.SubscriptionPage }))
@@ -145,6 +173,15 @@ const CheckoutPage = lazy(() =>
 );
 const PaymentHistoryPage = lazy(() =>
   import('@/features/payments/PaymentHistoryPage').then((m) => ({ default: m.PaymentHistoryPage }))
+);
+const MyTeachingPage = lazy(() =>
+  import('@/features/courses/MyTeachingPage').then((m) => ({ default: m.MyTeachingPage }))
+);
+const CreateCoursePage = lazy(() =>
+  import('@/features/courses/CreateCoursePage').then((m) => ({ default: m.CreateCoursePage }))
+);
+const EditCoursePage = lazy(() =>
+  import('@/features/courses/EditCoursePage').then((m) => ({ default: m.EditCoursePage }))
 );
 
 import CookieConsent from '@/components/CookieConsent';
@@ -287,6 +324,32 @@ export default function App() {
                   <Route path="/forgot-password" element={<ForgotPasswordPage />} />
                   <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
                   <Route path="/global-courses" element={<GlobalCoursesPage />} />
+                  <Route path="/courses" element={<CoursesPage />} />
+                  <Route path="/courses/:slug" element={<CourseDetailPage />} />
+                  <Route
+                    path="/courses/:slug/learn"
+                    element={
+                      <AuthGuard>
+                        <CoursePlayerPage />
+                      </AuthGuard>
+                    }
+                  />
+                  <Route
+                    path="/courses/:slug/quiz/:quizId"
+                    element={
+                      <AuthGuard>
+                        <QuizPlayerPage />
+                      </AuthGuard>
+                    }
+                  />
+                  <Route
+                    path="/my-courses"
+                    element={
+                      <AuthGuard>
+                        <MyCoursesPage />
+                      </AuthGuard>
+                    }
+                  />
                   <Route
                     path="/subscription"
                     element={
@@ -336,6 +399,30 @@ export default function App() {
                     }
                   />
                   <Route
+                    path="/scholar/courses"
+                    element={
+                      <AuthGuard>
+                        <MyTeachingPage />
+                      </AuthGuard>
+                    }
+                  />
+                  <Route
+                    path="/scholar/courses/new"
+                    element={
+                      <AuthGuard>
+                        <CreateCoursePage />
+                      </AuthGuard>
+                    }
+                  />
+                  <Route
+                    path="/scholar/courses/:slug/edit"
+                    element={
+                      <AuthGuard>
+                        <EditCoursePage />
+                      </AuthGuard>
+                    }
+                  />
+                  <Route
                     path="/admin/scholars"
                     element={
                       <AdminGuard>
@@ -343,10 +430,23 @@ export default function App() {
                       </AdminGuard>
                     }
                   />
+                  <Route
+                    path="/admin/courses"
+                    element={
+                      <AdminGuard>
+                        <AdminCourseReviewPage />
+                      </AdminGuard>
+                    }
+                  />
                   <Route path="*" element={<NotFoundPage />} />
                 </Route>
                 <Route path="/prototypes/scholar-review" element={<ScholarApplyPrototypesViewer />} />
                 <Route path="/prototypes/scholar-badge" element={<ScholarApplyPrototypesViewer />} />
+                <Route path="/prototypes/course-discovery" element={<CourseDiscoveryPrototypesViewer />} />
+                <Route path="/prototypes/course-detail" element={<CoursePrototypesViewer />} />
+                <Route path="/prototypes/course-player" element={<CoursePrototypesViewer />} />
+                <Route path="/prototypes/course-builder" element={<CoursePrototypesViewer />} />
+                <Route path="/prototypes/quiz-player" element={<CoursePrototypesViewer />} />
 
               </Routes>
             </Suspense>

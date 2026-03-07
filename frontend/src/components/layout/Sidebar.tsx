@@ -49,6 +49,7 @@ const navigation = [
   { name: 'Ruhani Space', href: '/ruhani', icon: Moon },
   { name: 'Hadith', href: '/hadith', icon: BookOpen },
   { name: 'Global Courses', href: '/global-courses', icon: Globe },
+  { name: 'Courses', href: '/courses', icon: BookOpen },
   { name: 'Streams', href: '/streams', icon: Radio },
   { name: 'Notifications', href: '/notifications', icon: Bell },
   { name: 'Messages', href: '/messages', icon: MessageCircle },
@@ -65,7 +66,7 @@ const navigationGroups = [
   },
   {
     title: 'Learning',
-    items: ['Learn Quran', 'Quran by Topic', 'Iman Boost', 'Ruhani Space', 'Hadith', 'Global Courses'],
+    items: ['Learn Quran', 'Quran by Topic', 'Iman Boost', 'Ruhani Space', 'Hadith', 'Global Courses', 'Courses'],
   },
   {
     title: 'Community',
@@ -285,22 +286,40 @@ export function Sidebar() {
         {/* User / Auth */}
         {/* Admin Panel — only for admins */}
         {isAuthenticated && user?.role === 'admin' && (
-          <Tooltip content="Admin: Scholar Review" side="right">
-            <NavLink
-              to="/admin/scholars"
-              className={({ isActive }) =>
-                cn(
-                  'flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors font-medium',
-                  isActive
-                    ? 'bg-primary/10 text-primary'
-                    : 'text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/30',
-                )
-              }
-            >
-              <ShieldCheck className="h-[18px] w-[18px] shrink-0" />
-              {!sidebarCollapsed && <span>Admin Panel</span>}
-            </NavLink>
-          </Tooltip>
+          <>
+            <Tooltip content="Admin: Scholar Review" side="right">
+              <NavLink
+                to="/admin/scholars"
+                className={({ isActive }) =>
+                  cn(
+                    'flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors font-medium',
+                    isActive
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/30',
+                  )
+                }
+              >
+                <ShieldCheck className="h-[18px] w-[18px] shrink-0" />
+                {!sidebarCollapsed && <span>Admin: Scholars</span>}
+              </NavLink>
+            </Tooltip>
+            <Tooltip content="Admin: Course Review" side="right">
+              <NavLink
+                to="/admin/courses"
+                className={({ isActive }) =>
+                  cn(
+                    'flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors font-medium',
+                    isActive
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/30',
+                  )
+                }
+              >
+                <GraduationCap className="h-[18px] w-[18px] shrink-0" />
+                {!sidebarCollapsed && <span>Admin: Courses</span>}
+              </NavLink>
+            </Tooltip>
+          </>
         )}
 
         {/* Upgrade Plan CTA — for free users */}
@@ -332,6 +351,26 @@ export function Sidebar() {
             >
               <TrendingUp className="h-[18px] w-[18px] shrink-0" />
               {!sidebarCollapsed && <span>Earnings</span>}
+            </NavLink>
+          </Tooltip>
+        )}
+
+        {/* My Teaching link — scholar only */}
+        {isAuthenticated && user && (user.role === 'scholar' || user.role === 'admin') && (
+          <Tooltip content="My Teaching" side="right">
+            <NavLink
+              to="/scholar/courses"
+              className={({ isActive }) =>
+                cn(
+                  'flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors',
+                  isActive
+                    ? 'bg-secondary text-secondary-foreground font-medium'
+                    : 'text-muted-foreground hover:bg-secondary hover:text-foreground',
+                )
+              }
+            >
+              <GraduationCap className="h-[18px] w-[18px] shrink-0" />
+              {!sidebarCollapsed && <span>My Teaching</span>}
             </NavLink>
           </Tooltip>
         )}

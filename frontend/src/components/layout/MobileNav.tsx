@@ -26,6 +26,7 @@ const extendedNav = [
   { name: 'Ruhani Space', href: '/ruhani', icon: Moon },
   { name: 'Hadith', href: '/hadith', icon: BookOpen },
   { name: 'Global Courses', href: '/global-courses', icon: Globe },
+  { name: 'Courses', href: '/courses', icon: BookOpen },
   { name: 'Streams', href: '/streams', icon: Radio },
   { name: 'Notifications', href: '/notifications', icon: Bell },
   { name: 'Messages', href: '/messages', icon: MessageCircle },
@@ -41,7 +42,7 @@ const extendedNavGroups = [
   },
   {
     title: 'Learning',
-    items: ['Learn Quran', 'Quran by Topic', 'Iman Boost', 'Ruhani Space', 'Hadith', 'Global Courses'],
+    items: ['Learn Quran', 'Quran by Topic', 'Iman Boost', 'Ruhani Space', 'Hadith', 'Global Courses', 'Courses'],
   },
   {
     title: 'Community',
