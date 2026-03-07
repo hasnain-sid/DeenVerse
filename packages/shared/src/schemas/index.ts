@@ -3,6 +3,7 @@ import { z } from 'zod';
 // Re-export feature schemas
 export * from './scholar.js';
 export * from './payment.js';
+export * from './course.js';
 
 // ===== Authentication Schemas =====
 
