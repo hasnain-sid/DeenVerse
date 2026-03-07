@@ -2,7 +2,7 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-07T13:27:19.173Z
+updated: 2026-03-07T13:27:33.557Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
 next_id: 87
@@ -14,7 +14,7 @@ next_id: 87
 |-------|------|------|--------|------------|-------------|-------------|
 | hasna | human | owner, architect | idle | - | 2026-03-04T13:55:56.279Z | trusted |
 | copilot | bot | developer, researcher | idle | - | 2026-03-06T11:02:21.140Z | trusted |
-| copilot-2 | bot | developer, reviewer | idle | - | 2026-03-07T13:27:19.173Z | trusted |
+| copilot-2 | bot | developer, reviewer | idle | - | 2026-03-07T13:27:33.557Z | trusted |
 | antigravity | bot | developer, researcher | idle | - | 2026-03-04T13:56:15.009Z | trusted |
 
 ---
@@ -1336,7 +1336,7 @@ assigned_to: null
 claimed_by: copilot-2
 created_by: "@hasnain-sid"
 created_at: 2026-03-05T13:13:32.365Z
-updated_at: 2026-03-07T13:14:56.070Z
+updated_at: 2026-03-07T13:27:33.557Z
 tags:
   - frontend
   - course
@@ -1352,6 +1352,11 @@ history:
     action: claimed
     from: backlog
     to: in_progress
+  - ts: 2026-03-07T13:27:33.557Z
+    who: copilot-2
+    action: commented
+    note: "Course Builder integrated: create, edit, my teaching list, module
+      management. Scholar routes live."
 ```
 
 > Promote chosen Course Builder prototype. Create CreateCoursePage.tsx + EditCoursePage.tsx. Add useCreateCourse(), useUpdateCourse(), useDeleteCourse(), usePublishCourse(), useAddModule(), useUpdateModule(), useDeleteModule(), useMyTeaching() hooks. Wire to course CRUD APIs. Routes: /scholar/courses/new, /scholar/courses/:slug/edit, /scholar/courses. AuthGuard + scholar check.
