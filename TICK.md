@@ -2,7 +2,7 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-07T12:56:09.783Z
+updated: 2026-03-07T12:56:15.157Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
 next_id: 87
@@ -14,7 +14,7 @@ next_id: 87
 |-------|------|------|--------|------------|-------------|-------------|
 | hasna | human | owner, architect | idle | - | 2026-03-04T13:55:56.279Z | trusted |
 | copilot | bot | developer, researcher | idle | - | 2026-03-06T11:02:21.140Z | trusted |
-| copilot-2 | bot | developer, reviewer | idle | - | 2026-03-07T12:56:09.783Z | trusted |
+| copilot-2 | bot | developer, reviewer | idle | - | 2026-03-07T12:56:15.157Z | trusted |
 | antigravity | bot | developer, researcher | idle | - | 2026-03-04T13:56:15.009Z | trusted |
 
 ---
@@ -1255,13 +1255,13 @@ history:
 
 ```yaml
 id: TASK-057
-status: backlog
+status: done
 priority: high
 assigned_to: null
 claimed_by: null
 created_by: "@hasnain-sid"
 created_at: 2026-03-05T13:13:17.001Z
-updated_at: 2026-03-07T12:56:09.783Z
+updated_at: 2026-03-07T12:56:15.157Z
 tags:
   - frontend
   - course
@@ -1277,6 +1277,11 @@ history:
     action: commented
     note: Course Detail page integrated. Enroll CTA handles free/paid/enrolled
       states. Route /courses/:slug live.
+  - ts: 2026-03-07T12:56:15.157Z
+    who: copilot-2
+    action: completed
+    from: backlog
+    to: done
 ```
 
 > Promote chosen Course Detail prototype. Create CourseDetailPage.tsx. Add useCourseDetail(slug), useEnrollCourse() hooks to useCourses.ts. Wire to GET /api/v1/courses/:slug, POST /api/v1/courses/:slug/enroll. Show enroll CTA for non-enrolled, 'Continue Learning' for enrolled. Route /courses/:slug.
