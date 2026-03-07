@@ -2,7 +2,7 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-07T13:20:37.543Z
+updated: 2026-03-07T13:25:12.450Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
 next_id: 87
@@ -14,7 +14,7 @@ next_id: 87
 |-------|------|------|--------|------------|-------------|-------------|
 | hasna | human | owner, architect | idle | - | 2026-03-04T13:55:56.279Z | trusted |
 | copilot | bot | developer, researcher | idle | - | 2026-03-06T11:02:21.140Z | trusted |
-| copilot-2 | bot | developer, reviewer | idle | - | 2026-03-07T13:20:37.543Z | trusted |
+| copilot-2 | bot | developer, reviewer | working | TASK-061 | 2026-03-07T13:25:12.450Z | trusted |
 | antigravity | bot | developer, researcher | idle | - | 2026-03-04T13:56:15.009Z | trusted |
 
 ---
@@ -1385,13 +1385,13 @@ history:
 
 ```yaml
 id: TASK-061
-status: backlog
+status: in_progress
 priority: medium
 assigned_to: null
-claimed_by: null
+claimed_by: copilot-2
 created_by: "@hasnain-sid"
 created_at: 2026-03-05T13:13:47.445Z
-updated_at: 2026-03-05T13:13:47.445Z
+updated_at: 2026-03-07T13:25:12.450Z
 tags:
   - frontend
   - course
@@ -1401,6 +1401,11 @@ history:
   - ts: 2026-03-05T13:13:47.445Z
     who: "@hasnain-sid"
     action: created
+  - ts: 2026-03-07T13:25:12.450Z
+    who: copilot-2
+    action: claimed
+    from: backlog
+    to: in_progress
 ```
 
 > Create AdminCourseReviewPage.tsx. Add useAdminCourses(status, page), useReviewCourse() hooks. Wire to GET /api/v1/admin/courses, PUT /api/v1/admin/courses/:slug/review. Show pending courses with approve/reject actions. Route /admin/courses. AuthGuard + admin check.
