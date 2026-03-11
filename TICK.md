@@ -2,7 +2,7 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-07T14:19:39.819Z
+updated: 2026-03-11T17:51:37.851Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
 next_id: 87
@@ -13,7 +13,7 @@ next_id: 87
 | Agent | Type | Role | Status | Working On | Last Active | Trust Level |
 |-------|------|------|--------|------------|-------------|-------------|
 | hasna | human | owner, architect | idle | - | 2026-03-04T13:55:56.279Z | trusted |
-| copilot | bot | developer, researcher | idle | - | 2026-03-07T14:19:39.819Z | trusted |
+| copilot | bot | developer, researcher | idle | - | 2026-03-11T17:51:37.851Z | trusted |
 | copilot-2 | bot | developer, reviewer | idle | - | 2026-03-07T13:27:34.716Z | trusted |
 | antigravity | bot | developer, researcher | idle | - | 2026-03-04T13:56:15.009Z | trusted |
 
@@ -1532,13 +1532,13 @@ history:
 
 ```yaml
 id: TASK-064
-status: done
+status: reopened
 priority: high
 assigned_to: null
 claimed_by: null
 created_by: "@hasnain-sid"
 created_at: 2026-03-05T13:14:17.151Z
-updated_at: 2026-03-07T14:13:49.098Z
+updated_at: 2026-03-11T17:51:37.851Z
 tags:
   - backend
   - testing
@@ -1561,6 +1561,11 @@ history:
     action: completed
     from: backlog
     to: done
+  - ts: 2026-03-11T17:51:37.851Z
+    who: copilot
+    action: reopened
+    from: done
+    to: reopened
 ```
 
 > Smoke/integration tests using supertest: scholar creates course (201), browse courses (200, paginated), get course by slug (200), update course (200, ownership enforced), enroll in free course (200), enroll in paid course without payment (402/400), get progress (200), complete lesson + check percentComplete, start quiz + submit + get results, admin review flow (pending-review->published). Auth guards: 401 without token, 403 without scholar role for create. Use mongodb-memory-server.
