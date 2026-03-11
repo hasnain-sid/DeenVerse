@@ -2,7 +2,7 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-11T20:34:30.702Z
+updated: 2026-03-11T20:34:31.684Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
 next_id: 97
@@ -13,7 +13,7 @@ next_id: 97
 | Agent | Type | Role | Status | Working On | Last Active | Trust Level |
 |-------|------|------|--------|------------|-------------|-------------|
 | hasna | human | owner, architect | idle | - | 2026-03-04T13:55:56.279Z | trusted |
-| copilot | bot | developer, researcher | working | TASK-096 | 2026-03-11T20:34:30.702Z | trusted |
+| copilot | bot | developer, researcher | idle | - | 2026-03-11T20:34:31.684Z | trusted |
 | copilot-2 | bot | developer, reviewer | idle | - | 2026-03-11T18:19:25.000Z | trusted |
 | antigravity | bot | developer, researcher | idle | - | 2026-03-04T13:56:15.009Z | trusted |
 
@@ -2564,13 +2564,13 @@ history:
 
 ```yaml
 id: TASK-096
-status: in_progress
+status: done
 priority: high
 assigned_to: null
-claimed_by: copilot
+claimed_by: null
 created_by: "@hasnain-sid"
 created_at: 2026-03-11T20:32:45.894Z
-updated_at: 2026-03-11T20:34:30.702Z
+updated_at: 2026-03-11T20:34:31.684Z
 tags:
   - phase2
   - backend
@@ -2590,6 +2590,11 @@ history:
     action: commented
     note: updateProgress uses atomic /. Status guard prevents reactivating dropped
       enrollments.
+  - ts: 2026-03-11T20:34:31.684Z
+    who: copilot
+    action: completed
+    from: in_progress
+    to: done
 ```
 
 > updateProgress uses .save() which races on concurrent lesson completions. Switch to atomic  + .
