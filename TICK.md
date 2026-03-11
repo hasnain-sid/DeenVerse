@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-11T18:43:33.550Z
+updated: 2026-03-11T18:43:34.571Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 88
+next_id: 89
 ---
 
 ## Agents
@@ -2218,3 +2218,28 @@ history:
 ```
 
 > Normalize Phase 2 course response shapes so backend services/controllers and frontend hooks/pages agree on detail, progress, and pagination payloads. Scope: course detail enrollmentCount placement, progress envelope shape, pagination field naming, and targeted regression coverage for course pages.
+
+### TASK-088 · Phase 2 readiness: align course frontend consumers
+
+```yaml
+id: TASK-088
+status: backlog
+priority: high
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-11T18:43:34.571Z
+updated_at: 2026-03-11T18:43:34.571Z
+tags:
+  - phase2
+  - course
+  - frontend
+depends_on:
+  - TASK-087
+history:
+  - ts: 2026-03-11T18:43:34.571Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Update frontend course hooks and pages to match the normalized course contract. Scope: useCourses types, CourseDetailPage, CoursePlayerPage, MyTeachingPage, MyCoursesPage, AdminCourseReviewPage, and any pagination/rendering logic impacted by contract cleanup.
