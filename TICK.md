@@ -2,7 +2,7 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-11T18:06:17.223Z
+updated: 2026-03-11T18:14:14.649Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
 next_id: 87
@@ -14,7 +14,7 @@ next_id: 87
 |-------|------|------|--------|------------|-------------|-------------|
 | hasna | human | owner, architect | idle | - | 2026-03-04T13:55:56.279Z | trusted |
 | copilot | bot | developer, researcher | idle | - | 2026-03-11T18:06:17.223Z | trusted |
-| copilot-2 | bot | developer, reviewer | idle | - | 2026-03-07T13:27:34.716Z | trusted |
+| copilot-2 | bot | developer, reviewer | idle | - | 2026-03-11T18:14:14.649Z | trusted |
 | antigravity | bot | developer, researcher | idle | - | 2026-03-04T13:56:15.009Z | trusted |
 
 ---
@@ -1588,13 +1588,13 @@ history:
 
 ```yaml
 id: TASK-065
-status: done
+status: reopened
 priority: medium
 assigned_to: null
 claimed_by: null
 created_by: "@hasnain-sid"
 created_at: 2026-03-05T13:14:27.421Z
-updated_at: 2026-03-07T14:19:39.819Z
+updated_at: 2026-03-11T18:14:14.649Z
 tags:
   - docs
   - devops
@@ -1626,6 +1626,11 @@ history:
     action: completed
     from: in_progress
     to: done
+  - ts: 2026-03-11T18:14:14.649Z
+    who: copilot-2
+    action: reopened
+    from: done
+    to: reopened
 ```
 
 > Update .agents/feature-board.md with Course System row (all layers complete). Mark course-system contract as complete. Update ROADMAP.md with Phase 2 completion. Run frontend lint, fix errors. Final code review. Commit with conventional commits: feat(courses), feat(enrollment), feat(quiz), feat(frontend), test(phase2), docs.
