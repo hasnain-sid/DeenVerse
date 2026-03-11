@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-11T18:19:25.000Z
+updated: 2026-03-11T18:43:33.550Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 87
+next_id: 88
 ---
 
 ## Agents
@@ -2193,3 +2193,28 @@ history:
 ```
 
 > Run frontend lint, fix errors. Update feature-board.md: Virtual Classroom row Shared ✅ Backend ✅ Frontend ✅, move to Active, contract ✅. Mark virtual-classroom contract complete. Update ROADMAP.md. Commit with conventional commits: feat(shared), feat(classroom), feat(frontend), test(phase3), docs.
+
+### TASK-087 · Phase 2 readiness: normalize course API response contracts
+
+```yaml
+id: TASK-087
+status: backlog
+priority: high
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-11T18:43:33.550Z
+updated_at: 2026-03-11T18:43:33.550Z
+tags:
+  - phase2
+  - course
+  - backend
+  - frontend
+  - contract
+history:
+  - ts: 2026-03-11T18:43:33.550Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Normalize Phase 2 course response shapes so backend services/controllers and frontend hooks/pages agree on detail, progress, and pagination payloads. Scope: course detail enrollmentCount placement, progress envelope shape, pagination field naming, and targeted regression coverage for course pages.
