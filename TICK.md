@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-11T18:43:36.508Z
+updated: 2026-03-11T18:43:37.379Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 91
+next_id: 92
 ---
 
 ## Agents
@@ -2293,3 +2293,29 @@ history:
 ```
 
 > Update frontend quiz hooks and QuizPlayerPage to match the normalized quiz contract, including attempt metadata, timer data, submission payload handling, and results rendering.
+
+### TASK-091 · Phase 2 readiness: add backend validation for course and quiz writes
+
+```yaml
+id: TASK-091
+status: backlog
+priority: medium
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-11T18:43:37.379Z
+updated_at: 2026-03-11T18:43:37.379Z
+tags:
+  - phase2
+  - backend
+  - validation
+  - shared
+depends_on:
+  - TASK-087 TASK-089
+history:
+  - ts: 2026-03-11T18:43:37.379Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Add backend request validation for Phase 2 course and quiz write endpoints using shared schemas or equivalent manual validation. Cover create/update course, module writes, enrollment/progress mutations, quiz writes, and admin review payloads.
