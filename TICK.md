@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-11T18:43:37.379Z
+updated: 2026-03-11T18:43:38.340Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 92
+next_id: 93
 ---
 
 ## Agents
@@ -2319,3 +2319,27 @@ history:
 ```
 
 > Add backend request validation for Phase 2 course and quiz write endpoints using shared schemas or equivalent manual validation. Cover create/update course, module writes, enrollment/progress mutations, quiz writes, and admin review payloads.
+
+### TASK-092 · Phase 2 readiness: fix integrity checker for typed API calls
+
+```yaml
+id: TASK-092
+status: backlog
+priority: medium
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-11T18:43:38.340Z
+updated_at: 2026-03-11T18:43:38.340Z
+tags:
+  - phase2
+  - tooling
+  - scripts
+  - integrity
+history:
+  - ts: 2026-03-11T18:43:38.340Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Update scripts/check-feature-integrity.js so it recognizes typed Axios calls like api.get<Foo>(...) and reduces false positives in the Course System readiness audit.
