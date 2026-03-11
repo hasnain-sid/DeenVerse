@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-11T20:19:38.024Z
+updated: 2026-03-11T20:21:24.707Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 95
+next_id: 96
 ---
 
 ## Agents
@@ -2520,3 +2520,27 @@ history:
 ```
 
 > 1. enrollInCourse payment lookup must verify payment.user === userId to prevent enrollment theft. 2. Module management routes (POST/PUT/DELETE /:slug/modules) missing isScholar middleware — add defense-in-depth.
+
+### TASK-095 · Fix: atomic enrollment with maxStudents + MongoDB transaction
+
+```yaml
+id: TASK-095
+status: backlog
+priority: urgent
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-11T20:21:24.707Z
+updated_at: 2026-03-11T20:21:24.707Z
+tags:
+  - phase2
+  - backend
+  - fix
+  - concurrency
+history:
+  - ts: 2026-03-11T20:21:24.707Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> enrollInCourse has check-then-act race on maxStudents and three non-atomic writes. Wrap in transaction + use atomic findOneAndUpdate for capacity check.
