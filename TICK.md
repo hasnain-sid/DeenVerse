@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-11T18:43:34.571Z
+updated: 2026-03-11T18:43:35.528Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 89
+next_id: 90
 ---
 
 ## Agents
@@ -2243,3 +2243,28 @@ history:
 ```
 
 > Update frontend course hooks and pages to match the normalized course contract. Scope: useCourses types, CourseDetailPage, CoursePlayerPage, MyTeachingPage, MyCoursesPage, AdminCourseReviewPage, and any pagination/rendering logic impacted by contract cleanup.
+
+### TASK-089 · Phase 2 readiness: normalize quiz API response contracts
+
+```yaml
+id: TASK-089
+status: backlog
+priority: high
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-11T18:43:35.528Z
+updated_at: 2026-03-11T18:43:35.528Z
+tags:
+  - phase2
+  - quiz
+  - backend
+  - contract
+  - testing
+history:
+  - ts: 2026-03-11T18:43:35.528Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Normalize quiz start/submit/results backend responses to the agreed contract and extend targeted tests so the quiz player can rely on stable payloads. Scope: quizService, quizController, and quiz-related backend tests.
