@@ -1,8 +1,8 @@
 /**
  * Phase 2 Smoke / Integration Tests
  *
- * Tests all Phase-2 API endpoints (Course CRUD, Enrollment, Quiz, Admin Review)
- * against a lightweight Express app backed by mongodb-memory-server.
+ * Tests all Phase-2 API endpoints (Course CRUD, Enrollment, Quiz, Admin Review,
+ * Discovery) against a lightweight Express app backed by mongodb-memory-server.
  *
  * Stripe, Redis, and notification calls are fully mocked.
  * 25 tests covering the requirements from TASK-064.
@@ -28,7 +28,7 @@ jest.mock("../../config/redis.js", () => ({
   isRedisConnected: jest.fn(() => false),
 }));
 
-// ── Suppress logger output ────────────────────────────────────────────
+// ── Suppress logger output ───────────────────────────────────────────
 jest.mock("../../config/logger.js", () => ({
   __esModule: true,
   default: {
@@ -44,11 +44,10 @@ jest.mock("../../services/notificationService.js", () => ({
   createAndEmitNotification: jest.fn().mockResolvedValue(undefined),
 }));
 
-// ── Mock Stripe (only needed for paid-course tests) ──────────────────
-const mockCheckoutCreate = jest.fn();
+// ── Mock Stripe ──────────────────────────────────────────────────────
 jest.mock("stripe", () =>
   jest.fn(() => ({
-    checkout: { sessions: { create: mockCheckoutCreate } },
+    checkout: { sessions: { create: jest.fn() } },
     webhooks: { constructEvent: jest.fn() },
   })),
 );
@@ -62,7 +61,7 @@ import quizRoute from "../../routes/quizRoute.js";
 import adminCourseRoute from "../../routes/adminCourseRoute.js";
 import errorHandler from "../../middlewares/errorHandler.js";
 
-// ── Test App ──────────────────────────────────────────────────────────
+// ── Test App ─────────────────────────────────────────────────────────
 function createApp() {
   const app = express();
   app.use(express.json({ limit: "1mb" }));
@@ -74,7 +73,7 @@ function createApp() {
   return app;
 }
 
-// ── Token helpers ─────────────────────────────────────────────────────
+// ── Token helpers ────────────────────────────────────────────────────
 function signToken(userId) {
   return jwt.sign({ userId: userId.toString() }, process.env.TOKEN_SECRET, {
     expiresIn: "1h",
@@ -85,7 +84,7 @@ function authHeader(userId) {
   return { Authorization: `Bearer ${signToken(userId)}` };
 }
 
-// ── Test fixtures ─────────────────────────────────────────────────────
+// ── Test fixtures ────────────────────────────────────────────────────
 const validCourseBody = () => ({
   title: "Introduction to Fiqh",
   description:
@@ -107,6 +106,13 @@ const validModuleBody = () => ({
       order: 0,
       isFree: true,
     },
+    {
+      title: "Lesson 2: Sources of Fiqh",
+      type: "text",
+      content: { text: "The primary sources of Fiqh are Quran and Sunnah..." },
+      order: 1,
+      isFree: false,
+    },
   ],
 });
 
@@ -115,7 +121,7 @@ const validQuizBody = () => ({
   type: "quiz",
   passingScore: 60,
   maxAttempts: 3,
-  timeLimit: 0, // no time limit
+  timeLimit: 0,
   showCorrectAnswers: true,
   questions: [
     {
@@ -131,28 +137,42 @@ const validQuizBody = () => ({
   ],
 });
 
-// ── Global state ──────────────────────────────────────────────────────
+// ── Global state ─────────────────────────────────────────────────────
 let mongoServer;
 let app;
 let scholar;
+let scholar2;
 let student;
 let adminUser;
-let courseSlug;
+let courseSlug;         // main published free course
+let mainFreeLessonId;   // free lesson in main course (isFree: true)
+let mainPaidLessonId;   // paid lesson in main course (isFree: false)
+let publishSlug;        // course created in test 9 (pending-review) → used by test 21
+let paidCourseSlug;     // paid course for lesson-access tests 16-17
+let paidCourseFreeLessonId;
+let paidCoursePaidLessonId;
 let quizId;
 let attemptId;
 
-// ── Lifecycle ─────────────────────────────────────────────────────────
+// ── Lifecycle ────────────────────────────────────────────────────────
 beforeAll(async () => {
   mongoServer = await MongoMemoryServer.create();
   await mongoose.connect(mongoServer.getUri());
   app = createApp();
 
   // Create test users
-  [scholar, student, adminUser] = await Promise.all([
+  [scholar, scholar2, student, adminUser] = await Promise.all([
     User.create({
-      name: "Scholar User",
-      username: "scholar_smoke",
-      email: "scholar@smoke.test",
+      name: "Scholar A",
+      username: "scholar_a",
+      email: "scholar_a@smoke.test",
+      password: "hashed_pw",
+      role: "scholar",
+    }),
+    User.create({
+      name: "Scholar B",
+      username: "scholar_b",
+      email: "scholar_b@smoke.test",
       password: "hashed_pw",
       role: "scholar",
     }),
@@ -171,6 +191,76 @@ beforeAll(async () => {
       role: "admin",
     }),
   ]);
+
+  // ── Set up main published free course (browse, get, update, enroll, quiz) ──
+  const createRes = await request(app)
+    .post("/api/v1/courses")
+    .set(authHeader(scholar._id))
+    .send(validCourseBody());
+  courseSlug = createRes.body.course.slug;
+
+  const addModRes = await request(app)
+    .post(`/api/v1/courses/${courseSlug}/modules`)
+    .set(authHeader(scholar._id))
+    .send(validModuleBody());
+  mainFreeLessonId = addModRes.body.course.modules[0].lessons[0]._id;
+  mainPaidLessonId = addModRes.body.course.modules[0].lessons[1]._id;
+
+  await request(app)
+    .put(`/api/v1/courses/${courseSlug}/publish`)
+    .set(authHeader(scholar._id));
+  await request(app)
+    .put(`/api/v1/admin/courses/${courseSlug}/review`)
+    .set(authHeader(adminUser._id))
+    .send({ decision: "approved" });
+
+  // ── Set up paid course with free-preview + paid lessons (tests 16-17) ──
+  const paidRes = await request(app)
+    .post("/api/v1/courses")
+    .set(authHeader(scholar._id))
+    .send({
+      title: "Advanced Hadith Sciences",
+      description:
+        "An in-depth study of hadith authentication methods and chain evaluation for advanced students.",
+      category: "hadith",
+      level: "advanced",
+      type: "self-paced",
+      pricing: { type: "paid", amount: 4999 },
+    });
+  paidCourseSlug = paidRes.body.course.slug;
+
+  const paidModRes = await request(app)
+    .post(`/api/v1/courses/${paidCourseSlug}/modules`)
+    .set(authHeader(scholar._id))
+    .send({
+      title: "Module 1: Foundations",
+      lessons: [
+        {
+          title: "Free Preview: What are Hadith Sciences?",
+          type: "text",
+          content: { text: "Hadith sciences preview content..." },
+          order: 0,
+          isFree: true,
+        },
+        {
+          title: "Chain Authentication Methods",
+          type: "text",
+          content: { text: "Premium hadith authentication content..." },
+          order: 1,
+          isFree: false,
+        },
+      ],
+    });
+  paidCourseFreeLessonId = paidModRes.body.course.modules[0].lessons[0]._id;
+  paidCoursePaidLessonId = paidModRes.body.course.modules[0].lessons[1]._id;
+
+  await request(app)
+    .put(`/api/v1/courses/${paidCourseSlug}/publish`)
+    .set(authHeader(scholar._id));
+  await request(app)
+    .put(`/api/v1/admin/courses/${paidCourseSlug}/review`)
+    .set(authHeader(adminUser._id))
+    .send({ decision: "approved" });
 }, 60_000);
 
 afterAll(async () => {
@@ -183,18 +273,18 @@ afterEach(() => {
 });
 
 // ─────────────────────────────────────────────────────────────────────
-// AUTH GUARDS
+// COURSE CRUD (tests 1–10)
 // ─────────────────────────────────────────────────────────────────────
 
-describe("Auth guards", () => {
-  // Test 1
-  it("1. POST /api/v1/courses without auth → 401", async () => {
-    const res = await request(app).post("/api/v1/courses").send(validCourseBody());
+describe("Course CRUD", () => {
+  it("1. Unauthenticated POST /api/v1/courses → 401", async () => {
+    const res = await request(app)
+      .post("/api/v1/courses")
+      .send(validCourseBody());
     expect(res.status).toBe(401);
   });
 
-  // Test 2
-  it("2. POST /api/v1/courses with regular-user token → 403 (scholar required)", async () => {
+  it("2. Authenticated non-scholar POST /api/v1/courses → 403", async () => {
     const res = await request(app)
       .post("/api/v1/courses")
       .set(authHeader(student._id))
@@ -202,176 +292,157 @@ describe("Auth guards", () => {
     expect(res.status).toBe(403);
   });
 
-  // Test 3
-  it("3. GET /api/v1/admin/courses without auth → 401", async () => {
-    const res = await request(app).get("/api/v1/admin/courses");
-    expect(res.status).toBe(401);
-  });
-
-  // Test 4
-  it("4. GET /api/v1/admin/courses with scholar token → 403 (admin required)", async () => {
-    const res = await request(app)
-      .get("/api/v1/admin/courses")
-      .set(authHeader(scholar._id));
-    expect(res.status).toBe(403);
-  });
-});
-
-// ─────────────────────────────────────────────────────────────────────
-// COURSE CRUD
-// ─────────────────────────────────────────────────────────────────────
-
-describe("Course CRUD", () => {
-  // Test 5
-  it("5. Scholar POST /api/v1/courses → 201, returns course with slug", async () => {
+  it("3. Scholar POST /api/v1/courses with valid body → 201, returns course with generated slug", async () => {
     const res = await request(app)
       .post("/api/v1/courses")
       .set(authHeader(scholar._id))
-      .send(validCourseBody());
-
+      .send({
+        title: "Tafseer Fundamentals",
+        description:
+          "A comprehensive introduction to Quranic exegesis and its methodologies for students of knowledge.",
+        category: "quran",
+        level: "intermediate",
+        type: "self-paced",
+        pricing: { type: "free" },
+      });
     expect(res.status).toBe(201);
     expect(res.body.success).toBe(true);
     expect(res.body.course).toBeDefined();
-    expect(res.body.course.slug).toMatch(/introduction-to-fiqh/);
-    courseSlug = res.body.course.slug;
+    expect(res.body.course.slug).toMatch(/tafseer-fundamentals/);
   });
 
-  // Test 6
-  it("6. GET /api/v1/courses (browse) → 200, zero published courses", async () => {
+  it("4. GET /api/v1/courses → 200, returns paginated courses", async () => {
     const res = await request(app).get("/api/v1/courses");
 
     expect(res.status).toBe(200);
     expect(res.body.success).toBe(true);
-    expect(res.body.courses).toHaveLength(0); // course is still draft
+    expect(Array.isArray(res.body.courses)).toBe(true);
+    expect(res.body.courses.length).toBeGreaterThanOrEqual(1);
     expect(res.body.pagination).toBeDefined();
+    expect(res.body.pagination).toHaveProperty("page");
+    expect(res.body.pagination).toHaveProperty("total");
   });
 
-  // Test 7
-  it("7. GET /api/v1/courses/:slug → 200, returns draft course details", async () => {
+  it("5. GET /api/v1/courses?category=fiqh → 200, only fiqh courses", async () => {
+    const res = await request(app)
+      .get("/api/v1/courses")
+      .query({ category: "fiqh" });
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    for (const c of res.body.courses) {
+      expect(c.category).toBe("fiqh");
+    }
+  });
+
+  it("6. GET /api/v1/courses/:slug → 200, includes instructor info", async () => {
     const res = await request(app).get(`/api/v1/courses/${courseSlug}`);
 
     expect(res.status).toBe(200);
     expect(res.body.course.slug).toBe(courseSlug);
+    expect(res.body.course.instructor).toBeDefined();
+    expect(res.body.course.instructor.name).toBeDefined();
+    expect(res.body.course.instructor.username).toBeDefined();
     expect(res.body.isEnrolled).toBe(false);
   });
 
-  // Test 8
-  it("8. PUT /api/v1/courses/:slug by owner → 200, updates description", async () => {
+  it("7. Scholar PUT /api/v1/courses/:slug → 200, update succeeds for owner", async () => {
     const res = await request(app)
       .put(`/api/v1/courses/${courseSlug}`)
       .set(authHeader(scholar._id))
-      .send({ description: "Updated description for the Fiqh course covering all madhabs." });
+      .send({
+        description:
+          "Updated description covering the classical approaches to fiqh across all major madhabs.",
+      });
 
     expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
     expect(res.body.course.description).toMatch(/Updated description/);
   });
 
-  // Test 9
-  it("9. PUT /api/v1/courses/:slug by non-owner → 403", async () => {
+  it("8. Different scholar PUT /api/v1/courses/:slug → 403 (not owner)", async () => {
     const res = await request(app)
       .put(`/api/v1/courses/${courseSlug}`)
-      .set(authHeader(student._id))
-      .send({ description: "Hacked" });
+      .set(authHeader(scholar2._id))
+      .send({ description: "Should not be allowed" });
 
     expect(res.status).toBe(403);
   });
-});
 
-// ─────────────────────────────────────────────────────────────────────
-// MODULE MANAGEMENT
-// ─────────────────────────────────────────────────────────────────────
-
-describe("Module management", () => {
-  // Test 10
-  it("10. POST /api/v1/courses/:slug/modules → 201, adds module with lesson", async () => {
-    const res = await request(app)
-      .post(`/api/v1/courses/${courseSlug}/modules`)
+  it("9. Scholar PUT /api/v1/courses/:slug/publish → 200, status becomes pending-review", async () => {
+    // Create a new draft course, add module, then publish
+    const createRes = await request(app)
+      .post("/api/v1/courses")
       .set(authHeader(scholar._id))
-      .send(validModuleBody());
+      .send({
+        title: "Seerah Studies",
+        description:
+          "A complete study of the life of Prophet Muhammad (PBUH) for students of all levels.",
+        category: "seerah",
+        level: "beginner",
+        type: "self-paced",
+        pricing: { type: "free" },
+      });
+    publishSlug = createRes.body.course.slug;
 
-    expect(res.status).toBe(201);
-    expect(res.body.course.modules).toHaveLength(1);
-    expect(res.body.course.modules[0].title).toBe("Module 1: Fundamentals");
-    expect(res.body.course.modules[0].lessons).toHaveLength(1);
-  });
-});
+    await request(app)
+      .post(`/api/v1/courses/${publishSlug}/modules`)
+      .set(authHeader(scholar._id))
+      .send({
+        title: "Module 1",
+        lessons: [
+          { title: "L1", type: "text", content: { text: "..." }, order: 0 },
+        ],
+      });
 
-// ─────────────────────────────────────────────────────────────────────
-// PUBLISH + ADMIN REVIEW FLOW
-// ─────────────────────────────────────────────────────────────────────
-
-describe("Publish and admin review flow", () => {
-  // Test 11
-  it("11. PUT /api/v1/courses/:slug/publish → 200, status becomes pending-review", async () => {
     const res = await request(app)
-      .put(`/api/v1/courses/${courseSlug}/publish`)
+      .put(`/api/v1/courses/${publishSlug}/publish`)
       .set(authHeader(scholar._id));
 
     expect(res.status).toBe(200);
     expect(res.body.course.status).toBe("pending-review");
   });
 
-  // Test 12
-  it("12. GET /api/v1/admin/courses (admin) → 200, shows pending course", async () => {
+  it("10. Scholar PUT /api/v1/courses/:slug/publish (no modules) → 400", async () => {
+    const createRes = await request(app)
+      .post("/api/v1/courses")
+      .set(authHeader(scholar._id))
+      .send({
+        title: "Empty Course",
+        description:
+          "This course has no modules and should fail to publish when attempted.",
+        category: "aqeedah",
+        level: "beginner",
+        type: "self-paced",
+      });
+
+    const emptySlug = createRes.body.course.slug;
+
     const res = await request(app)
-      .get("/api/v1/admin/courses")
-      .set(authHeader(adminUser._id))
-      .query({ status: "pending-review" });
-
-    expect(res.status).toBe(200);
-    expect(res.body.courses.length).toBeGreaterThanOrEqual(1);
-    expect(res.body.courses[0].slug).toBe(courseSlug);
-  });
-
-  // Test 13
-  it("13. PUT /api/v1/admin/courses/:slug/review (approve) → 200, status becomes published", async () => {
-    const res = await request(app)
-      .put(`/api/v1/admin/courses/${courseSlug}/review`)
-      .set(authHeader(adminUser._id))
-      .send({ decision: "approved" });
-
-    expect(res.status).toBe(200);
-    expect(res.body.course.status).toBe("published");
-  });
-
-  // Test 14
-  it("14. GET /api/v1/courses (browse) after approval → 200, returns published course", async () => {
-    const res = await request(app).get("/api/v1/courses");
-
-    expect(res.status).toBe(200);
-    expect(res.body.courses.length).toBeGreaterThanOrEqual(1);
-    expect(res.body.courses[0].slug).toBe(courseSlug);
-  });
-
-  // Test 15
-  it("15. PUT /api/v1/admin/courses/:slug/review on published course → 400 (not pending)", async () => {
-    const res = await request(app)
-      .put(`/api/v1/admin/courses/${courseSlug}/review`)
-      .set(authHeader(adminUser._id))
-      .send({ decision: "approved" });
+      .put(`/api/v1/courses/${emptySlug}/publish`)
+      .set(authHeader(scholar._id));
 
     expect(res.status).toBe(400);
   });
 });
 
 // ─────────────────────────────────────────────────────────────────────
-// ENROLLMENT AND PROGRESS
+// ENROLLMENT (tests 11–17)
 // ─────────────────────────────────────────────────────────────────────
 
-describe("Enrollment and progress", () => {
-  // Test 16
-  it("16. POST /api/v1/courses/:slug/enroll → 200, student enrolled", async () => {
+describe("Enrollment", () => {
+  it("11. Authenticated POST /api/v1/courses/:slug/enroll (free course) → 200", async () => {
     const res = await request(app)
       .post(`/api/v1/courses/${courseSlug}/enroll`)
       .set(authHeader(student._id));
 
     expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
     expect(res.body.enrollment).toBeDefined();
     expect(res.body.enrollment.status).toBe("active");
   });
 
-  // Test 17
-  it("17. POST /api/v1/courses/:slug/enroll again → 400 (already enrolled)", async () => {
+  it("12. POST /api/v1/courses/:slug/enroll again → 400 (already enrolled)", async () => {
     const res = await request(app)
       .post(`/api/v1/courses/${courseSlug}/enroll`)
       .set(authHeader(student._id));
@@ -379,8 +450,7 @@ describe("Enrollment and progress", () => {
     expect(res.status).toBe(400);
   });
 
-  // Test 18
-  it("18. GET /api/v1/courses/:slug/progress → 200, progress starts at 0%", async () => {
+  it("13. GET /api/v1/courses/:slug/progress → 200, percentComplete=0", async () => {
     const res = await request(app)
       .get(`/api/v1/courses/${courseSlug}/progress`)
       .set(authHeader(student._id));
@@ -390,79 +460,72 @@ describe("Enrollment and progress", () => {
     expect(res.body.enrollment.progress.completedLessons).toHaveLength(0);
   });
 
-  // Test 19
-  it("19. PUT /api/v1/courses/:slug/progress → 200, marks lesson complete", async () => {
-    // Get the lesson ID from the course
-    const courseRes = await request(app).get(`/api/v1/courses/${courseSlug}`);
-    const lessonId = courseRes.body.course.modules[0].lessons[0]._id;
-
+  it("14. PUT /api/v1/courses/:slug/progress { lessonId, completed: true } → 200, percentComplete updated", async () => {
     const res = await request(app)
       .put(`/api/v1/courses/${courseSlug}/progress`)
       .set(authHeader(student._id))
-      .send({ lessonId, completed: true });
+      .send({ lessonId: mainFreeLessonId, completed: true });
 
     expect(res.status).toBe(200);
-    expect(res.body.enrollment.progress.completedLessons).toContain(lessonId);
-    expect(res.body.enrollment.progress.percentComplete).toBe(100); // 1/1 lesson = 100%
-    expect(res.body.enrollment.status).toBe("completed");
+    expect(res.body.enrollment.progress.completedLessons).toContain(
+      mainFreeLessonId,
+    );
+    // 1 of 2 lessons = 50%
+    expect(res.body.enrollment.progress.percentComplete).toBe(50);
   });
 
-  // Test 20
-  it("20. GET /api/v1/courses/my-courses (auth) → 200, shows enrolled course", async () => {
+  it("15. GET /api/v1/courses/:slug/lessons/:lessonId (enrolled) → 200", async () => {
+    // Access the non-free lesson — requires active enrollment
     const res = await request(app)
-      .get("/api/v1/courses/my-courses")
+      .get(`/api/v1/courses/${courseSlug}/lessons/${mainPaidLessonId}`)
       .set(authHeader(student._id));
 
     expect(res.status).toBe(200);
-    expect(res.body.enrollments.length).toBeGreaterThanOrEqual(1);
+    expect(res.body.success).toBe(true);
+    expect(res.body.lesson).toBeDefined();
+    expect(res.body.lesson.title).toBe("Lesson 2: Sources of Fiqh");
   });
 
-  // Test 21
-  it("21. GET /api/v1/courses/my-courses without auth → 401", async () => {
-    const res = await request(app).get("/api/v1/courses/my-courses");
-    expect(res.status).toBe(401);
-  });
-
-  // Test 22
-  it("22. GET /api/v1/courses/teaching (scholar) → 200, shows created course", async () => {
+  it("16. GET /api/v1/courses/:slug/lessons/:lessonId (not enrolled, paid lesson) → 403", async () => {
+    // Student is not enrolled in the paid course — paid lesson should be blocked
     const res = await request(app)
-      .get("/api/v1/courses/teaching")
-      .set(authHeader(scholar._id));
+      .get(
+        `/api/v1/courses/${paidCourseSlug}/lessons/${paidCoursePaidLessonId}`,
+      )
+      .set(authHeader(student._id));
+
+    expect(res.status).toBe(403);
+  });
+
+  it("17. GET /api/v1/courses/:slug/lessons/:lessonId (not enrolled, free preview) → 200", async () => {
+    // Student is not enrolled in the paid course — but lesson is a free preview
+    const res = await request(app)
+      .get(
+        `/api/v1/courses/${paidCourseSlug}/lessons/${paidCourseFreeLessonId}`,
+      )
+      .set(authHeader(student._id));
 
     expect(res.status).toBe(200);
-    expect(res.body.courses.length).toBeGreaterThanOrEqual(1);
+    expect(res.body.lesson).toBeDefined();
+    expect(res.body.lesson.title).toMatch(/Free Preview/);
   });
 });
 
 // ─────────────────────────────────────────────────────────────────────
-// QUIZ FLOW
+// QUIZ (tests 18–20)
 // ─────────────────────────────────────────────────────────────────────
 
-describe("Quiz flow", () => {
-  // Reset enrollment to active (test 19 completed it at 100% progress)
+describe("Quiz", () => {
   beforeAll(async () => {
-    const course = await Course.findOne({ slug: courseSlug }).lean();
-    await Enrollment.updateOne(
-      { student: student._id, course: course._id },
-      { $set: { status: "active" } },
-    );
-  });
-
-  // Test 23
-  it("23. POST /api/v1/courses/:slug/quizzes (scholar) → 201, quiz created", async () => {
-    const res = await request(app)
+    // Create a quiz on the main course for the student to take
+    const quizRes = await request(app)
       .post(`/api/v1/courses/${courseSlug}/quizzes`)
       .set(authHeader(scholar._id))
       .send(validQuizBody());
-
-    expect(res.status).toBe(201);
-    expect(res.body.quiz).toBeDefined();
-    expect(res.body.quiz.title).toBe("Module 1 Assessment");
-    quizId = res.body.quiz._id;
+    quizId = quizRes.body.quiz._id;
   });
 
-  // Test 24
-  it("24. POST /api/v1/quizzes/:quizId/start → 200, strips correct answers", async () => {
+  it("18. POST /api/v1/quizzes/:id/start (enrolled) → 200, questions without answers", async () => {
     const res = await request(app)
       .post(`/api/v1/quizzes/${quizId}/start`)
       .set(authHeader(student._id));
@@ -481,10 +544,8 @@ describe("Quiz flow", () => {
     attemptId = res.body.attempt.id;
   });
 
-  // Test 25
-  it("25. POST /api/v1/quizzes/:quizId/submit → 200, graded correctly, GET results confirms pass", async () => {
-    // Correct answer for Q0 (MCQ) is index 0 ("Jurisprudence")
-    const submitRes = await request(app)
+  it("19. POST /api/v1/quizzes/:id/submit → 200, scored and graded", async () => {
+    const res = await request(app)
       .post(`/api/v1/quizzes/${quizId}/submit`)
       .set(authHeader(student._id))
       .send({
@@ -492,150 +553,113 @@ describe("Quiz flow", () => {
         answers: [{ questionIndex: 0, answer: 0 }],
       });
 
-    expect(submitRes.status).toBe(200);
-    expect(submitRes.body.score).toBe(100); // 1/1 correct = 100%
-    expect(submitRes.body.passed).toBe(true);
+    expect(res.status).toBe(200);
+    expect(res.body.score).toBe(100);
+    expect(res.body.passed).toBe(true);
+    expect(res.body.earnedPoints).toBe(1);
+    expect(res.body.totalPoints).toBe(1);
+  });
 
-    // Verify results endpoint also reflects the pass
-    const resultsRes = await request(app)
+  it("20. GET /api/v1/quizzes/:id/results → 200, attempts list", async () => {
+    const res = await request(app)
       .get(`/api/v1/quizzes/${quizId}/results`)
       .set(authHeader(student._id));
 
-    expect(resultsRes.status).toBe(200);
-    expect(resultsRes.body.passed).toBe(true);
-    expect(resultsRes.body.bestScore).toBe(100);
-    expect(resultsRes.body.attemptsUsed).toBe(1);
+    expect(res.status).toBe(200);
+    expect(res.body.attempts).toBeDefined();
+    expect(Array.isArray(res.body.attempts)).toBe(true);
+    expect(res.body.attemptsUsed).toBe(1);
+    expect(res.body.bestScore).toBe(100);
+    expect(res.body.passed).toBe(true);
   });
 });
 
 // ─────────────────────────────────────────────────────────────────────
-// PAID COURSE ENROLLMENT
+// ADMIN (tests 21–22)
 // ─────────────────────────────────────────────────────────────────────
 
-describe("Paid course enrollment", () => {
-  let paidCourseSlug;
-
-  beforeAll(async () => {
-    // Scholar creates a paid course, admin approves it
-    const createRes = await request(app)
-      .post("/api/v1/courses")
-      .set(authHeader(scholar._id))
-      .send({
-        title: "Advanced Hadith Sciences",
-        description:
-          "An in-depth study of hadith sciences, authentication methods and chain evaluation for advanced students.",
-        category: "hadith",
-        level: "advanced",
-        type: "self-paced",
-        pricing: { type: "paid", amount: 4999 },
-      });
-
-    paidCourseSlug = createRes.body.course.slug;
-
-    // Add module + lesson then publish
-    await request(app)
-      .post(`/api/v1/courses/${paidCourseSlug}/modules`)
-      .set(authHeader(scholar._id))
-      .send({
-        title: "Module 1",
-        lessons: [{ title: "L1", type: "text", content: { text: "..." }, order: 0 }],
-      });
-
-    await request(app)
-      .put(`/api/v1/courses/${paidCourseSlug}/publish`)
-      .set(authHeader(scholar._id));
-
-    await request(app)
-      .put(`/api/v1/admin/courses/${paidCourseSlug}/review`)
+describe("Admin", () => {
+  it("21. Admin PUT /api/v1/admin/courses/:slug/review decision=approved → 200, status=published", async () => {
+    // publishSlug was set to pending-review in test 9
+    const res = await request(app)
+      .put(`/api/v1/admin/courses/${publishSlug}/review`)
       .set(authHeader(adminUser._id))
       .send({ decision: "approved" });
-  });
-
-  it("POST /api/v1/courses/:slug/enroll for paid course without payment → 402", async () => {
-    const res = await request(app)
-      .post(`/api/v1/courses/${paidCourseSlug}/enroll`)
-      .set(authHeader(student._id));
-
-    expect(res.status).toBe(402);
-  });
-});
-
-// ─────────────────────────────────────────────────────────────────────
-// FEATURED + SEARCH
-// ─────────────────────────────────────────────────────────────────────
-
-describe("Featured and search", () => {
-  it("GET /api/v1/courses/featured → 200", async () => {
-    const res = await request(app).get("/api/v1/courses/featured");
-    expect(res.status).toBe(200);
-    expect(Array.isArray(res.body.courses)).toBe(true);
-  });
-
-  it("GET /api/v1/courses?category=fiqh → 200, paginated", async () => {
-    const res = await request(app)
-      .get("/api/v1/courses")
-      .query({ category: "fiqh", page: 1, limit: 5 });
 
     expect(res.status).toBe(200);
-    expect(res.body.pagination).toMatchObject({ page: 1, limit: 5 });
-    for (const c of res.body.courses) {
-      expect(c.category).toBe("fiqh");
-    }
+    expect(res.body.success).toBe(true);
+    expect(res.body.course.status).toBe("published");
   });
 
-  it("GET /api/v1/courses?search=Fiqh → 200, matches course title", async () => {
-    const res = await request(app)
-      .get("/api/v1/courses")
-      .query({ search: "Fiqh" });
-
-    expect(res.status).toBe(200);
-    expect(res.body.courses.length).toBeGreaterThanOrEqual(1);
-  });
-});
-
-// ─────────────────────────────────────────────────────────────────────
-// ADMIN REJECTION FLOW
-// ─────────────────────────────────────────────────────────────────────
-
-describe("Admin rejection flow", () => {
-  let secondCourseSlug;
-
-  beforeAll(async () => {
-    // Create + add content + publish a second course to test rejection
+  it("22. Non-admin PUT /api/v1/admin/courses/:slug/review → 403", async () => {
+    // Create a fresh pending-review course for this test
     const createRes = await request(app)
       .post("/api/v1/courses")
       .set(authHeader(scholar._id))
       .send({
-        title: "Seerah for Beginners",
-        description: "An introductory course on the life of Prophet Muhammad (PBUH) for new Muslims.",
-        category: "seerah",
+        title: "Admin Test Course",
+        description:
+          "Temporary course created only for validating admin access control on review endpoints.",
+        category: "aqeedah",
         level: "beginner",
         type: "self-paced",
       });
-
-    secondCourseSlug = createRes.body.course.slug;
+    const tempSlug = createRes.body.course.slug;
 
     await request(app)
-      .post(`/api/v1/courses/${secondCourseSlug}/modules`)
+      .post(`/api/v1/courses/${tempSlug}/modules`)
       .set(authHeader(scholar._id))
       .send({
         title: "Module 1",
-        lessons: [{ title: "L1", type: "text", content: { text: "..." }, order: 0 }],
+        lessons: [
+          { title: "L1", type: "text", content: { text: "..." }, order: 0 },
+        ],
       });
-
     await request(app)
-      .put(`/api/v1/courses/${secondCourseSlug}/publish`)
+      .put(`/api/v1/courses/${tempSlug}/publish`)
       .set(authHeader(scholar._id));
-  });
 
-  it("PUT /api/v1/admin/courses/:slug/review (reject) → 200, status returns to draft", async () => {
     const res = await request(app)
-      .put(`/api/v1/admin/courses/${secondCourseSlug}/review`)
-      .set(authHeader(adminUser._id))
-      .send({ decision: "rejected", reason: "Content is too brief" });
+      .put(`/api/v1/admin/courses/${tempSlug}/review`)
+      .set(authHeader(student._id))
+      .send({ decision: "approved" });
+
+    expect(res.status).toBe(403);
+  });
+});
+
+// ─────────────────────────────────────────────────────────────────────
+// DISCOVERY (tests 23–25)
+// ─────────────────────────────────────────────────────────────────────
+
+describe("Discovery", () => {
+  it("23. GET /api/v1/courses/featured → 200", async () => {
+    const res = await request(app).get("/api/v1/courses/featured");
 
     expect(res.status).toBe(200);
-    expect(res.body.course.status).toBe("draft");
-    expect(res.body.course.rejectionReason).toBe("Content is too brief");
+    expect(res.body.success).toBe(true);
+    expect(Array.isArray(res.body.courses)).toBe(true);
+  });
+
+  it("24. GET /api/v1/courses/my-courses (enrolled student) → 200", async () => {
+    const res = await request(app)
+      .get("/api/v1/courses/my-courses")
+      .set(authHeader(student._id));
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.enrollments).toBeDefined();
+    expect(res.body.enrollments.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it("25. GET /api/v1/courses/teaching (scholar) → 200", async () => {
+    const res = await request(app)
+      .get("/api/v1/courses/teaching")
+      .set(authHeader(scholar._id));
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.courses).toBeDefined();
+    expect(res.body.courses.length).toBeGreaterThanOrEqual(1);
   });
 });
