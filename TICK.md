@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-11T21:10:35.073Z
+updated: 2026-03-11T21:13:05.819Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 100
+next_id: 101
 ---
 
 ## Agents
@@ -2714,3 +2714,26 @@ history:
 ```
 
 > CreateCoursePage (1200 lines), QuizPlayerPage (900 lines), useCourses (900 lines) violate 300-line limit. Extract sub-components and split hooks.
+
+### TASK-100 · Test: fill Phase 2 test coverage gaps
+
+```yaml
+id: TASK-100
+status: backlog
+priority: medium
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-11T21:13:05.819Z
+updated_at: 2026-03-11T21:13:05.819Z
+tags:
+  - phase2
+  - backend
+  - testing
+history:
+  - ts: 2026-03-11T21:13:05.819Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Add tests for maxStudents enforcement, quiz short-answer/essay grading, slug collision retry, archived course visibility.
