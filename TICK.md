@@ -2,7 +2,7 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-11T20:36:38.183Z
+updated: 2026-03-11T20:37:10.541Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
 next_id: 98
@@ -13,7 +13,7 @@ next_id: 98
 | Agent | Type | Role | Status | Working On | Last Active | Trust Level |
 |-------|------|------|--------|------------|-------------|-------------|
 | hasna | human | owner, architect | idle | - | 2026-03-04T13:55:56.279Z | trusted |
-| copilot | bot | developer, researcher | working | TASK-097 | 2026-03-11T20:36:38.183Z | trusted |
+| copilot | bot | developer, researcher | working | TASK-097 | 2026-03-11T20:37:10.541Z | trusted |
 | copilot-2 | bot | developer, reviewer | idle | - | 2026-03-11T18:19:25.000Z | trusted |
 | antigravity | bot | developer, researcher | idle | - | 2026-03-04T13:56:15.009Z | trusted |
 
@@ -2609,7 +2609,7 @@ assigned_to: null
 claimed_by: copilot
 created_by: "@hasnain-sid"
 created_at: 2026-03-11T20:36:36.698Z
-updated_at: 2026-03-11T20:36:38.183Z
+updated_at: 2026-03-11T20:37:10.541Z
 tags:
   - phase2
   - backend
@@ -2624,6 +2624,11 @@ history:
     action: claimed
     from: backlog
     to: in_progress
+  - ts: 2026-03-11T20:37:10.541Z
+    who: copilot
+    action: commented
+    note: Added min/max validators to course, enrollment, quiz, quizAttempt models.
+      Added {student:1,status:1} index to enrollment.
 ```
 
 > Multiple schemas lack min/max validators on numeric fields. Enrollment missing {student:1,status:1} index for getMyCourses query.
