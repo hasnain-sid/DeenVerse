@@ -323,7 +323,7 @@ export function Sidebar() {
         )}
 
         {/* Upgrade Plan CTA — for free users */}
-        {isAuthenticated && user && !(user as any)?.subscription?.plan && (
+        {isAuthenticated && user && !user.subscription?.plan && (
           <Tooltip content="Upgrade Plan" side="right">
             <NavLink
               to="/subscription"

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useForm, useFieldArray, Controller } from 'react-hook-form';
+import { useForm, useFieldArray, Controller, useWatch } from 'react-hook-form';
 import type { Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -79,7 +79,6 @@ export function CreateCoursePage() {
     register,
     control,
     handleSubmit,
-    watch,
     formState: { errors },
     getValues,
   } = useForm<FormValues>({
@@ -100,11 +99,11 @@ export function CreateCoursePage() {
     name: 'modules',
   });
 
-  const pricingType = watch('pricing.type');
-  const title = watch('title');
-  const description = watch('description');
-  const category = watch('category');
-  const level = watch('level');
+  const pricingType = useWatch({ control, name: 'pricing.type' });
+  const title = useWatch({ control, name: 'title' });
+  const description = useWatch({ control, name: 'description' });
+  const category = useWatch({ control, name: 'category' });
+  const level = useWatch({ control, name: 'level' });
   const stepIndex = STEPS.findIndex((s) => s.id === currentStep);
 
   // Scholar-only guard

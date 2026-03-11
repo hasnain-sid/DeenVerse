@@ -36,18 +36,6 @@ export function connectSocket(): Socket {
     timeout: 20000,
   });
 
-  socket.on('connect', () => {
-    console.log('⚡ Socket connected:', socket?.id);
-  });
-
-  socket.on('connect_error', (err) => {
-    console.warn('Socket connection error:', err.message);
-  });
-
-  socket.on('disconnect', (reason) => {
-    console.log('🔌 Socket disconnected:', reason);
-  });
-
   return socket;
 }
 
@@ -60,7 +48,6 @@ export function disconnectSocket(): void {
     socket.removeAllListeners();
     socket.disconnect();
     socket = null;
-    console.log('Socket manually disconnected');
   }
 }
 

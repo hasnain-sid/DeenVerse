@@ -117,7 +117,7 @@ export function CommandPalette() {
     });
 
     return results;
-  }, [navigate, isAuthenticated]);
+  }, [navigate, isAuthenticated, setOpen]);
 
   // ── Filter items by query ──────────────────────
   const filtered = useMemo(() => {
@@ -157,7 +157,7 @@ export function CommandPalette() {
         }
       }
     },
-    [filtered, selectedIndex, query]
+    [filtered, navigate, query, selectedIndex, setOpen]
   );
 
   // Scroll selected item into view

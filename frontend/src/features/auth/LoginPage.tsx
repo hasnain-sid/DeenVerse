@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Eye, EyeOff, ArrowRight, Check, X } from 'lucide-react';
@@ -110,6 +110,7 @@ export function LoginPage() {
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const registerPassword = useWatch({ control: registerForm.control, name: 'password' });
 
   const loginMutation = useLogin();
   const registerMutation = useRegister();
@@ -309,7 +310,7 @@ export function LoginPage() {
                   </button>
                 </div>
                 <FieldError message={registerForm.formState.errors.password?.message} />
-                <PasswordStrength password={registerForm.watch('password')} />
+                <PasswordStrength password={registerPassword ?? ''} />
               </div>
 
               <div className="space-y-2">

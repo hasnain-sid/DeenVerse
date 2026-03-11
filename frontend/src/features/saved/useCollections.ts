@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '@/lib/api';
 import toast from 'react-hot-toast';
+import { getErrorMessage } from '@/lib/http';
 
 // ── Types ────────────────────────────────────────────
 
@@ -41,8 +42,8 @@ export function useCreateCollection() {
       qc.invalidateQueries({ queryKey: ['collections'] });
       toast.success(`"${collection.name}" created`);
     },
-    onError: (err: any) => {
-      toast.error(err?.response?.data?.message || 'Failed to create collection');
+    onError: (error: unknown) => {
+      toast.error(getErrorMessage(error, 'Failed to create collection'));
     },
   });
 }
@@ -66,8 +67,8 @@ export function useUpdateCollection() {
       qc.invalidateQueries({ queryKey: ['collections'] });
       toast.success('Collection updated');
     },
-    onError: (err: any) => {
-      toast.error(err?.response?.data?.message || 'Failed to update collection');
+    onError: (error: unknown) => {
+      toast.error(getErrorMessage(error, 'Failed to update collection'));
     },
   });
 }
@@ -82,8 +83,8 @@ export function useDeleteCollection() {
       qc.invalidateQueries({ queryKey: ['collections'] });
       toast.success('Collection deleted');
     },
-    onError: (err: any) => {
-      toast.error(err?.response?.data?.message || 'Failed to delete collection');
+    onError: (error: unknown) => {
+      toast.error(getErrorMessage(error, 'Failed to delete collection'));
     },
   });
 }
@@ -99,8 +100,8 @@ export function useAddToCollection() {
       qc.invalidateQueries({ queryKey: ['collections'] });
       toast.success('Added to collection');
     },
-    onError: (err: any) => {
-      toast.error(err?.response?.data?.message || 'Failed to add to collection');
+    onError: (error: unknown) => {
+      toast.error(getErrorMessage(error, 'Failed to add to collection'));
     },
   });
 }
@@ -115,8 +116,8 @@ export function useRemoveFromCollection() {
       qc.invalidateQueries({ queryKey: ['collections'] });
       toast.success('Removed from collection');
     },
-    onError: (err: any) => {
-      toast.error(err?.response?.data?.message || 'Failed to remove from collection');
+    onError: (error: unknown) => {
+      toast.error(getErrorMessage(error, 'Failed to remove from collection'));
     },
   });
 }

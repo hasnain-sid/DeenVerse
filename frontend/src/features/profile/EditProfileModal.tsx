@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { X, Loader2 } from 'lucide-react';
@@ -9,6 +9,7 @@ import { ImageUpload } from '@/components/ui/image-upload';
 import { useAuthStore } from '@/stores/authStore';
 import api from '@/lib/api';
 import toast from 'react-hot-toast';
+import { getErrorMessage } from '@/lib/http';
 
 // ── Schema ───────────────────────────────────────────
 
@@ -40,9 +41,9 @@ export function EditProfileModal({ open, onClose }: EditProfileModalProps) {
 
   const {
     register,
+    control,
     handleSubmit,
     reset,
-    watch,
     setValue,
     formState: { errors, isSubmitting },
   } = useForm<EditProfileValues>({
@@ -69,13 +70,13 @@ export function EditProfileModal({ open, onClose }: EditProfileModalProps) {
   }, [open, user, reset]);
 
   // Watch bio for character count
-  const bioValue = watch('bio');
+  const bioValue = useWatch({ control, name: 'bio' });
   useEffect(() => {
     setBioCount(bioValue?.length ?? 0);
   }, [bioValue]);
 
   // Watch avatar URL for live preview
-  const avatarValue = watch('avatar');
+  const avatarValue = useWatch({ control, name: 'avatar' });
 
   const onSubmit = async (values: EditProfileValues) => {
     try {
@@ -85,8 +86,8 @@ export function EditProfileModal({ open, onClose }: EditProfileModalProps) {
         toast.success('Profile updated!');
         onClose();
       }
-    } catch (err: any) {
-      toast.error(err?.response?.data?.message ?? 'Failed to update profile');
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error, 'Failed to update profile'));
     }
   };
 

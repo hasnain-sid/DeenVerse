@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useForm, useFieldArray, Controller } from 'react-hook-form';
+import { useForm, useFieldArray, Controller, useWatch } from 'react-hook-form';
 import type { Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -84,7 +84,6 @@ export function EditCoursePage() {
     register,
     control,
     handleSubmit,
-    watch,
     reset,
     formState: { errors, isDirty },
     getValues,
@@ -144,8 +143,8 @@ export function EditCoursePage() {
     }
   }, [data, isInitialized, reset]);
 
-  const pricingType = watch('pricing.type');
-  const title = watch('title');
+  const pricingType = useWatch({ control, name: 'pricing.type' });
+  const title = useWatch({ control, name: 'title' });
   const stepIndex = STEPS.findIndex((s) => s.id === currentStep);
 
   if (isLoading) {

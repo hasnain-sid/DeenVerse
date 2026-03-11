@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useMemo } from 'react';
 import { Upload, X, Loader2, ImageIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useUpload } from '@/hooks/useUpload';
@@ -49,11 +49,13 @@ export function ImageUpload({
 
   // Normalize to array internally
   const isSingle = maxFiles === 1;
-  const urls: string[] = Array.isArray(value)
-    ? value
-    : value
-      ? [value]
-      : [];
+  const urls = useMemo<string[]>(() => {
+    if (Array.isArray(value)) {
+      return value;
+    }
+
+    return value ? [value] : [];
+  }, [value]);
 
   const canAddMore = urls.length < maxFiles && !isUploading;
 

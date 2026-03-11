@@ -19,8 +19,9 @@ export function TafakkurPage() {
     const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     useEffect(() => {
+        const timeout = timerRef.current;
         return () => {
-            if (timerRef.current) clearTimeout(timerRef.current);
+            if (timeout) clearTimeout(timeout);
         };
     }, []);
 

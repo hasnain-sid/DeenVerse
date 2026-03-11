@@ -25,7 +25,7 @@ import {
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm, useFieldArray } from 'react-hook-form';
+import { useForm, useFieldArray, useWatch } from 'react-hook-form';
 import { scholarApplicationSchema, type ScholarApplication } from '@deenverse/shared';
 import { useApplicationStatus, useApplyForScholar } from './useScholar';
 
@@ -136,7 +136,6 @@ export function ScholarApplicationPage() {
     register,
     control,
     handleSubmit,
-    watch,
     setValue,
     getValues,
     formState: { errors },
@@ -153,8 +152,8 @@ export function ScholarApplicationPage() {
 
   const { fields, append, remove } = useFieldArray({ control, name: 'credentials' });
 
-  const watchedSpecialties = watch('specialties');
-  const watchedLanguages = watch('teachingLanguages');
+  const watchedSpecialties = useWatch({ control, name: 'specialties' }) ?? [];
+  const watchedLanguages = useWatch({ control, name: 'teachingLanguages' }) ?? [];
 
   // ── Toggle helpers ──────────────────────────────
   const toggleSpecialty = (value: string) => {

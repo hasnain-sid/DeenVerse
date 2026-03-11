@@ -25,6 +25,7 @@ import { usePushNotifications } from '@/hooks/usePushNotifications';
 import { cn } from '@/lib/utils';
 import api from '@/lib/api';
 import { Link } from 'react-router-dom';
+import { getErrorMessage } from '@/lib/http';
 
 // ── Schemas ──────────────────────────────────────────
 
@@ -150,8 +151,8 @@ function ProfileSection() {
       setUser(res.data.user);
       reset(data); // reset form dirty state with new values
       toast.success('Profile updated');
-    } catch (err: any) {
-      toast.error(err.response?.data?.message ?? 'Failed to update profile');
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error, 'Failed to update profile'));
     } finally {
       setSaving(false);
     }
@@ -432,8 +433,8 @@ function PasswordSection() {
       });
       toast.success('Password changed successfully');
       reset();
-    } catch (err: any) {
-      toast.error(err.response?.data?.message ?? 'Failed to change password');
+    } catch (error: unknown) {
+      toast.error(getErrorMessage(error, 'Failed to change password'));
     } finally {
       setSaving(false);
     }

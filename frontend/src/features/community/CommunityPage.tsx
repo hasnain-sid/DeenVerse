@@ -11,6 +11,7 @@ import api from '@/lib/api';
 import toast from 'react-hot-toast';
 import { Link } from 'react-router-dom';
 import type { User } from '@/types/user';
+import { getErrorMessage } from '@/lib/http';
 
 export function CommunityPage() {
   const { user: currentUser, isAuthenticated, setUser } = useAuthStore();
@@ -44,8 +45,8 @@ export function CommunityPage() {
       }
       queryClient.invalidateQueries({ queryKey: ['other-users'] });
     },
-    onError: (err: any) => {
-      toast.error(err.response?.data?.message ?? 'Failed to follow');
+    onError: (error: unknown) => {
+      toast.error(getErrorMessage(error, 'Failed to follow'));
     },
   });
 
@@ -64,8 +65,8 @@ export function CommunityPage() {
       }
       queryClient.invalidateQueries({ queryKey: ['other-users'] });
     },
-    onError: (err: any) => {
-      toast.error(err.response?.data?.message ?? 'Failed to unfollow');
+    onError: (error: unknown) => {
+      toast.error(getErrorMessage(error, 'Failed to unfollow'));
     },
   });
 

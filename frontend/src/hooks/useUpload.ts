@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import api from '@/lib/api';
+import { getErrorMessage } from '@/lib/http';
 
 interface UploadResult {
   url: string;
@@ -88,10 +89,10 @@ export function useUpload(): UseUploadReturn {
 
       setProgress(100);
       return { url: confirm.url, key };
-    } catch (err: any) {
-      const msg = err?.response?.data?.message || err.message || 'Upload failed';
+    } catch (error: unknown) {
+      const msg = getErrorMessage(error, 'Upload failed');
       setError(msg);
-      throw err;
+      throw error;
     } finally {
       setIsUploading(false);
     }

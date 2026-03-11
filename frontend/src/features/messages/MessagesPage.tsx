@@ -54,7 +54,7 @@ export function MessagesPage() {
       socket.emit('chat:leave', activeConversation);
       socket.off('chat:message', handleMessage);
     };
-  }, [activeConversation]);
+  }, [activeConversation, queryClient]);
 
   const handleSend = () => {
     if (!messageInput.trim() || !activeConversation) return;

@@ -86,7 +86,7 @@ export function StreamViewPage() {
     }
 
     // For other browsers, we'd use hls.js – lazy load it
-    let hls: any;
+    let hls: { destroy: () => void } | null = null;
     import('hls.js')
       .then(({ default: Hls }) => {
         if (!Hls.isSupported()) return;

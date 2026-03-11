@@ -68,6 +68,8 @@ const features = [
     },
 ];
 
+type LearnQuranFeature = (typeof features)[number];
+
 export function LearnQuranHub() {
     return (
         <div className="space-y-6 animate-fade-in max-w-5xl mx-auto p-4 md:p-6 pb-24">
@@ -101,7 +103,7 @@ export function LearnQuranHub() {
     );
 }
 
-function FeatureCard({ feature }: { feature: any }) {
+function FeatureCard({ feature }: { feature: LearnQuranFeature }) {
     const Icon = feature.icon;
     return (
         <Card className="h-full transition-all duration-300 hover:border-primary/50 hover:shadow-md hover:shadow-primary/5 relative overflow-hidden flex flex-col">
