@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-11T19:55:15.852Z
+updated: 2026-03-11T20:18:57.376Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 94
+next_id: 95
 ---
 
 ## Agents
@@ -2481,3 +2481,27 @@ history:
 ```
 
 > Run final readiness checks after the remediation pass: frontend lint, targeted Phase 2 tests, integrity check, and a short go/no-go summary for Phase 3 with any residual risk called out.
+
+### TASK-094 · Fix: payment user verification + module route isScholar guard
+
+```yaml
+id: TASK-094
+status: backlog
+priority: urgent
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-11T20:18:57.376Z
+updated_at: 2026-03-11T20:18:57.376Z
+tags:
+  - phase2
+  - security
+  - backend
+  - fix
+history:
+  - ts: 2026-03-11T20:18:57.376Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> 1. enrollInCourse payment lookup must verify payment.user === userId to prevent enrollment theft. 2. Module management routes (POST/PUT/DELETE /:slug/modules) missing isScholar middleware — add defense-in-depth.
