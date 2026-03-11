@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-11T20:22:28.307Z
+updated: 2026-03-11T20:32:45.894Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 96
+next_id: 97
 ---
 
 ## Agents
@@ -2559,3 +2559,27 @@ history:
 ```
 
 > enrollInCourse has check-then-act race on maxStudents and three non-atomic writes. Wrap in transaction + use atomic findOneAndUpdate for capacity check.
+
+### TASK-096 · Fix: atomic progress update with 
+
+```yaml
+id: TASK-096
+status: backlog
+priority: high
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-11T20:32:45.894Z
+updated_at: 2026-03-11T20:32:45.894Z
+tags:
+  - phase2
+  - backend
+  - fix
+  - concurrency
+history:
+  - ts: 2026-03-11T20:32:45.894Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> updateProgress uses .save() which races on concurrent lesson completions. Switch to atomic  + .
