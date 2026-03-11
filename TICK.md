@@ -2,7 +2,7 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-11T18:59:25.851Z
+updated: 2026-03-11T19:14:21.683Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
 next_id: 94
@@ -13,7 +13,7 @@ next_id: 94
 | Agent | Type | Role | Status | Working On | Last Active | Trust Level |
 |-------|------|------|--------|------------|-------------|-------------|
 | hasna | human | owner, architect | idle | - | 2026-03-04T13:55:56.279Z | trusted |
-| copilot | bot | developer, researcher | idle | - | 2026-03-11T18:59:25.851Z | trusted |
+| copilot | bot | developer, researcher | working | TASK-088 | 2026-03-11T19:14:21.683Z | trusted |
 | copilot-2 | bot | developer, reviewer | idle | - | 2026-03-11T18:19:25.000Z | trusted |
 | antigravity | bot | developer, researcher | idle | - | 2026-03-04T13:56:15.009Z | trusted |
 
@@ -2238,13 +2238,13 @@ history:
 
 ```yaml
 id: TASK-088
-status: backlog
+status: in_progress
 priority: high
 assigned_to: null
-claimed_by: null
+claimed_by: copilot
 created_by: "@hasnain-sid"
 created_at: 2026-03-11T18:43:34.571Z
-updated_at: 2026-03-11T18:43:34.571Z
+updated_at: 2026-03-11T19:14:21.683Z
 tags:
   - phase2
   - course
@@ -2255,6 +2255,11 @@ history:
   - ts: 2026-03-11T18:43:34.571Z
     who: "@hasnain-sid"
     action: created
+  - ts: 2026-03-11T19:14:21.683Z
+    who: copilot
+    action: claimed
+    from: backlog
+    to: in_progress
 ```
 
 > Update frontend course hooks and pages to match the normalized course contract. Scope: useCourses types, CourseDetailPage, CoursePlayerPage, MyTeachingPage, MyCoursesPage, AdminCourseReviewPage, and any pagination/rendering logic impacted by contract cleanup.
