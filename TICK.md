@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-11T18:43:35.528Z
+updated: 2026-03-11T18:43:36.508Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 90
+next_id: 91
 ---
 
 ## Agents
@@ -2268,3 +2268,28 @@ history:
 ```
 
 > Normalize quiz start/submit/results backend responses to the agreed contract and extend targeted tests so the quiz player can rely on stable payloads. Scope: quizService, quizController, and quiz-related backend tests.
+
+### TASK-090 · Phase 2 readiness: align quiz frontend consumer
+
+```yaml
+id: TASK-090
+status: backlog
+priority: high
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-11T18:43:36.508Z
+updated_at: 2026-03-11T18:43:36.508Z
+tags:
+  - phase2
+  - quiz
+  - frontend
+depends_on:
+  - TASK-089
+history:
+  - ts: 2026-03-11T18:43:36.508Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Update frontend quiz hooks and QuizPlayerPage to match the normalized quiz contract, including attempt metadata, timer data, submission payload handling, and results rendering.
