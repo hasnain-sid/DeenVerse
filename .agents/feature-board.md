@@ -125,7 +125,6 @@
 | Feature | Priority | Contract Created | Assigned To | Target |
 |---------|----------|-----------------|-------------|--------|
 | Email Verification | High | ⬜ | — | — |
-| Course System (LMS) | High | ✅ | copilot, copilot-2 | Phase 2 ✅ Complete |
 | Virtual Classroom (LiveKit + tldraw) | High | ⬜ | — | Phase 3 — depends on Course System |
 | Interactive Quran Teaching | Medium | ⬜ | — | Phase 4 — depends on Virtual Classroom |
 | Certification System | Medium | ⬜ | — | Phase 5 — depends on Course System |
