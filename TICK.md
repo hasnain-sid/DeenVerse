@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-11T20:44:06.951Z
+updated: 2026-03-11T20:45:30.597Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 99
+next_id: 100
 ---
 
 ## Agents
@@ -2675,3 +2675,26 @@ history:
 ```
 
 > 1. deleteQuiz hard-deletes student attempts — switch to soft-archive. 2. ADMIN_IDS parsed on every request — cache at module scope. 3. reviewCourse notification has no content.
+
+### TASK-099 · Refactor: extract sub-components from large course pages
+
+```yaml
+id: TASK-099
+status: backlog
+priority: high
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-11T20:45:30.597Z
+updated_at: 2026-03-11T20:45:30.597Z
+tags:
+  - phase2
+  - frontend
+  - refactor
+history:
+  - ts: 2026-03-11T20:45:30.597Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> CreateCoursePage (1200 lines), QuizPlayerPage (900 lines), useCourses (900 lines) violate 300-line limit. Extract sub-components and split hooks.
