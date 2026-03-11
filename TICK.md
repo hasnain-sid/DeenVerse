@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-11T20:34:31.684Z
+updated: 2026-03-11T20:36:36.698Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 97
+next_id: 98
 ---
 
 ## Agents
@@ -2598,3 +2598,27 @@ history:
 ```
 
 > updateProgress uses .save() which races on concurrent lesson completions. Switch to atomic  + .
+
+### TASK-097 · Fix: add min/max validators to models + missing enrollment index
+
+```yaml
+id: TASK-097
+status: backlog
+priority: high
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-11T20:36:36.698Z
+updated_at: 2026-03-11T20:36:36.698Z
+tags:
+  - phase2
+  - backend
+  - fix
+  - models
+history:
+  - ts: 2026-03-11T20:36:36.698Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> Multiple schemas lack min/max validators on numeric fields. Enrollment missing {student:1,status:1} index for getMyCourses query.
