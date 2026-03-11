@@ -2,10 +2,10 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-11T20:37:11.666Z
+updated: 2026-03-11T20:39:16.230Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 98
+next_id: 99
 ---
 
 ## Agents
@@ -2637,3 +2637,26 @@ history:
 ```
 
 > Multiple schemas lack min/max validators on numeric fields. Enrollment missing {student:1,status:1} index for getMyCourses query.
+
+### TASK-098 · Fix: quiz soft-delete, ADMIN_IDS cache, review notification content
+
+```yaml
+id: TASK-098
+status: backlog
+priority: high
+assigned_to: null
+claimed_by: null
+created_by: "@hasnain-sid"
+created_at: 2026-03-11T20:39:16.230Z
+updated_at: 2026-03-11T20:39:16.230Z
+tags:
+  - phase2
+  - backend
+  - fix
+history:
+  - ts: 2026-03-11T20:39:16.230Z
+    who: "@hasnain-sid"
+    action: created
+```
+
+> 1. deleteQuiz hard-deletes student attempts — switch to soft-archive. 2. ADMIN_IDS parsed on every request — cache at module scope. 3. reviewCourse notification has no content.
