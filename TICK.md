@@ -2,7 +2,7 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-12T07:16:37.751Z
+updated: 2026-03-12T07:20:05.752Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
 next_id: 102
@@ -13,7 +13,7 @@ next_id: 102
 | Agent | Type | Role | Status | Working On | Last Active | Trust Level |
 |-------|------|------|--------|------------|-------------|-------------|
 | hasna | human | owner, architect | idle | - | 2026-03-04T13:55:56.279Z | trusted |
-| copilot | bot | developer, researcher | working | TASK-069 | 2026-03-12T07:16:37.751Z | trusted |
+| copilot | bot | developer, researcher | working | TASK-069 | 2026-03-12T07:20:05.752Z | trusted |
 | copilot-2 | bot | developer, reviewer | idle | - | 2026-03-11T18:19:25.000Z | trusted |
 | antigravity | bot | developer, researcher | idle | - | 2026-03-04T13:56:15.009Z | trusted |
 
@@ -1778,7 +1778,7 @@ assigned_to: null
 claimed_by: copilot
 created_by: "@hasnain-sid"
 created_at: 2026-03-05T14:00:00.000Z
-updated_at: 2026-03-12T07:16:37.751Z
+updated_at: 2026-03-12T07:20:05.752Z
 tags:
   - backend
   - classroom
@@ -1794,6 +1794,12 @@ history:
     action: claimed
     from: backlog
     to: in_progress
+  - ts: 2026-03-12T07:20:05.752Z
+    who: copilot
+    action: commented
+    note: "Classroom lifecycle API complete: start (LiveKit room creation + host
+      token), join (enrollment/access verification + participant token), end
+      (room cleanup), leave. Socket.IO events emitted."
 ```
 
 > Add lifecycle endpoints to classroomRoute: POST /:id/start (host creates LiveKit room, returns token+serverUrl), POST /:id/join (access control: course-only enrollment check, followers check, public allow; token generation; participant tracking; peakParticipants update), POST /:id/end (host deletes room, updates all participants, sets ended), POST /:id/leave (update participant, decrement count). Socket.IO events: classroom:started, classroom:ended.
