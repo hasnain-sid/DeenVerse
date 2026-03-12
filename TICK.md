@@ -2,7 +2,7 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-12T10:07:46.981Z
+updated: 2026-03-12T10:19:06.086Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
 next_id: 102
@@ -14,7 +14,7 @@ next_id: 102
 |-------|------|------|--------|------------|-------------|-------------|
 | hasna | human | owner, architect | idle | - | 2026-03-04T13:55:56.279Z | trusted |
 | copilot | bot | developer, researcher | idle | - | 2026-03-12T08:20:37.378Z | trusted |
-| copilot-2 | bot | developer, reviewer | working | TASK-079 | 2026-03-12T10:07:46.981Z | trusted |
+| copilot-2 | bot | developer, reviewer | working | TASK-079 | 2026-03-12T10:19:06.086Z | trusted |
 | antigravity | bot | developer, researcher | idle | - | 2026-03-04T13:56:15.009Z | trusted |
 
 ---
@@ -2044,7 +2044,7 @@ assigned_to: null
 claimed_by: copilot-2
 created_by: "@hasnain-sid"
 created_at: 2026-03-05T14:00:00.000Z
-updated_at: 2026-03-12T10:00:42.894Z
+updated_at: 2026-03-12T10:19:06.086Z
 tags:
   - frontend
   - classroom
@@ -2061,6 +2061,11 @@ history:
     action: claimed
     from: backlog
     to: in_progress
+  - ts: 2026-03-12T10:19:06.086Z
+    who: copilot-2
+    action: commented
+    note: Classroom Lobby page integrated. useClassrooms hook created with filters +
+      upcoming. Route /classrooms live. Nav link added.
 ```
 
 > Promote chosen Lobby prototype to ClassroomLobbyPage.tsx. Create useClassroom.ts with useClassrooms(filters) + useUpcomingClassrooms hooks. Route /classrooms. Nav link. Delete lobby prototypes.
