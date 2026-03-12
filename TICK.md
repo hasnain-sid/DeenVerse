@@ -2,7 +2,7 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-12T10:00:42.894Z
+updated: 2026-03-12T10:04:23.737Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
 next_id: 102
@@ -14,7 +14,7 @@ next_id: 102
 |-------|------|------|--------|------------|-------------|-------------|
 | hasna | human | owner, architect | idle | - | 2026-03-04T13:55:56.279Z | trusted |
 | copilot | bot | developer, researcher | idle | - | 2026-03-12T08:20:37.378Z | trusted |
-| copilot-2 | bot | developer, reviewer | working | TASK-077 | 2026-03-12T10:00:42.894Z | trusted |
+| copilot-2 | bot | developer, reviewer | working | TASK-078 | 2026-03-12T10:04:23.737Z | trusted |
 | antigravity | bot | developer, researcher | idle | - | 2026-03-04T13:56:15.009Z | trusted |
 
 ---
@@ -2069,13 +2069,13 @@ history:
 
 ```yaml
 id: TASK-078
-status: backlog
+status: in_progress
 priority: high
 assigned_to: null
-claimed_by: null
+claimed_by: copilot-2
 created_by: "@hasnain-sid"
 created_at: 2026-03-05T14:00:00.000Z
-updated_at: 2026-03-05T14:00:00.000Z
+updated_at: 2026-03-12T10:04:23.737Z
 tags:
   - frontend
   - classroom
@@ -2088,6 +2088,11 @@ history:
   - ts: 2026-03-05T14:00:00.000Z
     who: "@hasnain-sid"
     action: created
+  - ts: 2026-03-12T10:04:23.737Z
+    who: copilot-2
+    action: claimed
+    from: backlog
+    to: in_progress
 ```
 
 > Promote chosen Live prototype. Install @livekit/components-react, livekit-client, @livekit/components-styles. LiveKit integration: LiveKitRoom wrapper, VideoTrack, ParticipantTile, mic/cam/screen toggles. Add useStartClassroom, useJoinClassroom, useEndClassroom, useLeaveClassroom, useClassroomDetail hooks. Socket.IO chat + raise hand. Route /classrooms/:id/live.
