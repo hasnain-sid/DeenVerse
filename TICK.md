@@ -2,7 +2,7 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-12T13:14:02.149Z
+updated: 2026-03-12T13:18:56.477Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
 next_id: 102
@@ -13,7 +13,7 @@ next_id: 102
 | Agent | Type | Role | Status | Working On | Last Active | Trust Level |
 |-------|------|------|--------|------------|-------------|-------------|
 | hasna | human | owner, architect | idle | - | 2026-03-04T13:55:56.279Z | trusted |
-| copilot | bot | developer, researcher | idle | - | 2026-03-12T13:14:02.149Z | trusted |
+| copilot | bot | developer, researcher | working | TASK-085 | 2026-03-12T13:18:56.477Z | trusted |
 | copilot-2 | bot | developer, reviewer | idle | - | 2026-03-12T12:37:20.641Z | trusted |
 | antigravity | bot | developer, researcher | idle | - | 2026-03-04T13:56:15.009Z | trusted |
 
@@ -2387,13 +2387,13 @@ history:
 
 ```yaml
 id: TASK-085
-status: backlog
+status: in_progress
 priority: medium
 assigned_to: null
-claimed_by: null
+claimed_by: copilot
 created_by: "@hasnain-sid"
 created_at: 2026-03-05T14:00:00.000Z
-updated_at: 2026-03-05T14:00:00.000Z
+updated_at: 2026-03-12T13:18:56.477Z
 tags:
   - backend
   - classroom
@@ -2406,6 +2406,11 @@ history:
   - ts: 2026-03-05T14:00:00.000Z
     who: "@hasnain-sid"
     action: created
+  - ts: 2026-03-12T13:18:56.477Z
+    who: copilot
+    action: claimed
+    from: backlog
+    to: in_progress
 ```
 
 > 29 smoke tests with supertest + mongodb-memory-server: CRUD (401/403 auth guards, 201 create, browse+filter, detail, update ownership, delete), Lifecycle (start host-only, start already-live 400, join enrolled, join non-enrolled 403, join public, join full 403, end, leave), Controls (mute host-only, kick host-only, settings), Recording (start/stop/get), Whiteboard (save/get), Discovery (upcoming, my-sessions). Mock LiveKit.
