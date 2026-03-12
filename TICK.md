@@ -2,7 +2,7 @@
 project: deenverse
 schema_version: "1.0"
 created: Wed Mar 04 2026 19:24:26 GMT+0530 (India Standard Time)
-updated: 2026-03-12T11:07:10.089Z
+updated: 2026-03-12T11:10:16.146Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
 next_id: 102
@@ -14,7 +14,7 @@ next_id: 102
 |-------|------|------|--------|------------|-------------|-------------|
 | hasna | human | owner, architect | idle | - | 2026-03-04T13:55:56.279Z | trusted |
 | copilot | bot | developer, researcher | idle | - | 2026-03-12T08:20:37.378Z | trusted |
-| copilot-2 | bot | developer, reviewer | working | TASK-081 | 2026-03-12T11:07:10.089Z | trusted |
+| copilot-2 | bot | developer, reviewer | working | TASK-082 | 2026-03-12T11:10:16.146Z | trusted |
 | antigravity | bot | developer, researcher | idle | - | 2026-03-04T13:56:15.009Z | trusted |
 
 ---
@@ -2229,13 +2229,13 @@ history:
 
 ```yaml
 id: TASK-082
-status: backlog
+status: in_progress
 priority: medium
 assigned_to: null
-claimed_by: null
+claimed_by: copilot-2
 created_by: "@hasnain-sid"
 created_at: 2026-03-05T14:00:00.000Z
-updated_at: 2026-03-05T14:00:00.000Z
+updated_at: 2026-03-12T11:10:16.146Z
 tags:
   - frontend
   - classroom
@@ -2247,6 +2247,11 @@ history:
   - ts: 2026-03-05T14:00:00.000Z
     who: "@hasnain-sid"
     action: created
+  - ts: 2026-03-12T11:10:16.146Z
+    who: copilot-2
+    action: claimed
+    from: backlog
+    to: in_progress
 ```
 
 > Recording hooks: useStartRecording, useStopRecording, useRecordings, useMuteParticipant, useKickParticipant, useUpdateSettings. Recording UI in live page (record button, banner, indicator). RecordingViewerPage (/classrooms/:id/recordings). Host moderation: mute/kick in participants panel, settings modal. Edge cases: reconnecting overlay, session ended overlay, classroom full message.
