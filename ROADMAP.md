@@ -178,9 +178,11 @@
 
 ---
 
-## Phase 3 — Social Platform Features (Week 5-7)
+## Phase 3 — Social Platform Features (Week 5-7) ✅ COMPLETED
 
 > **Goal**: Transform from a hadith reader into a full Islamic social platform.
+>
+> **Completion note (2026-03-23)**: Virtual Classroom (LiveKit + tldraw) is complete across shared schemas, backend lifecycle/control/recording APIs, frontend lobby/live/scheduler/recordings/whiteboard integration, tests, and coordination docs.
 
 ### 3.1 Post/Share System (Twitter-like)
 - [x] **Step 1**: Create Post model (backend)

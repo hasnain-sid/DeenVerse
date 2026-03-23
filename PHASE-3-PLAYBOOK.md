@@ -1,5 +1,7 @@
 # Phase 3 Playbook — Virtual Classroom (LiveKit + tldraw)
 
+> **Status**: ✅ Complete (2026-03-23)
+
 > **Copy-paste prompts for each agent, in exact execution order.**
 > Work through this document top to bottom. Each step tells you which tool/agent to use,
 > what to wait for before moving on, and the exact prompt text to send.
@@ -10,9 +12,11 @@
 
 | Symbol | Agent | Tool | Model |
 |--------|-------|------|-------|
-| 🔵 **OPUS** | `copilot` | GitHub Copilot | Claude Opus 4.6 |
+| 🔵 **OPUS** | `copilot` | GitHub Copilot | GPT-5.4 preferred for backend + testing |
 | 🟡 **ANTIGRAVITY** | `antigravity` | Antigravity tool | Gemini 3.1 Pro |
-| 🟢 **SONNET** | `copilot-2` | GitHub Copilot | Claude Sonnet 4.6 |
+| 🟢 **SONNET** | `copilot-2` | GitHub Copilot | GPT-5.4 preferred for frontend integration + docs |
+
+If you are using GitHub Copilot today, prefer `GPT-5.4` for both `copilot` and `copilot-2` tasks in this playbook. Keep the OPUS/SONNET labels as workflow roles, not as a hard model requirement.
 
 ---
 
@@ -186,9 +190,9 @@ Create these files:
    - isLivekitConfigured(): check LIVEKIT_API_KEY, LIVEKIT_API_SECRET, LIVEKIT_URL env vars
    - createRoom(roomName, maxParticipants, emptyTimeout): create a LiveKit room via RoomServiceClient. If not configured, return placeholder for dev. emptyTimeout = 600 (10 min auto-cleanup).
    - deleteRoom(roomName): delete a LiveKit room.
-   - generateToken(userId, userName, roomName, options): create an AccessToken with VideoGrant. options: { isHost, canPublish, canSubscribe, canPublishData }. Host gets roomAdmin=true, canUpdateOwnMetadata=true. Participant gets canPublish based on classroom settings. Token TTL = classroom duration + 30 min buffer.
+   - generateToken(userId, userName, roomName, options): create an AccessToken with VideoGrant. options: { isHost, canPublish, canSubscribe, canPublishData, ttlSeconds }. Host gets roomAdmin=true, canUpdateOwnMetadata=true. Participant gets canPublish based on classroom settings. Pass `ttlSeconds` from the classroom duration + 30 min buffer.
    - listParticipants(roomName): list active participants in a room.
-   - muteParticipant(roomName, identity, trackSid, muted): mute/unmute a participant track.
+   - muteParticipant(roomName, identity, trackSid, muted): mute/unmute a participant track. If the caller only provides audio/video intent, resolve the participant's current published track SID on the server before calling LiveKit.
    - removeParticipant(roomName, identity): kick a participant from the room.
    - startRecording(roomName, s3Config): start Egress composite recording to S3. Return egressId.
    - stopRecording(egressId): stop an active Egress recording.
@@ -259,9 +263,9 @@ Create these files following route → controller → service pattern:
    - browseClassrooms(filters): paginated query on live+scheduled classrooms. Support: status filter, course filter, type filter, text search on title. Sort scheduled by scheduledAt asc, live first. Return { classrooms, pagination }.
    - getClassroomById(classroomId, userId): return classroom with host populated (name, username, avatar, scholarProfile). Include isHost boolean. If userId + course-only: check enrollment.
    - getUpcomingClassrooms(courseSlug?): scheduled classrooms with scheduledAt > now, sorted by scheduledAt asc, limit 20. Optionally filter by course.
-   - getMySessions(userId, role, status, page, limit): if role=host: classrooms where host=userId. If role=student: classrooms where user is in participants array. Filter by status if provided.
+   - getMySessions(userId, role, status, page, limit): if role=host: classrooms where host=userId. If role=student: return a union of (a) classrooms where the user already joined and (b) scheduled classrooms linked to courses where the user is currently enrolled. Filter by status if provided. This endpoint must support Student Sessions UI without frontend-only stitching.
    - updateClassroom(userId, classroomId, data): verify host ownership (host === userId OR admin). Cannot update a live classroom's scheduledAt or type.
-   - deleteClassroom(userId, classroomId): verify ownership. If status='scheduled', hard delete. If status='ended', soft delete (set status='cancelled'). Cannot delete a live classroom — must end it first.
+   - deleteClassroom(userId, classroomId): verify ownership. If status='scheduled', hard delete. If status='ended', soft delete with `archived: true` or `deletedAt`, but keep status='ended' so recordings/history remain distinguishable from cancellations. Cannot delete a live classroom — must end it first.
 
    Use AppError for all error cases. Use .lean() for read queries. Populate host on browse/detail.
 
@@ -398,6 +402,8 @@ Add to backend/controller/classroomController.js and backend/services/classroomS
   4. If participantAudio/participantVideo changed: notify participants so UI updates controls.
 
 Add to backend/socket/index.js — new classroom Socket.IO events:
+- classroom:message:send  → { classroomId, message } — persist if you choose durable chat, else keep ephemeral and broadcast `classroom:message:new`
+- classroom:message:new   → { classroomId, message: { id, userId, name, avatar, text, createdAt } }
 - classroom:raise-hand   → { classroomId } — add user to hand queue, broadcast 'classroom:hand-queue' to host
 - classroom:lower-hand   → { classroomId } — remove from queue, broadcast update
 - classroom:grant-speak  → { classroomId, userId } — host grants speak permission to hand-raised user, emit 'classroom:speak-granted' to that user (enables their publish capability)
@@ -459,7 +465,7 @@ Add to backend/controller/classroomController.js and backend/services/classroomS
   6. Return { recordingUrl }.
 
 - getRecordings(userId, classroomId):
-  1. Look up classroom. Verify user was a participant (ClassroomParticipant exists) OR is the host. 403 otherwise.
+   1. Look up classroom. Verify user is the host, a past participant, OR an actively enrolled student when this is a `course-only` classroom tied to a course. 403 otherwise.
   2. Return classroom.recordings with pre-signed S3 URLs (generate via AWS SDK, 1-hour expiry).
 
 After completing:
@@ -808,7 +814,8 @@ Do the following:
    - useLeaveClassroom(): useMutation → POST /api/v1/classrooms/:id/leave
 
 3. LiveKit integration:
-   - Wrap main content in <LiveKitRoom token={livekitToken} serverUrl={serverUrl} connect={true}>
+   - If the backend response includes `livekitMode: 'mock'`, render a mock classroom shell instead of connecting.
+   - Only wrap main content in <LiveKitRoom token={livekitToken} serverUrl={serverUrl} connect={true}> when `livekitMode !== 'mock'`.
    - Use @livekit/components-react components:
      - <VideoTrack> for host and participant video
      - <ParticipantTile> for participant grid
@@ -819,7 +826,7 @@ Do the following:
      - <ScreenShareButton> for screen sharing
    - Import @livekit/components-styles/prefabs.css for base styles
 
-4. Chat panel: use existing Socket.IO events (classroom:join-room, send messages via Socket.IO like stream chat pattern).
+4. Chat panel: use classroom-specific Socket.IO events from TASK-070 (`classroom:join-room`, `classroom:message:send`, `classroom:message:new`). Do not rely on stream-chat event names.
 
 5. Raise hand: use Socket.IO events (classroom:raise-hand, classroom:lower-hand). Show hand queue to host.
 
@@ -995,6 +1002,7 @@ Do the following:
 
 2. Add to useClassroom.ts:
    - useStudentSessions(status, page): GET /api/v1/classrooms/my-sessions?role=student&status=...
+     This must return both joined session history and upcoming sessions from the student's enrolled courses.
 
 3. Route: /my-sessions → StudentSessionsPage (AuthGuard)
 
@@ -1007,7 +1015,7 @@ Do the following:
    - For lessons with type='live-session': show "Join Live Classroom" button instead of video/text content.
    - If the session is scheduled but not live yet: show countdown timer + "Session starts in X".
    - If the session is live: show "Join Now" button → navigates to /classrooms/:id/live.
-   - If the session has ended: show "Watch Recording" link.
+   - If the session has ended: show "Watch Recording" link. Enrolled students in course-only classrooms must be allowed to access the recording even if they missed the live session.
 
 6. Add "My Sessions" link in user profile dropdown or navigation (alongside "My Courses").
 
@@ -1299,15 +1307,17 @@ Do the following in order:
 4. Update ROADMAP.md (if applicable): add Phase 3 completion note.
 
 5. Commit all Phase 3 code with conventional commits:
-   git add .
+   Prefer committing at the end of each stage instead of batching everything at the very end.
+   If you must finalize from a single working tree, use path-scoped commits so the history stays meaningful:
+   git add packages/shared/src/schemas/classroom.ts packages/shared/src/schemas/index.ts packages/shared/src/index.ts
    git commit -m "feat(shared): add classroom Zod schemas for Phase 3"
-   git add .
+   git add backend/models/classroomSchema.js backend/models/classroomParticipantSchema.js backend/services/livekitService.js backend/routes/classroomRoute.js backend/controller/classroomController.js backend/services/classroomService.js backend/socket/index.js
    git commit -m "feat(classroom): add Classroom models, LiveKit service, CRUD, lifecycle, controls, recording, whiteboard APIs"
-   git add .
+   git add frontend/src/features/classroom frontend/src/features/courses frontend/src/components frontend/src/App.tsx frontend/src/lib/api.ts frontend/vite.config.ts
    git commit -m "feat(frontend): integrate classroom lobby, live view, scheduler, whiteboard, student sessions, recordings"
-   git add .
+   git add backend/__tests__
    git commit -m "test(phase3): add unit + smoke tests for classroom system"
-   git add .
+   git add .agents/feature-board.md .agents/contracts/virtual-classroom.md ROADMAP.md PHASE-3-PLAYBOOK.md
    git commit -m "docs: update feature board and contracts for Phase 3 completion"
 
 After completing:
@@ -1375,10 +1385,10 @@ SONNET                                                                          
 - TASK-068 (CRUD) first — creates route/controller/service files.
 - TASK-069 (Lifecycle) after 068 — extends the same files.
 - TASK-070 (Controls) after 069 — extends further.
-- TASK-071 (Recording) after 069 — can run parallel with 070 (different functions).
+- TASK-071 (Recording) after 070 preferred — it touches the same route/controller/service files, so sequential execution reduces merge churn.
 - TASK-072 (Whiteboard) after 070 — extends socket + service.
 
-**Safest execution order**: 068 → 069 → (070 + 071 parallel) → 072
+**Safest execution order**: 068 → 069 → 070 → 071 → 072
 
 **Stage 3 — ANTIGRAVITY prototypes:**
 - ALL four prototype tasks (073-076) are fully independent. Run all in the same session or sequentially — they only create files in `prototypes/` folder.
@@ -1402,10 +1412,10 @@ SONNET                                                                          
 
 - **TICK.md is the source of truth** — always claim before starting, always done after finishing
 - **Contract is at** `.agents/contracts/virtual-classroom.md` — every agent reads it before coding
-- **Never skip the review gate** — Sonnet integration must wait for you to pick a prototype
+- **Never skip the review gate** — frontend integration must wait for you to pick a prototype
 - **Opus runs tests independently** — no need to wait for frontend to finish
 - **Phase 2 must be complete** — Virtual Classroom depends on course system + scholar roles + enrollment
-- **LiveKit dev mode**: When `LIVEKIT_API_KEY` is not set, livekitService returns placeholder data so local development works without a LiveKit server. Frontend should handle this gracefully (show mock video UI).
+- **LiveKit dev mode**: When `LIVEKIT_API_KEY` is not set, livekitService should return a clear shape such as `{ livekitMode: 'mock', token: null, serverUrl: null }` so local development works without a LiveKit server. Frontend should branch on `livekitMode` and render mock classroom UI instead of trying to connect.
 - **tldraw chunk size**: tldraw is ~400KB — add it to manual chunks in `vite.config.ts` to avoid build warnings
 - **Existing streaming coexists**: AWS IVS (one-to-many broadcasting) stays for large streams. LiveKit (many-to-many, interactive) is for classrooms. They serve different use cases.
 - **Phase 4** (Interactive Quran Teaching) planning begins only after TASK-086 is done and you confirm satisfaction

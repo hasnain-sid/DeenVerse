@@ -44,7 +44,7 @@
 | Scholar Role System | ✅ | ✅ | ✅ | ⬜ | copilot (backend), antigravity (prototypes), copilot-2 (integration) | [scholar-role-system.md](contracts/scholar-role-system.md) | Phase 1 complete — TASK-024→028 (backend), TASK-040→042 (frontend) |
 | Payment System (Stripe) | ✅ | ✅ | ✅ | ⬜ | copilot (backend), antigravity (prototypes), copilot-2 (integration) | [payment-system.md](contracts/payment-system.md) | Phase 1 complete — TASK-029→034 (backend), TASK-040→042 (frontend) |
 | Course System (LMS) | ✅ | ✅ | ✅ | ⬜ | copilot (backend), antigravity (prototypes), copilot-2 (integration) | [course-system.md](contracts/course-system.md) | Phase 2 complete — TASK-045 to TASK-065. Shared schemas, backend API, frontend pages (discovery, detail, player, builder, quiz, admin review) |
-| Virtual Classroom (LiveKit + tldraw) | ⬜ | ⬜ | ⬜ | ⬜ | copilot (backend), antigravity (prototypes), copilot-2 (integration) | [virtual-classroom.md](contracts/virtual-classroom.md) | Phase 3 — TASK-066 to TASK-086. Depends on Phase 2 (Course System) |
+| Virtual Classroom (LiveKit + tldraw) | ✅ | ✅ | ✅ | ⬜ | copilot (backend), antigravity (prototypes), copilot-2 (integration) | [virtual-classroom.md](contracts/virtual-classroom.md) | Phase 3 complete — TASK-066 to TASK-086. LiveKit room lifecycle, whiteboard, scheduler, recordings, and UI integration shipped |
 
 ---
 
@@ -96,6 +96,8 @@
 | Scholar Role System — Phase 1 complete | copilot + copilot-2 | 2026-03-06 | Shared schemas, backend API, frontend pages (application, admin review, earnings, badge) |
 | Payment System (Stripe) — Phase 1 complete | copilot + copilot-2 | 2026-03-06 | Stripe Connect, checkout, webhooks, subscription management, earnings dashboard |
 | Course System (LMS) — Phase 2 complete | copilot + copilot-2 | 2026-03-07 | Shared schemas, course/enrollment/quiz models, full CRUD API, enrollment + progress tracking, quiz engine, frontend pages (discovery, detail, player, builder, quiz player, my courses, admin review), 30 smoke tests |
+| Phase 2.5 Code-Review Fixes | copilot | 2026-03-12 | Payment user filter, isScholar guards, enrollment transaction, $addToSet progress, model validators, enrollment index, quiz soft-delete, ADMIN_IDS cache, review notifications, component extraction. 202 tests pass, lint clean, integrity green. Phase 3 gate open. |
+| Virtual Classroom (LiveKit + tldraw) — Phase 3 complete | copilot + copilot-2 | 2026-03-23 | Shared schemas, backend classroom APIs + LiveKit service, whiteboard + live classroom frontend integration, tests, lint clean, docs updated |
 
 ### How to Use This Section
 
@@ -125,7 +127,6 @@
 | Feature | Priority | Contract Created | Assigned To | Target |
 |---------|----------|-----------------|-------------|--------|
 | Email Verification | High | ⬜ | — | — |
-| Virtual Classroom (LiveKit + tldraw) | High | ⬜ | — | Phase 3 — depends on Course System |
 | Interactive Quran Teaching | Medium | ⬜ | — | Phase 4 — depends on Virtual Classroom |
 | Certification System | Medium | ⬜ | — | Phase 5 — depends on Course System |
 | Dawah & Q&A Platform | Medium | ⬜ | — | Phase 6 — depends on Scholar Roles |
