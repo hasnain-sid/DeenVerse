@@ -8,7 +8,7 @@
  * 25 tests covering the requirements from TASK-064.
  */
 
-import { MongoMemoryServer } from "mongodb-memory-server";
+import { MongoMemoryReplSet } from "mongodb-memory-server";
 import mongoose from "mongoose";
 import express from "express";
 import cookieParser from "cookie-parser";
@@ -56,6 +56,7 @@ jest.mock("stripe", () =>
 import { User } from "../../models/userSchema.js";
 import { Course } from "../../models/courseSchema.js";
 import { Enrollment } from "../../models/enrollmentSchema.js";
+import { Payment } from "../../models/paymentSchema.js";
 import courseRoute from "../../routes/courseRoute.js";
 import quizRoute from "../../routes/quizRoute.js";
 import adminCourseRoute from "../../routes/adminCourseRoute.js";
@@ -98,6 +99,7 @@ const validCourseBody = () => ({
 const validModuleBody = () => ({
   title: "Module 1: Fundamentals",
   description: "Core concepts",
+  order: 0,
   lessons: [
     {
       title: "Lesson 1: What is Fiqh?",
@@ -156,7 +158,9 @@ let attemptId;
 
 // ── Lifecycle ────────────────────────────────────────────────────────
 beforeAll(async () => {
-  mongoServer = await MongoMemoryServer.create();
+  mongoServer = await MongoMemoryReplSet.create({
+    replSet: { count: 1, storageEngine: "wiredTiger" },
+  });
   await mongoose.connect(mongoServer.getUri());
   app = createApp();
 
@@ -234,6 +238,7 @@ beforeAll(async () => {
     .set(authHeader(scholar._id))
     .send({
       title: "Module 1: Foundations",
+      order: 0,
       lessons: [
         {
           title: "Free Preview: What are Hadith Sciences?",
@@ -390,6 +395,7 @@ describe("Course CRUD", () => {
       .set(authHeader(scholar._id))
       .send({
         title: "Module 1",
+        order: 0,
         lessons: [
           { title: "L1", type: "text", content: { text: "..." }, order: 0 },
         ],
@@ -414,6 +420,7 @@ describe("Course CRUD", () => {
         category: "aqeedah",
         level: "beginner",
         type: "self-paced",
+        pricing: { type: "free" },
       });
 
     const emptySlug = createRes.body.course.slug;
@@ -509,6 +516,126 @@ describe("Enrollment", () => {
     expect(res.body.lesson).toBeDefined();
     expect(res.body.lesson.title).toMatch(/Free Preview/);
   });
+
+  it("enforces maxStudents end-to-end once course capacity is full", async () => {
+    const [firstStudent, secondStudent] = await Promise.all([
+      User.create({
+        name: "Capacity Student One",
+        username: "capacity_student_one",
+        email: "capacity1@smoke.test",
+        password: "hashed_pw",
+        role: "user",
+      }),
+      User.create({
+        name: "Capacity Student Two",
+        username: "capacity_student_two",
+        email: "capacity2@smoke.test",
+        password: "hashed_pw",
+        role: "user",
+      }),
+    ]);
+
+    const createRes = await request(app)
+      .post("/api/v1/courses")
+      .set(authHeader(scholar._id))
+      .send({
+        title: "Limited Seats Aqeedah",
+        description: "A tightly capped class to verify enrollment capacity enforcement.",
+        category: "aqeedah",
+        level: "beginner",
+        type: "self-paced",
+        pricing: { type: "free" },
+        maxStudents: 1,
+      });
+    const limitedSlug = createRes.body.course.slug;
+
+    await request(app)
+      .post(`/api/v1/courses/${limitedSlug}/modules`)
+      .set(authHeader(scholar._id))
+      .send(validModuleBody());
+    await request(app)
+      .put(`/api/v1/courses/${limitedSlug}/publish`)
+      .set(authHeader(scholar._id));
+    await request(app)
+      .put(`/api/v1/admin/courses/${limitedSlug}/review`)
+      .set(authHeader(adminUser._id))
+      .send({ decision: "approved" });
+
+    const firstEnrollRes = await request(app)
+      .post(`/api/v1/courses/${limitedSlug}/enroll`)
+      .set(authHeader(firstStudent._id));
+    const secondEnrollRes = await request(app)
+      .post(`/api/v1/courses/${limitedSlug}/enroll`)
+      .set(authHeader(secondStudent._id));
+
+    expect(firstEnrollRes.status).toBe(200);
+    expect(secondEnrollRes.status).toBe(400);
+    expect(secondEnrollRes.body.message).toMatch(/maximum number of students/i);
+  });
+
+  it("rejects enrollments that reuse another user's payment session", async () => {
+    const [payer, attacker] = await Promise.all([
+      User.create({
+        name: "Legit Payer",
+        username: "legit_payer",
+        email: "payer@smoke.test",
+        password: "hashed_pw",
+        role: "user",
+      }),
+      User.create({
+        name: "Payment Attacker",
+        username: "payment_attacker",
+        email: "attacker@smoke.test",
+        password: "hashed_pw",
+        role: "user",
+      }),
+    ]);
+
+    const createRes = await request(app)
+      .post("/api/v1/courses")
+      .set(authHeader(scholar._id))
+      .send({
+        title: "Paid Tajweed Intensive",
+        description: "A paid course used to verify payment ownership checks during enrollment.",
+        category: "tajweed",
+        level: "intermediate",
+        type: "self-paced",
+        pricing: { type: "paid", amount: 9900, currency: "usd" },
+      });
+    const paidSlug = createRes.body.course.slug;
+    const paidCourse = await Course.findOne({ slug: paidSlug }).lean();
+
+    await request(app)
+      .post(`/api/v1/courses/${paidSlug}/modules`)
+      .set(authHeader(scholar._id))
+      .send(validModuleBody());
+    await request(app)
+      .put(`/api/v1/courses/${paidSlug}/publish`)
+      .set(authHeader(scholar._id));
+    await request(app)
+      .put(`/api/v1/admin/courses/${paidSlug}/review`)
+      .set(authHeader(adminUser._id))
+      .send({ decision: "approved" });
+
+    await Payment.create({
+      user: payer._id,
+      type: "course-purchase",
+      stripeSessionId: "sess_stolen_payment",
+      stripePaymentIntentId: "pi_stolen_payment",
+      amount: 9900,
+      currency: "usd",
+      status: "completed",
+      course: paidCourse._id,
+    });
+
+    const res = await request(app)
+      .post(`/api/v1/courses/${paidSlug}/enroll`)
+      .set(authHeader(attacker._id))
+      .send({ paymentSessionId: "sess_stolen_payment" });
+
+    expect(res.status).toBe(402);
+    expect(res.body.message).toMatch(/payment required/i);
+  });
 });
 
 // ─────────────────────────────────────────────────────────────────────
@@ -531,7 +658,12 @@ describe("Quiz", () => {
       .set(authHeader(student._id));
 
     expect(res.status).toBe(200);
+    expect(res.body.quiz).toBeDefined();
+    expect(res.body.quiz).toHaveProperty("timeLimit");
+    expect(res.body.quiz).toHaveProperty("totalQuestions", 1);
     expect(res.body.attempt).toBeDefined();
+    expect(res.body.attempt).toHaveProperty("_id");
+    expect(res.body.attempt).toHaveProperty("attempt", 1);
     expect(res.body.questions).toHaveLength(1);
     // Correct answers must be stripped
     for (const q of res.body.questions) {
@@ -541,7 +673,7 @@ describe("Quiz", () => {
         }
       }
     }
-    attemptId = res.body.attempt.id;
+    attemptId = res.body.attempt._id;
   });
 
   it("19. POST /api/v1/quizzes/:id/submit → 200, scored and graded", async () => {
@@ -554,10 +686,14 @@ describe("Quiz", () => {
       });
 
     expect(res.status).toBe(200);
+    expect(res.body.quiz).toBeDefined();
+    expect(res.body.attempt).toBeDefined();
+    expect(res.body.attempt).toHaveProperty("_id", attemptId);
     expect(res.body.score).toBe(100);
     expect(res.body.passed).toBe(true);
     expect(res.body.earnedPoints).toBe(1);
     expect(res.body.totalPoints).toBe(1);
+    expect(res.body.answers).toHaveLength(1);
   });
 
   it("20. GET /api/v1/quizzes/:id/results → 200, attempts list", async () => {
@@ -566,9 +702,11 @@ describe("Quiz", () => {
       .set(authHeader(student._id));
 
     expect(res.status).toBe(200);
+    expect(res.body.quiz).toBeDefined();
     expect(res.body.attempts).toBeDefined();
     expect(Array.isArray(res.body.attempts)).toBe(true);
     expect(res.body.attemptsUsed).toBe(1);
+    expect(res.body.attemptsRemaining).toBeGreaterThanOrEqual(0);
     expect(res.body.bestScore).toBe(100);
     expect(res.body.passed).toBe(true);
   });
@@ -603,6 +741,7 @@ describe("Admin", () => {
         category: "aqeedah",
         level: "beginner",
         type: "self-paced",
+        pricing: { type: "free" },
       });
     const tempSlug = createRes.body.course.slug;
 
@@ -611,6 +750,7 @@ describe("Admin", () => {
       .set(authHeader(scholar._id))
       .send({
         title: "Module 1",
+        order: 0,
         lessons: [
           { title: "L1", type: "text", content: { text: "..." }, order: 0 },
         ],

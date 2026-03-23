@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import {
   enrollInCourse,
   updateProgress,
@@ -15,6 +16,7 @@ jest.mock("../models/courseSchema.js", () => ({
   Course: {
     findOne: jest.fn(),
     updateOne: jest.fn(),
+    findOneAndUpdate: jest.fn(),
   },
 }));
 
@@ -23,6 +25,7 @@ jest.mock("../models/enrollmentSchema.js", () => ({
     findOne: jest.fn(),
     findById: jest.fn(),
     create: jest.fn(),
+    updateOne: jest.fn(),
   },
 }));
 
@@ -109,7 +112,22 @@ function makeEnrollmentDoc(overrides = {}) {
 
 // ── Tests ───────────────────────────────────────────
 
-beforeEach(() => jest.clearAllMocks());
+let session;
+
+beforeEach(() => {
+  jest.clearAllMocks();
+  session = {
+    startTransaction: jest.fn(),
+    commitTransaction: jest.fn().mockResolvedValue(undefined),
+    abortTransaction: jest.fn().mockResolvedValue(undefined),
+    endSession: jest.fn(),
+  };
+  jest.spyOn(mongoose, "startSession").mockResolvedValue(session);
+});
+
+afterEach(() => {
+  jest.restoreAllMocks();
+});
 
 // ────── enrollInCourse ──────────────────────────────
 
@@ -119,27 +137,34 @@ describe("enrollInCourse", () => {
     Course.findOne.mockResolvedValue(course);
     Enrollment.findOne.mockResolvedValue(null);
     const fakeEnrollment = makeEnrollmentDoc();
-    Enrollment.create.mockResolvedValue(fakeEnrollment);
-    Course.updateOne.mockResolvedValue({});
+    Course.findOneAndUpdate.mockResolvedValue({ ...course, enrollmentCount: 6 });
+    Enrollment.create.mockResolvedValue([fakeEnrollment]);
     User.updateOne.mockResolvedValue({});
 
     const result = await enrollInCourse(USER_ID, "test-course");
 
-    expect(Enrollment.create).toHaveBeenCalledWith(
-      expect.objectContaining({
-        student: USER_ID,
-        course: COURSE_ID,
-        status: "active",
-      })
-    );
-    expect(Course.updateOne).toHaveBeenCalledWith(
+    expect(session.startTransaction).toHaveBeenCalled();
+    expect(Course.findOneAndUpdate).toHaveBeenCalledWith(
       { _id: COURSE_ID },
-      { $inc: { enrollmentCount: 1 } }
+      { $inc: { enrollmentCount: 1 } },
+      { new: true, session }
+    );
+    expect(Enrollment.create).toHaveBeenCalledWith(
+      [
+        expect.objectContaining({
+          student: USER_ID,
+          course: COURSE_ID,
+          status: "active",
+        }),
+      ],
+      { session }
     );
     expect(User.updateOne).toHaveBeenCalledWith(
       { _id: INSTRUCTOR_ID },
-      { $inc: { "scholarProfile.totalStudents": 1 } }
+      { $inc: { "scholarProfile.totalStudents": 1 } },
+      { session }
     );
+    expect(session.commitTransaction).toHaveBeenCalled();
     expect(result).toEqual({ enrollment: fakeEnrollment });
   });
 
@@ -173,8 +198,8 @@ describe("enrollInCourse", () => {
       amount: 49,
     });
     const fakeEnrollment = makeEnrollmentDoc();
-    Enrollment.create.mockResolvedValue(fakeEnrollment);
-    Course.updateOne.mockResolvedValue({});
+    Course.findOneAndUpdate.mockResolvedValue({ ...paidCourse, enrollmentCount: 6 });
+    Enrollment.create.mockResolvedValue([fakeEnrollment]);
     User.updateOne.mockResolvedValue({});
 
     const result = await enrollInCourse(USER_ID, "test-course", "sess_abc");
@@ -184,79 +209,123 @@ describe("enrollInCourse", () => {
         stripeSessionId: "sess_abc",
         status: "completed",
         course: COURSE_ID,
+        user: USER_ID,
       })
     );
     expect(Enrollment.create).toHaveBeenCalledWith(
-      expect.objectContaining({
-        payment: expect.objectContaining({
-          stripePaymentId: "pi_123",
-          amount: 49,
+      [
+        expect.objectContaining({
+          payment: expect.objectContaining({
+            stripePaymentId: "pi_123",
+            amount: 49,
+          }),
         }),
-      })
+      ],
+      { session }
     );
     expect(result).toEqual({ enrollment: fakeEnrollment });
+  });
+
+  it("rejects when maxStudents capacity is already reached (400)", async () => {
+    const limitedCourse = makeCourse({ maxStudents: 5, enrollmentCount: 5 });
+    Course.findOne.mockResolvedValue(limitedCourse);
+    Enrollment.findOne.mockResolvedValue(null);
+    Course.findOneAndUpdate.mockResolvedValue(null);
+
+    await expect(enrollInCourse(USER_ID, "test-course")).rejects.toMatchObject({
+      statusCode: 400,
+      message: expect.stringMatching(/maximum number of students/i),
+    });
+
+    expect(Course.findOneAndUpdate).toHaveBeenCalledWith(
+      {
+        _id: COURSE_ID,
+        $expr: { $lt: ["$enrollmentCount", "$maxStudents"] },
+      },
+      { $inc: { enrollmentCount: 1 } },
+      { new: true, session }
+    );
+    expect(Enrollment.create).not.toHaveBeenCalled();
+    expect(session.abortTransaction).toHaveBeenCalled();
+  });
+
+  it("rejects when payment.user does not match the enrolling user (402)", async () => {
+    const paidCourse = makeCourse({ pricing: { type: "paid", amount: 49 }, autoEnroll: false });
+    Course.findOne.mockResolvedValue(paidCourse);
+    Enrollment.findOne.mockResolvedValue(null);
+    Payment.findOne.mockResolvedValue(null);
+
+    await expect(enrollInCourse(USER_ID, "test-course", "sess_other_user")).rejects.toMatchObject({
+      statusCode: 402,
+      message: expect.stringMatching(/payment required/i),
+    });
+
+    expect(Payment.findOne).toHaveBeenCalledWith({
+      stripeSessionId: "sess_other_user",
+      status: "completed",
+      course: COURSE_ID,
+      user: USER_ID,
+    });
+    expect(mongoose.startSession).not.toHaveBeenCalled();
   });
 });
 
 // ────── updateProgress ──────────────────────────────
 
 describe("updateProgress", () => {
-  it("adds lesson to completedLessons and recalculates percentComplete", async () => {
-    const course = makeCourse(); // 3 lessons total
-    const enrollDoc = makeEnrollmentDoc();
-    Enrollment.findById.mockResolvedValue(enrollDoc);
-
-    const result = await updateProgress(
-      USER_ID, "test-course", "lesson-1", true, enrollDoc, course
-    );
-
-    expect(enrollDoc.progress.completedLessons).toContain("lesson-1");
-    // 1 of 3 lessons = 33%
-    expect(enrollDoc.progress.percentComplete).toBe(33);
-    expect(enrollDoc.save).toHaveBeenCalled();
-    expect(result.enrollment).toBeDefined();
-  });
-
-  it("does not duplicate lesson if already completed", async () => {
+  it("adds lesson to completedLessons with an atomic update and recalculates percentComplete", async () => {
     const course = makeCourse();
-    const enrollDoc = makeEnrollmentDoc({
+    const initialEnrollment = makeEnrollmentDoc();
+    const updatedEnrollment = makeEnrollmentDoc({
       progress: {
         completedLessons: ["lesson-1"],
         currentModule: 0,
         currentLesson: 0,
-        percentComplete: 33,
+        percentComplete: 0,
         lastAccessedAt: null,
       },
     });
-    Enrollment.findById.mockResolvedValue(enrollDoc);
+    Enrollment.findById
+      .mockResolvedValueOnce(initialEnrollment)
+      .mockResolvedValueOnce(updatedEnrollment);
+    Enrollment.updateOne.mockResolvedValue({ acknowledged: true, modifiedCount: 1 });
 
-    await updateProgress(USER_ID, "test-course", "lesson-1", true, enrollDoc, course);
+    const result = await updateProgress(
+      USER_ID,
+      "test-course",
+      "lesson-1",
+      true,
+      { _id: initialEnrollment._id },
+      course
+    );
 
-    // Should still have exactly one entry
-    const count = enrollDoc.progress.completedLessons.filter(
-      (id) => id === "lesson-1"
-    ).length;
-    expect(count).toBe(1);
+    expect(Enrollment.updateOne).toHaveBeenCalledWith(
+      { _id: initialEnrollment._id },
+      expect.objectContaining({
+        $addToSet: { "progress.completedLessons": "lesson-1" },
+        $set: { "progress.lastAccessedAt": expect.any(Date) },
+      })
+    );
+    expect(updatedEnrollment.progress.percentComplete).toBe(33);
+    expect(updatedEnrollment.save).toHaveBeenCalled();
+    expect(result.enrollment).toBeDefined();
   });
 
-  it("marks enrollment as completed when 100%", async () => {
-    const course = makeCourse();
-    const enrollDoc = makeEnrollmentDoc({
-      progress: {
-        completedLessons: ["lesson-1", "lesson-2"],
-        currentModule: 0,
-        currentLesson: 0,
-        percentComplete: 67,
-        lastAccessedAt: null,
-      },
+  it("rejects progress updates on dropped or suspended enrollments (400)", async () => {
+    Enrollment.findById.mockResolvedValue(
+      makeEnrollmentDoc({
+        status: "dropped",
+      })
+    );
+
+    await expect(
+      updateProgress(USER_ID, "test-course", "lesson-1", true, { _id: "enr001" }, makeCourse())
+    ).rejects.toMatchObject({
+      statusCode: 400,
+      message: expect.stringMatching(/dropped or suspended enrollment/i),
     });
-    Enrollment.findById.mockResolvedValue(enrollDoc);
 
-    await updateProgress(USER_ID, "test-course", "lesson-3", true, enrollDoc, course);
-
-    expect(enrollDoc.progress.percentComplete).toBe(100);
-    expect(enrollDoc.status).toBe("completed");
-    expect(enrollDoc.completedAt).toBeInstanceOf(Date);
+    expect(Enrollment.updateOne).not.toHaveBeenCalled();
   });
 });
 

@@ -5,6 +5,7 @@ import {
   updateCourse,
   deleteCourse,
   publishCourse,
+  updateProgress,
   addModule,
   updateModule,
   deleteModule,
@@ -35,8 +36,10 @@ jest.mock("../models/enrollmentSchema.js", () => ({
     exists: jest.fn(),
     findOne: jest.fn(),
     find: jest.fn(),
+    findById: jest.fn(),
     countDocuments: jest.fn(),
     create: jest.fn(),
+    updateOne: jest.fn(),
   },
 }));
 
@@ -349,6 +352,36 @@ describe("updateCourse", () => {
 
     expect(result.course).toBeDefined();
   });
+
+  it("generates a unique slug when a renamed course collides with another title", async () => {
+    const courseDoc = makeCourseDoc({ title: "Original Title", slug: "original-title" });
+    Course.findOne.mockResolvedValue(courseDoc);
+    Course.exists
+      .mockResolvedValueOnce(true)
+      .mockResolvedValueOnce(false);
+    Course.findById.mockReturnValue(
+      chainQuery({
+        ...courseDoc,
+        title: "Shared Title",
+        slug: "shared-title-1",
+      })
+    );
+
+    const result = await updateCourse(OWNER_ID, "original-title", {
+      title: "Shared Title",
+    });
+
+    expect(Course.exists).toHaveBeenNthCalledWith(1, {
+      slug: "shared-title",
+      _id: { $ne: "c1" },
+    });
+    expect(Course.exists).toHaveBeenNthCalledWith(2, {
+      slug: "shared-title-1",
+      _id: { $ne: "c1" },
+    });
+    expect(courseDoc.slug).toBe("shared-title-1");
+    expect(result.course.slug).toBe("shared-title-1");
+  });
 });
 
 // ─────────────────────────────────────────────────────────
@@ -384,6 +417,25 @@ describe("deleteCourse", () => {
 
     expect(Course.deleteOne).toHaveBeenCalledWith({ _id: "c1" });
     expect(result.message).toMatch(/deleted/i);
+  });
+
+  it("keeps archived courses out of browseCourses results", async () => {
+    const archivedCourse = makeCourseDoc();
+    Course.findOne.mockResolvedValue(archivedCourse);
+    Enrollment.exists.mockResolvedValueOnce({ _id: "enr1" });
+
+    await deleteCourse(OWNER_ID, "introduction-to-tajweed");
+
+    const publishedCourse = makeCourseDoc({ _id: "c2", slug: "published-course", status: "published" });
+    Course.find.mockReturnValue(chainQuery([publishedCourse]));
+    Course.countDocuments.mockResolvedValue(1);
+
+    const result = await browseCourses({});
+
+    expect(archivedCourse.status).toBe("archived");
+    expect(Course.find).toHaveBeenCalledWith({ status: "published" });
+    expect(result.courses).toEqual([publishedCourse]);
+    expect(result.courses.some((course) => course.slug === archivedCourse.slug)).toBe(false);
   });
 });
 
@@ -450,6 +502,98 @@ describe("publishCourse", () => {
     await expect(
       publishCourse(OWNER_ID, "introduction-to-tajweed")
     ).rejects.toMatchObject({ statusCode: 400, message: expect.stringMatching(/lesson/i) });
+  });
+});
+
+// ─────────────────────────────────────────────────────────
+// updateProgress
+// ─────────────────────────────────────────────────────────
+
+describe("updateProgress", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("rejects dropped or suspended enrollments", async () => {
+    Enrollment.findById.mockResolvedValue({
+      _id: "enr1",
+      status: "dropped",
+      progress: { completedLessons: [] },
+    });
+
+    await expect(
+      updateProgress(
+        "student1",
+        "introduction-to-tajweed",
+        "lesson-1",
+        true,
+        { _id: "enr1" },
+        { modules: [{ lessons: [{ _id: "lesson-1" }] }] }
+      )
+    ).rejects.toMatchObject({
+      statusCode: 400,
+      message: expect.stringMatching(/dropped or suspended enrollment/i),
+    });
+
+    expect(Enrollment.updateOne).not.toHaveBeenCalled();
+  });
+
+  it("uses atomic addToSet updates and recalculates completion", async () => {
+    const initialDoc = {
+      _id: "enr1",
+      status: "active",
+      progress: { completedLessons: [] },
+    };
+    const updatedDoc = {
+      _id: "enr1",
+      status: "active",
+      completedAt: undefined,
+      progress: {
+        completedLessons: ["lesson-1", "lesson-2"],
+        percentComplete: 0,
+      },
+      save: jest.fn().mockResolvedValue(undefined),
+      toObject: jest.fn().mockReturnValue({
+        _id: "enr1",
+        status: "completed",
+        progress: {
+          completedLessons: ["lesson-1", "lesson-2"],
+          percentComplete: 100,
+        },
+      }),
+    };
+
+    Enrollment.findById
+      .mockResolvedValueOnce(initialDoc)
+      .mockResolvedValueOnce(updatedDoc);
+    Enrollment.updateOne.mockResolvedValue({ acknowledged: true, modifiedCount: 1 });
+
+    const result = await updateProgress(
+      "student1",
+      "introduction-to-tajweed",
+      "lesson-2",
+      true,
+      { _id: "enr1" },
+      {
+        modules: [
+          { lessons: [{ _id: "lesson-1" }] },
+          { lessons: [{ _id: "lesson-2" }] },
+        ],
+      }
+    );
+
+    expect(Enrollment.updateOne).toHaveBeenCalledWith(
+      { _id: "enr1" },
+      expect.objectContaining({
+        $addToSet: { "progress.completedLessons": "lesson-2" },
+        $set: { "progress.lastAccessedAt": expect.any(Date) },
+      })
+    );
+    expect(updatedDoc.progress.percentComplete).toBe(100);
+    expect(updatedDoc.status).toBe("completed");
+    expect(updatedDoc.completedAt).toEqual(expect.any(Date));
+    expect(updatedDoc.save).toHaveBeenCalled();
+    expect(result.enrollment.progress.percentComplete).toBe(100);
   });
 });
 

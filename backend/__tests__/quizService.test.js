@@ -1,4 +1,4 @@
-import { startQuiz, submitQuiz, getQuizResults } from "../services/quizService.js";
+import { startQuiz, submitQuiz, getQuizResults, deleteQuiz } from "../services/quizService.js";
 import { Quiz } from "../models/quizSchema.js";
 import { QuizAttempt } from "../models/quizAttemptSchema.js";
 import { Enrollment } from "../models/enrollmentSchema.js";
@@ -19,6 +19,7 @@ jest.mock("../models/quizAttemptSchema.js", () => ({
     create: jest.fn(),
     findById: jest.fn(),
     find: jest.fn(),
+    exists: jest.fn(),
     deleteMany: jest.fn(),
   },
 }));
@@ -60,6 +61,7 @@ function makeQuiz(overrides = {}) {
     showCorrectAnswers: true,
     questions: [
       {
+        _id: new mongoose.Types.ObjectId().toString(),
         text: "What is the first pillar of Islam?",
         type: "mcq",
         options: [
@@ -71,6 +73,7 @@ function makeQuiz(overrides = {}) {
         explanation: "Shahada is the declaration of faith.",
       },
       {
+        _id: new mongoose.Types.ObjectId().toString(),
         text: "Ramadan is the 9th month of the Islamic calendar.",
         type: "true-false",
         options: [
@@ -80,6 +83,7 @@ function makeQuiz(overrides = {}) {
         points: 1,
       },
       {
+        _id: new mongoose.Types.ObjectId().toString(),
         text: "How many daily prayers are obligatory?",
         type: "mcq",
         options: [
@@ -135,9 +139,16 @@ describe("startQuiz", () => {
 
     const result = await startQuiz(USER_ID, QUIZ_ID);
 
-    expect(result.attempt).toMatchObject({ id: ATTEMPT_ID, attempt: 1 });
-    expect(result.totalQuestions).toBe(3);
-    expect(result.timeLimit).toBe(30);
+    expect(result.quiz).toMatchObject({
+      _id: QUIZ_ID,
+      title: "Fiqh Basics Quiz",
+      timeLimit: 30,
+      maxAttempts: 3,
+      totalQuestions: 3,
+    });
+    expect(result.attempt).toMatchObject({ _id: ATTEMPT_ID, attempt: 1 });
+    expect(result.questions).toHaveLength(3);
+    expect(result.questions[0]).toHaveProperty("_id");
 
     // Verify correct answers are stripped
     for (const q of result.questions) {
@@ -171,6 +182,19 @@ describe("startQuiz", () => {
       statusCode: 403,
     });
   });
+
+  it("rejects archived quizzes before creating an attempt", async () => {
+    const archivedQuiz = makeQuiz({ status: "archived" });
+    Quiz.findById.mockReturnValue({ lean: () => Promise.resolve(archivedQuiz) });
+
+    await expect(startQuiz(USER_ID, QUIZ_ID)).rejects.toMatchObject({
+      statusCode: 410,
+      message: expect.stringMatching(/no longer available/i),
+    });
+
+    expect(Enrollment.findOne).not.toHaveBeenCalled();
+    expect(QuizAttempt.create).not.toHaveBeenCalled();
+  });
 });
 
 // ────── submitQuiz ──────────────────────────────────
@@ -199,9 +223,15 @@ describe("submitQuiz", () => {
 
     // Q0 (MCQ, 2pts): correct → 2pts. Q1 (true-false, 1pt): "True" matches "True" → 1pt. Q2 (MCQ, 2pts): wrong → 0
     // Total earned: 3, total: 5, score = round(3/5*100) = 60
+    expect(result.quiz).toMatchObject({ _id: QUIZ_ID, totalQuestions: 3 });
+    expect(result.attempt).toMatchObject({ _id: ATTEMPT_ID, attempt: 1, score: 60, passed: false });
     expect(result.score).toBe(60);
     expect(result.earnedPoints).toBe(3);
     expect(result.totalPoints).toBe(5);
+    expect(result.answers).toHaveLength(3);
+    expect(result.answers[0]).toMatchObject({ questionIndex: 0, answer: 0, isCorrect: true });
+    expect(result.questions).toHaveLength(3);
+    expect(result.questions[0]).toHaveProperty("correctOptionIndex");
     expect(attempt.save).toHaveBeenCalled();
   });
 
@@ -231,6 +261,7 @@ describe("submitQuiz", () => {
 
     expect(result.score).toBe(100);
     expect(result.passed).toBe(true);
+    expect(result.attempt).toMatchObject({ attempt: 1, score: 100, passed: true });
   });
 
   it("enforces time limit (rejects late submission, 400)", async () => {
@@ -275,6 +306,7 @@ describe("submitQuiz", () => {
     expect(result.score).toBe(100);
     expect(result.earnedPoints).toBe(5);
     expect(result.totalPoints).toBe(5);
+    expect(result.answers.every((answer) => answer.isCorrect)).toBe(true);
   });
 
   it("marks passed/failed based on passingScore", async () => {
@@ -293,6 +325,119 @@ describe("submitQuiz", () => {
     expect(result.score).toBe(20);
     expect(result.passed).toBe(false);
   });
+
+  it("grades short-answer answers case-insensitively", async () => {
+    const shortAnswerQuiz = makeQuiz({
+      passingScore: 100,
+      questions: [
+        {
+          _id: new mongoose.Types.ObjectId().toString(),
+          text: "Begin recitation with which phrase?",
+          type: "short-answer",
+          options: [{ text: "Bismillah", isCorrect: true }],
+          points: 2,
+          explanation: "Students should write Bismillah.",
+        },
+      ],
+    });
+    const attempt = makeAttemptDoc();
+    Quiz.findById.mockReturnValue({ lean: () => Promise.resolve(shortAnswerQuiz) });
+    QuizAttempt.findById.mockResolvedValue(attempt);
+
+    const result = await submitQuiz(USER_ID, QUIZ_ID, ATTEMPT_ID, [
+      { questionIndex: 0, answer: "  bIsMiLlAh  " },
+    ]);
+
+    expect(result.score).toBe(100);
+    expect(result.earnedPoints).toBe(2);
+    expect(result.answers[0]).toMatchObject({
+      questionIndex: 0,
+      answer: "  bIsMiLlAh  ",
+      isCorrect: true,
+    });
+  });
+
+  it("marks essay and quran-recitation answers as manually graded", async () => {
+    const manualReviewQuiz = makeQuiz({
+      passingScore: 50,
+      questions: [
+        {
+          _id: new mongoose.Types.ObjectId().toString(),
+          text: "Explain the importance of intention.",
+          type: "essay",
+          points: 2,
+        },
+        {
+          _id: new mongoose.Types.ObjectId().toString(),
+          text: "Recite Surah Al-Fatihah.",
+          type: "quran-recitation",
+          points: 3,
+        },
+      ],
+    });
+    const attempt = makeAttemptDoc();
+    Quiz.findById.mockReturnValue({ lean: () => Promise.resolve(manualReviewQuiz) });
+    QuizAttempt.findById.mockResolvedValue(attempt);
+
+    const result = await submitQuiz(USER_ID, QUIZ_ID, ATTEMPT_ID, [
+      { questionIndex: 0, answer: "A sincere act is for Allah alone." },
+      { questionIndex: 1, answer: "audio-file-id" },
+    ]);
+
+    expect(result.score).toBe(0);
+    expect(result.earnedPoints).toBe(0);
+    expect(result.answers).toEqual([
+      expect.objectContaining({ questionIndex: 0, isCorrect: false }),
+      expect.objectContaining({ questionIndex: 1, isCorrect: false }),
+    ]);
+  });
+});
+
+// ────── deleteQuiz ──────────────────────────────────
+
+describe("deleteQuiz", () => {
+  function mockOwnedQuiz(overrides = {}) {
+    const quizDoc = {
+      _id: QUIZ_ID,
+      course: COURSE_ID,
+      status: "active",
+      save: jest.fn().mockResolvedValue(undefined),
+      deleteOne: jest.fn().mockResolvedValue(undefined),
+      ...overrides,
+    };
+
+    Quiz.findById.mockResolvedValue(quizDoc);
+    Course.findById.mockReturnValue({
+      lean: () => Promise.resolve({ _id: COURSE_ID, instructor: USER_ID }),
+    });
+
+    return quizDoc;
+  }
+
+  it("soft-archives quizzes when submitted attempts exist", async () => {
+    const quizDoc = mockOwnedQuiz();
+    QuizAttempt.exists.mockResolvedValue({ _id: "attempt1" });
+
+    const result = await deleteQuiz(USER_ID, QUIZ_ID);
+
+    expect(quizDoc.status).toBe("archived");
+    expect(quizDoc.save).toHaveBeenCalled();
+    expect(QuizAttempt.deleteMany).not.toHaveBeenCalled();
+    expect(quizDoc.deleteOne).not.toHaveBeenCalled();
+    expect(result.message).toMatch(/archived/i);
+  });
+
+  it("hard-deletes quizzes when no submitted attempts exist", async () => {
+    const quizDoc = mockOwnedQuiz();
+    QuizAttempt.exists.mockResolvedValue(null);
+    QuizAttempt.deleteMany.mockResolvedValue({ deletedCount: 0 });
+
+    const result = await deleteQuiz(USER_ID, QUIZ_ID);
+
+    expect(QuizAttempt.deleteMany).toHaveBeenCalledWith({ quiz: QUIZ_ID });
+    expect(quizDoc.deleteOne).toHaveBeenCalled();
+    expect(result.message).toMatch(/deleted successfully/i);
+  });
 });
 
 // ────── getQuizResults ──────────────────────────────
@@ -303,9 +448,9 @@ describe("getQuizResults", () => {
     Quiz.findById.mockReturnValue({ lean: () => Promise.resolve(quiz) });
 
     const attempts = [
-      { _id: "a1", attempt: 1, score: 40, passed: false },
-      { _id: "a2", attempt: 2, score: 80, passed: true },
-      { _id: "a3", attempt: 3, score: 60, passed: false },
+      { _id: "a1", attempt: 1, score: 40, passed: false, startedAt: new Date("2026-01-01") },
+      { _id: "a2", attempt: 2, score: 80, passed: true, startedAt: new Date("2026-01-02") },
+      { _id: "a3", attempt: 3, score: 60, passed: false, startedAt: new Date("2026-01-03") },
     ];
 
     QuizAttempt.find.mockReturnValue({
@@ -317,14 +462,17 @@ describe("getQuizResults", () => {
     const result = await getQuizResults(USER_ID, QUIZ_ID);
 
     expect(result.attempts).toHaveLength(3);
+    expect(result.attempts[0]).toMatchObject({ _id: "a1", attempt: 1, score: 40, passed: false });
     expect(result.bestScore).toBe(80);
     expect(result.passed).toBe(true);
     expect(result.attemptsUsed).toBe(3);
     expect(result.attemptsRemaining).toBe(0); // 3 max - 3 used
     expect(result.quiz).toMatchObject({
+      _id: QUIZ_ID,
       title: "Fiqh Basics Quiz",
       passingScore: 70,
       maxAttempts: 3,
+      totalQuestions: 3,
     });
   });
 });
