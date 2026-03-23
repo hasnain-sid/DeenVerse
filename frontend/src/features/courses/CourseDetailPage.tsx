@@ -9,12 +9,15 @@ import {
   Shield,
   CheckCircle,
   Loader2,
+  Bell,
+  Radio,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { useAuthStore } from '@/stores/authStore';
 import { useCourseDetail, useEnrollCourse } from './useCourses';
 import { useCreateCheckout } from '@/features/payments/usePayments';
+import { useUpcomingClassrooms } from '@/features/classroom/useClassroom';
 
 function formatDuration(minutes?: number): string {
   if (!minutes) return '';
@@ -24,12 +27,29 @@ function formatDuration(minutes?: number): string {
   return m ? `${h}h ${m}m` : `${h}h`;
 }
 
+function buildClassroomCalendarUrl(title: string, description: string | undefined, scheduledAt: string, duration: number) {
+  const start = new Date(scheduledAt);
+  const end = new Date(start.getTime() + duration * 60 * 1000);
+  const formatCalendarDate = (date: Date) =>
+    date.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+
+  const params = new URLSearchParams({
+    action: 'TEMPLATE',
+    text: title,
+    dates: `${formatCalendarDate(start)}/${formatCalendarDate(end)}`,
+    details: description ?? 'Join this DeenVerse classroom session.',
+  });
+
+  return `https://calendar.google.com/calendar/render?${params.toString()}`;
+}
+
 export function CourseDetailPage() {
   const { slug = '' } = useParams<{ slug: string }>();
   const navigate = useNavigate();
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
 
   const { data, isLoading, isError } = useCourseDetail(slug);
+  const { data: upcomingClassroomsData } = useUpcomingClassrooms(slug);
   const enrollCourse = useEnrollCourse();
   const createCheckout = useCreateCheckout();
 
@@ -53,9 +73,18 @@ export function CourseDetailPage() {
   }
 
   const { course, isEnrolled } = data;
+  const upcomingClassrooms = upcomingClassroomsData?.classrooms ?? [];
   const isFree = course.pricing.type === 'free';
-  const totalLessons =
-    course.modules?.reduce((sum, m) => sum + (m.lessons?.length ?? 0), 0) ?? 0;
+  const totalLessons = course.modules.reduce((sum, module) => sum + module.lessons.length, 0);
+  const totalDurationMinutes = course.modules.reduce(
+    (sum, module) =>
+      sum + module.lessons.reduce((lessonSum, lesson) => lessonSum + (lesson.duration ?? 0), 0),
+    0,
+  );
+  const totalDuration = formatDuration(totalDurationMinutes);
+  const enrollmentCount = course.enrollmentCount ?? 0;
+  const courseRating = course.rating?.average ?? 0;
+  const reviewCount = course.rating?.count ?? 0;
 
   const handleEnrollClick = () => {
     if (!isAuthenticated) {
@@ -78,6 +107,15 @@ export function CourseDetailPage() {
         cancelUrl: window.location.href,
       });
     }
+  };
+
+  const handleJoinClassroom = (classroomId: string) => {
+    if (!isAuthenticated) {
+      navigate('/login', { state: { from: `/classrooms/${classroomId}/live` } });
+      return;
+    }
+
+    navigate(`/classrooms/${classroomId}/live`);
   };
 
   const ctaLabel = isEnrolled
@@ -117,7 +155,7 @@ export function CourseDetailPage() {
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <span className="flex items-center gap-1 text-amber-500 font-medium">
                   <Star size={14} className="fill-amber-500" />{' '}
-                  {course.rating.average.toFixed(1)}
+                  {courseRating.toFixed(1)}
                 </span>
                 <span>&bull;</span>
                 <span>{course.instructor.name}</span>
@@ -226,12 +264,12 @@ export function CourseDetailPage() {
                 <div className="bg-muted/50 p-6 rounded-xl border border-border">
                   <h3 className="font-bold mb-4">Course Features</h3>
                   <div className="space-y-4 text-sm font-medium">
-                    {course.totalDuration ? (
+                    {totalDuration ? (
                       <div className="flex items-center justify-between">
                         <span className="flex items-center gap-2 text-muted-foreground">
                           <Clock size={16} /> Total Duration
                         </span>
-                        <span>{course.totalDuration}</span>
+                        <span>{totalDuration}</span>
                       </div>
                     ) : null}
                     <div className="flex items-center justify-between">
@@ -250,7 +288,19 @@ export function CourseDetailPage() {
                       <span className="flex items-center gap-2 text-muted-foreground">
                         <Users size={16} /> Students
                       </span>
-                      <span>{data.enrollmentCount.toLocaleString()}</span>
+                      <span>{enrollmentCount.toLocaleString()}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="flex items-center gap-2 text-muted-foreground">
+                        <BookOpen size={16} /> Format
+                      </span>
+                      <span className="capitalize">{course.type}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="flex items-center gap-2 text-muted-foreground">
+                        <Shield size={16} /> Language
+                      </span>
+                      <span className="uppercase">{course.language}</span>
                     </div>
                   </div>
                 </div>
@@ -318,9 +368,9 @@ export function CourseDetailPage() {
                                   FREE
                                 </span>
                               )}
-                              {lesson.durationMinutes ? (
+                              {lesson.duration ? (
                                 <span className="text-sm text-muted-foreground">
-                                  {formatDuration(lesson.durationMinutes)}
+                                  {formatDuration(lesson.duration)}
                                 </span>
                               ) : null}
                             </div>
@@ -330,6 +380,95 @@ export function CourseDetailPage() {
                     ) : null}
                   </div>
                 ))}
+
+                {upcomingClassrooms.length > 0 && (
+                  <div className="border border-border rounded-xl p-6 bg-card shadow-sm">
+                    <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between mb-4">
+                      <div>
+                        <h3 className="font-bold text-lg">Upcoming Live Sessions</h3>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          Stay synced with the live classroom sessions connected to this course.
+                        </p>
+                      </div>
+                      <Button variant="outline" size="sm" onClick={() => navigate('/classrooms')}>
+                        View All Classrooms
+                      </Button>
+                    </div>
+
+                    <div className="grid gap-4 md:grid-cols-2">
+                      {upcomingClassrooms.map((classroom) => {
+                        const scheduledDate = new Date(classroom.scheduledAt);
+                        const calendarUrl = buildClassroomCalendarUrl(
+                          classroom.title,
+                          classroom.description,
+                          classroom.scheduledAt,
+                          classroom.duration,
+                        );
+
+                        return (
+                          <div
+                            key={classroom._id}
+                            className="rounded-xl border border-border bg-muted/20 p-4"
+                          >
+                            <div className="flex items-center justify-between gap-3 mb-3">
+                              <span className="inline-flex items-center gap-1 rounded-full bg-blue-100 px-2.5 py-1 text-xs font-semibold text-blue-700 dark:bg-blue-950/30 dark:text-blue-300">
+                                {classroom.type}
+                              </span>
+                              <span className="text-xs text-muted-foreground capitalize">
+                                {classroom.access}
+                              </span>
+                            </div>
+
+                            <h4 className="font-semibold text-foreground leading-snug">
+                              {classroom.title}
+                            </h4>
+                            <p className="text-sm text-muted-foreground mt-1">
+                              {classroom.host.name}
+                            </p>
+
+                            <div className="flex flex-wrap items-center gap-4 mt-4 text-sm text-muted-foreground">
+                              <span className="inline-flex items-center gap-1">
+                                <Clock size={14} />
+                                {scheduledDate.toLocaleDateString(undefined, {
+                                  weekday: 'short',
+                                  month: 'short',
+                                  day: 'numeric',
+                                })}{' '}
+                                at{' '}
+                                {scheduledDate.toLocaleTimeString(undefined, {
+                                  hour: 'numeric',
+                                  minute: '2-digit',
+                                })}
+                              </span>
+                              <span className="inline-flex items-center gap-1">
+                                <Users size={14} />
+                                {classroom.maxParticipants} seats
+                              </span>
+                            </div>
+
+                            <div className="flex flex-wrap gap-2 mt-4">
+                              {classroom.status === 'live' ? (
+                                <Button size="sm" onClick={() => handleJoinClassroom(classroom._id)}>
+                                  <Radio className="mr-2 h-4 w-4" />
+                                  Join
+                                </Button>
+                              ) : (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => window.open(calendarUrl, '_blank', 'noopener,noreferrer')}
+                                >
+                                  <Bell className="mr-2 h-4 w-4" />
+                                  Notify Me
+                                </Button>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
               </div>
             ) : (
               <p className="text-muted-foreground">Syllabus not yet available.</p>
@@ -392,7 +531,7 @@ export function CourseDetailPage() {
             <div className="flex items-center gap-6 p-6 bg-muted/30 rounded-2xl border border-border">
               <div className="text-center">
                 <div className="text-5xl font-black text-amber-500">
-                  {course.rating.average.toFixed(1)}
+                  {courseRating.toFixed(1)}
                 </div>
                 <div className="flex items-center justify-center my-2 text-amber-500">
                   {[1, 2, 3, 4, 5].map((i) => (
@@ -400,7 +539,7 @@ export function CourseDetailPage() {
                       key={i}
                       size={16}
                       className={
-                        i <= Math.round(course.rating.average)
+                        i <= Math.round(courseRating)
                           ? 'fill-amber-500'
                           : 'fill-amber-500/30'
                       }
@@ -408,13 +547,12 @@ export function CourseDetailPage() {
                   ))}
                 </div>
                 <div className="text-sm font-medium text-muted-foreground">
-                  {course.rating.count}{' '}
-                  {course.rating.count === 1 ? 'review' : 'reviews'}
+                  {reviewCount} {reviewCount === 1 ? 'review' : 'reviews'}
                 </div>
               </div>
             </div>
 
-            {course.rating.count === 0 && (
+            {reviewCount === 0 && (
               <p className="text-muted-foreground text-center py-8">
                 No reviews yet. Be the first!
               </p>

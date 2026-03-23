@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { Home, Search, Bookmark, Users, Newspaper, Bell, Radio, BookOpen, BookHeart, MessageCircle, User, GraduationCap, Moon, Sparkles, ChevronDown, Globe, ShieldCheck } from 'lucide-react';
+import { Home, Search, Bookmark, Users, Newspaper, Bell, Radio, BookOpen, BookHeart, MessageCircle, User, GraduationCap, Moon, Sparkles, ChevronDown, Globe, ShieldCheck, CalendarDays } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useUIStore } from '@/stores/uiStore';
 import { useUnreadCount } from '@/features/notifications/useNotifications';
@@ -25,6 +25,7 @@ const extendedNav = [
   { name: 'Iman Boost', href: '/iman-boost', icon: Sparkles },
   { name: 'Ruhani Space', href: '/ruhani', icon: Moon },
   { name: 'Hadith', href: '/hadith', icon: BookOpen },
+  { name: 'Classrooms', href: '/classrooms', icon: CalendarDays },
   { name: 'Global Courses', href: '/global-courses', icon: Globe },
   { name: 'Courses', href: '/courses', icon: BookOpen },
   { name: 'Streams', href: '/streams', icon: Radio },
@@ -42,7 +43,7 @@ const extendedNavGroups = [
   },
   {
     title: 'Learning',
-    items: ['Learn Quran', 'Quran by Topic', 'Iman Boost', 'Ruhani Space', 'Hadith', 'Global Courses', 'Courses'],
+    items: ['Learn Quran', 'Quran by Topic', 'Iman Boost', 'Ruhani Space', 'Hadith', 'Classrooms', 'Global Courses', 'Courses'],
   },
   {
     title: 'Community',
@@ -194,6 +195,24 @@ export function MobileNav() {
               >
                 <ShieldCheck className="h-5 w-5 shrink-0" />
                 Admin Panel
+              </NavLink>
+            )}
+
+            {isAuthenticated && user && (
+              <NavLink
+                to="/my-sessions"
+                onClick={() => setMobileNavOpen(false)}
+                className={({ isActive }) =>
+                  cn(
+                    'mt-3 flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors border',
+                    isActive
+                      ? 'bg-primary/10 text-primary border-primary/30'
+                      : 'bg-card text-foreground border-border hover:bg-secondary',
+                  )
+                }
+              >
+                <CalendarDays className="h-5 w-5 shrink-0" />
+                My Sessions
               </NavLink>
             )}
           </div>

@@ -131,7 +131,7 @@ export function EditCoursePage() {
             type: l.type,
             order: lIdx,
             isFree: l.isFree ?? false,
-            duration: l.durationMinutes,
+            duration: l.duration,
           })),
         })) ?? [],
         requirements: (course as unknown as { requirements?: string[] }).requirements ?? [],

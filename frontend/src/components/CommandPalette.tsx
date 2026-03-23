@@ -5,6 +5,7 @@ import {
   Home,
   BookOpen,
   Bookmark,
+  CalendarDays,
   Users,
   User,
   Settings,
@@ -34,6 +35,8 @@ const NAV_ITEMS = [
   { path: '/', label: 'Home', description: 'Go to the home page', icon: Home },
   { path: '/explore', label: 'Explore', description: 'Browse hadith categories', icon: Compass },
   { path: '/hadith', label: 'Daily Hadith', description: 'Read the hadith of the day', icon: BookOpen },
+  { path: '/classrooms', label: 'Classrooms', description: 'Browse live and upcoming sessions', icon: CalendarDays },
+  { path: '/my-sessions', label: 'My Sessions', description: 'Review your upcoming and past classrooms', icon: CalendarDays },
   { path: '/saved', label: 'Saved', description: 'View your bookmarked hadiths', icon: Bookmark },
   { path: '/community', label: 'Community', description: 'Connect with others', icon: Users },
   { path: '/profile', label: 'Profile', description: 'View your profile', icon: User },
@@ -101,7 +104,7 @@ export function CommandPalette() {
     // Navigation items always available
     NAV_ITEMS.forEach((item) => {
       // Skip auth-required routes for unauthenticated users
-      if (!isAuthenticated && ['/saved', '/profile', '/settings'].includes(item.path)) return;
+      if (!isAuthenticated && ['/my-sessions', '/saved', '/profile', '/settings'].includes(item.path)) return;
 
       results.push({
         id: `nav-${item.path}`,

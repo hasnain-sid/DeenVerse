@@ -26,6 +26,8 @@ import {
   ShieldCheck,
   CreditCard,
   TrendingUp,
+  CalendarDays,
+  Video,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Avatar } from '@/components/ui/avatar';
@@ -48,6 +50,7 @@ const navigation = [
   { name: 'Iman Boost', href: '/iman-boost', icon: Sparkles },
   { name: 'Ruhani Space', href: '/ruhani', icon: Moon },
   { name: 'Hadith', href: '/hadith', icon: BookOpen },
+  { name: 'Classrooms', href: '/classrooms', icon: CalendarDays },
   { name: 'Global Courses', href: '/global-courses', icon: Globe },
   { name: 'Courses', href: '/courses', icon: BookOpen },
   { name: 'Streams', href: '/streams', icon: Radio },
@@ -66,7 +69,7 @@ const navigationGroups = [
   },
   {
     title: 'Learning',
-    items: ['Learn Quran', 'Quran by Topic', 'Iman Boost', 'Ruhani Space', 'Hadith', 'Global Courses', 'Courses'],
+    items: ['Learn Quran', 'Quran by Topic', 'Iman Boost', 'Ruhani Space', 'Hadith', 'Classrooms', 'Global Courses', 'Courses'],
   },
   {
     title: 'Community',
@@ -335,6 +338,25 @@ export function Sidebar() {
           </Tooltip>
         )}
 
+        {isAuthenticated && user && (
+          <Tooltip content="My Sessions" side="right">
+            <NavLink
+              to="/my-sessions"
+              className={({ isActive }) =>
+                cn(
+                  'flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors',
+                  isActive
+                    ? 'bg-secondary text-secondary-foreground font-medium'
+                    : 'text-muted-foreground hover:bg-secondary hover:text-foreground',
+                )
+              }
+            >
+              <CalendarDays className="h-[18px] w-[18px] shrink-0" />
+              {!sidebarCollapsed && <span>My Sessions</span>}
+            </NavLink>
+          </Tooltip>
+        )}
+
         {/* Earnings link — scholar only */}
         {isAuthenticated && user && (user.role === 'scholar' || user.role === 'admin') && (
           <Tooltip content="Earnings" side="right">
@@ -351,6 +373,26 @@ export function Sidebar() {
             >
               <TrendingUp className="h-[18px] w-[18px] shrink-0" />
               {!sidebarCollapsed && <span>Earnings</span>}
+            </NavLink>
+          </Tooltip>
+        )}
+
+        {/* My Sessions link — scholar only */}
+        {isAuthenticated && user && (user.role === 'scholar' || user.role === 'admin') && (
+          <Tooltip content="My Sessions" side="right">
+            <NavLink
+              to="/scholar/classrooms"
+              className={({ isActive }) =>
+                cn(
+                  'flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors',
+                  isActive
+                    ? 'bg-secondary text-secondary-foreground font-medium'
+                    : 'text-muted-foreground hover:bg-secondary hover:text-foreground',
+                )
+              }
+            >
+              <Video className="h-[18px] w-[18px] shrink-0" />
+              {!sidebarCollapsed && <span>My Sessions</span>}
             </NavLink>
           </Tooltip>
         )}

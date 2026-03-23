@@ -2,7 +2,7 @@ import { useState } from 'react';
 import {
   useAdminCourses,
   useReviewCourse,
-  type AdminCoursesResponse,
+  type AdminCourse,
 } from './useCourses';
 import {
   Check,
@@ -22,7 +22,7 @@ import { cn } from '@/lib/utils';
 
 type StatusTab = 'pending-review' | 'published' | 'all';
 
-type AdminCourseItem = AdminCoursesResponse['courses'][number];
+type AdminCourseItem = AdminCourse;
 
 export function AdminCourseReviewPage() {
   const [tab, setTab] = useState<StatusTab>('pending-review');
@@ -86,6 +86,7 @@ export function AdminCourseReviewPage() {
     published: 'Published',
     all: 'All Courses',
   };
+  const selectedCourseStatus = selectedCourse?.status ?? 'draft';
 
   return (
     <div className="flex flex-col h-[calc(100vh-130px)]">
@@ -199,10 +200,10 @@ export function AdminCourseReviewPage() {
           </div>
 
           {/* Pagination */}
-          {pagination && pagination.pages > 1 && (
+          {pagination && pagination.totalPages > 1 && (
             <div className="flex items-center justify-between p-3 border-t bg-background text-xs text-muted-foreground">
               <span>
-                Page {pagination.page} of {pagination.pages} ({pagination.total} total)
+                Page {pagination.page} of {pagination.totalPages} ({pagination.total} total)
               </span>
               <div className="flex gap-1">
                 <button
@@ -213,7 +214,7 @@ export function AdminCourseReviewPage() {
                   <ChevronLeft className="w-4 h-4" />
                 </button>
                 <button
-                  disabled={page >= pagination.pages}
+                  disabled={page >= pagination.totalPages}
                   onClick={() => setPage((p) => p + 1)}
                   className="p-1 rounded hover:bg-muted disabled:opacity-30"
                 >
@@ -237,7 +238,7 @@ export function AdminCourseReviewPage() {
                 </div>
 
                 <div className="flex items-center gap-3">
-                  {selectedCourse.status === 'pending-review' ? (
+                  {selectedCourseStatus === 'pending-review' ? (
                     <>
                       <button
                         onClick={() => {
@@ -262,18 +263,18 @@ export function AdminCourseReviewPage() {
                     <div
                       className={cn(
                         'px-4 py-1.5 text-sm font-medium rounded-md flex items-center gap-2',
-                        selectedCourse.status === 'published'
+                        selectedCourseStatus === 'published'
                           ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
                           : 'bg-rose-50 text-rose-700 border border-rose-200',
                       )}
                     >
-                      {selectedCourse.status === 'published' ? (
+                      {selectedCourseStatus === 'published' ? (
                         <Check className="w-4 h-4" />
                       ) : (
                         <X className="w-4 h-4" />
                       )}
-                      {selectedCourse.status.charAt(0).toUpperCase() +
-                        selectedCourse.status.slice(1)}
+                      {selectedCourseStatus.charAt(0).toUpperCase() +
+                        selectedCourseStatus.slice(1)}
                     </div>
                   )}
                   <div className="w-px h-6 bg-border mx-1" />
@@ -286,7 +287,7 @@ export function AdminCourseReviewPage() {
               {/* Detail body */}
               <div className="flex-1 overflow-y-auto p-8 max-w-4xl mx-auto w-full">
                 {/* Approve confirm */}
-                {confirmApprove && selectedCourse.status === 'pending-review' && (
+                {confirmApprove && selectedCourseStatus === 'pending-review' && (
                   <div className="mb-8 p-5 bg-emerald-50/50 border border-emerald-100 rounded-xl animate-in slide-in-from-top-4 fade-in">
                     <h4 className="flex items-center gap-2 text-emerald-700 font-medium text-sm mb-3">
                       <Check className="w-4 h-4" /> Confirm Approval
@@ -314,7 +315,7 @@ export function AdminCourseReviewPage() {
                 )}
 
                 {/* Reject form */}
-                {showRejectInput && selectedCourse.status === 'pending-review' && (
+                {showRejectInput && selectedCourseStatus === 'pending-review' && (
                   <div className="mb-8 p-5 bg-rose-50/50 border border-rose-100 rounded-xl animate-in slide-in-from-top-4 fade-in">
                     <h4 className="flex items-center gap-2 text-rose-700 font-medium text-sm mb-3">
                       <AlertCircle className="w-4 h-4" /> Rejection Reason

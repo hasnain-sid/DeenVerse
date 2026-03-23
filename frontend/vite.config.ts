@@ -107,6 +107,7 @@ export default defineConfig({
           ui: ['lucide-react'],
           forms: ['react-hook-form', 'zod', '@hookform/resolvers'],
           motion: ['framer-motion'],
+          whiteboard: ['@tldraw/tldraw', 'tldraw'],
         },
       },
     },

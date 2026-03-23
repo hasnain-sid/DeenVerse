@@ -2,12 +2,16 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   Check,
+  CalendarDays,
   ChevronLeft,
+  Clock3,
   FileText,
   Play,
   BookOpen,
   MessageSquare,
   Plus,
+  Radio,
+  Video,
   X,
   Menu,
 } from 'lucide-react';
@@ -22,6 +26,12 @@ import {
   type CourseModule,
   type CourseLesson,
 } from '@/features/courses/useCourses';
+import {
+  useClassroomDetail,
+  useStudentSessions,
+  useUpcomingClassrooms,
+  type ClassroomSummary,
+} from '@/features/classroom/useClassroom';
 
 // ── Local types ──────────────────────────────────────
 
@@ -31,9 +41,62 @@ interface LocalNote {
   createdAt: string;
 }
 
+const EMPTY_COMPLETED_LESSONS: string[] = [];
+
 // ── Helpers ──────────────────────────────────────────
 
 const notesKey = (slug: string, lessonId: string) => `dv_notes_${slug}_${lessonId}`;
+
+interface LiveSessionLessonContent {
+  classroomId?: string;
+  classroom?: {
+    _id?: string;
+    id?: string;
+  };
+  recordingUrl?: string;
+}
+
+function extractLessonClassroomId(content: unknown) {
+  if (!content || typeof content !== 'object') {
+    return undefined;
+  }
+
+  const lessonContent = content as LiveSessionLessonContent;
+  return lessonContent.classroomId ?? lessonContent.classroom?._id ?? lessonContent.classroom?.id;
+}
+
+function getCourseSlugFromClassroom(classroom: ClassroomSummary) {
+  if (!classroom.course || typeof classroom.course === 'string') {
+    return undefined;
+  }
+
+  return classroom.course.slug;
+}
+
+function formatCountdown(value?: string) {
+  if (!value) {
+    return 'Session starts soon';
+  }
+
+  const diffMs = new Date(value).getTime() - Date.now();
+  if (diffMs <= 0) {
+    return 'Session starts soon';
+  }
+
+  const totalMinutes = Math.floor(diffMs / 60000);
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+
+  if (hours <= 0) {
+    return `Session starts in ${minutes}m`;
+  }
+
+  return `Session starts in ${hours}h ${minutes}m`;
+}
+
+function getRecordingUrl(classroom?: ClassroomSummary | null) {
+  return classroom?.recordings?.find((recording) => Boolean(recording.url))?.url;
+}
 
 function LessonIcon({
   type,
@@ -77,10 +140,13 @@ export function CoursePlayerPage() {
     slug ?? '',
     activeLessonId
   );
+  const { data: upcomingClassroomsData } = useUpcomingClassrooms(slug ?? '');
+  const { data: studentSessionsData } = useStudentSessions(undefined, 1);
 
   const course = courseData?.course;
-  const completedLessons = progressData?.progress?.completedLessons ?? [];
-  const percentComplete = progressData?.progress?.percentComplete ?? 0;
+  const progress = progressData?.enrollment?.progress;
+  const completedLessons = progress?.completedLessons ?? EMPTY_COMPLETED_LESSONS;
+  const percentComplete = progress?.percentComplete ?? 0;
 
   const allLessons = useMemo(
     () => course?.modules?.flatMap((m) => m.lessons) ?? [],
@@ -89,11 +155,10 @@ export function CoursePlayerPage() {
 
   // Set initial lesson once course + progress are loaded
   useEffect(() => {
-    if (activeLessonId || !course || !allLessons.length) return;
+    if (activeLessonId || !allLessons.length) return;
     const firstIncomplete = allLessons.find((l) => !completedLessons.includes(l._id));
     setActiveLessonId(firstIncomplete?._id ?? allLessons[0]._id);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [course, allLessons]);
+  }, [activeLessonId, allLessons, completedLessons]);
 
   // Load notes from localStorage when lesson changes
   useEffect(() => {
@@ -116,6 +181,54 @@ export function CoursePlayerPage() {
   const prevLesson = allLessons[currentIndex - 1] ?? null;
   const currentLesson = allLessons[currentIndex] ?? null;
   const isComplete = activeLessonId ? completedLessons.includes(activeLessonId) : false;
+  const isLiveSessionLesson = currentLesson?.type === 'live-session';
+
+  const linkedClassroomId = useMemo(
+    () => extractLessonClassroomId(lessonData?.lesson?.content ?? currentLesson?.content),
+    [currentLesson?.content, lessonData?.lesson?.content]
+  );
+  const classroomDetailQuery = useClassroomDetail(linkedClassroomId);
+
+  const currentLessonClassroom = useMemo(() => {
+    if (classroomDetailQuery.data?.classroom) {
+      return classroomDetailQuery.data.classroom;
+    }
+
+    const combinedClassrooms = [
+      ...(studentSessionsData?.classrooms ?? []),
+      ...(upcomingClassroomsData?.classrooms ?? []),
+    ];
+
+    const byLinkedId = linkedClassroomId
+      ? combinedClassrooms.find((classroom) => classroom._id === linkedClassroomId)
+      : undefined;
+    if (byLinkedId) {
+      return byLinkedId;
+    }
+
+    if (!currentLesson?._id) {
+      return undefined;
+    }
+
+    const byLessonId = combinedClassrooms.find((classroom) => classroom.lessonId === currentLesson._id);
+    if (byLessonId) {
+      return byLessonId;
+    }
+
+    return combinedClassrooms.find((classroom) => getCourseSlugFromClassroom(classroom) === slug);
+  }, [
+    classroomDetailQuery.data?.classroom,
+    currentLesson?._id,
+    linkedClassroomId,
+    slug,
+    studentSessionsData?.classrooms,
+    upcomingClassroomsData?.classrooms,
+  ]);
+
+  const liveSessionRecordingUrl = useMemo(
+    () => getRecordingUrl(currentLessonClassroom),
+    [currentLessonClassroom]
+  );
 
   const handleMarkComplete = useCallback(() => {
     if (!slug || !activeLessonId) return;
@@ -226,14 +339,92 @@ export function CoursePlayerPage() {
       {/* ── Main content ── */}
       <div className="flex-1 flex overflow-hidden relative">
         <main
-          className={`flex-1 h-full flex flex-col bg-[#0F172A] relative overflow-y-auto transition-all duration-300 ${
-            rightPanelOpen ? 'md:pr-[350px] lg:pr-[400px]' : ''
-          }`}
+          className={`flex-1 h-full flex flex-col bg-[#0F172A] relative overflow-y-auto transition-all duration-300 ${rightPanelOpen ? 'md:pr-[350px] lg:pr-[400px]' : ''
+            }`}
         >
           {/* Video / Content Area */}
           <div className="w-full bg-black shrink-0 relative flex flex-col max-h-[75vh]">
             {isLoading || lessonLoading ? (
               <SkeletonBlock className="w-full aspect-video md:aspect-video rounded-none" />
+            ) : currentLesson?.type === 'live-session' ? (
+              <div className="w-full bg-[#1E293B] border-b border-white/5 min-h-[280px] p-6 md:p-8">
+                <div className="mx-auto flex h-full max-w-4xl flex-col justify-center gap-5 rounded-[1.75rem] border border-white/10 bg-[linear-gradient(135deg,rgba(2,44,34,0.98),rgba(15,23,42,0.96))] p-6 text-white shadow-2xl">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-emerald-200">
+                      <Radio className="h-3.5 w-3.5" />
+                      Live Session Lesson
+                    </span>
+                    {currentLessonClassroom ? (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-white/10 px-3 py-1 text-xs text-slate-200 capitalize">
+                        {currentLessonClassroom.status}
+                      </span>
+                    ) : null}
+                  </div>
+
+                  <div>
+                    <h2 className="text-2xl font-bold text-white md:text-3xl">
+                      {lessonData?.lesson?.title ?? currentLesson.title}
+                    </h2>
+                    <p className="mt-3 max-w-2xl text-sm leading-relaxed text-slate-300">
+                      This lesson happens inside an interactive classroom with live teaching, questions, and real-time participation.
+                    </p>
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-4 text-sm text-slate-300">
+                    {currentLessonClassroom?.scheduledAt ? (
+                      <span className="inline-flex items-center gap-1.5">
+                        <CalendarDays className="h-4 w-4 text-emerald-300" />
+                        {new Date(currentLessonClassroom.scheduledAt).toLocaleDateString(undefined, {
+                          weekday: 'short',
+                          month: 'short',
+                          day: 'numeric',
+                        })}{' '}
+                        at{' '}
+                        {new Date(currentLessonClassroom.scheduledAt).toLocaleTimeString(undefined, {
+                          hour: 'numeric',
+                          minute: '2-digit',
+                        })}
+                      </span>
+                    ) : null}
+                    {currentLessonClassroom?.duration ? (
+                      <span className="inline-flex items-center gap-1.5">
+                        <Clock3 className="h-4 w-4 text-emerald-300" />
+                        {currentLessonClassroom.duration} min
+                      </span>
+                    ) : null}
+                  </div>
+
+                  <div className="flex flex-wrap gap-3">
+                    {currentLessonClassroom?.status === 'live' ? (
+                      <Button onClick={() => navigate(`/classrooms/${currentLessonClassroom._id}/live`)}>
+                        <Radio className="mr-2 h-4 w-4" />
+                        Join Now
+                      </Button>
+                    ) : currentLessonClassroom?.status === 'scheduled' ? (
+                      <>
+                        <Button variant="outline" className="border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white">
+                          <CalendarDays className="mr-2 h-4 w-4" />
+                          {formatCountdown(currentLessonClassroom.scheduledAt)}
+                        </Button>
+                        <Button variant="outline" onClick={() => navigate('/my-sessions')} className="border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white">
+                          View My Sessions
+                        </Button>
+                      </>
+                    ) : currentLessonClassroom?.status === 'ended' && liveSessionRecordingUrl ? (
+                      <Button asChild>
+                        <a href={liveSessionRecordingUrl} target="_blank" rel="noreferrer">
+                          <Video className="mr-2 h-4 w-4" />
+                          Watch Recording
+                        </a>
+                      </Button>
+                    ) : (
+                      <Button variant="outline" onClick={() => navigate('/classrooms')} className="border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white">
+                        Browse Classrooms
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </div>
             ) : currentLesson?.type === 'video' ? (
               <div className="w-full aspect-video relative overflow-hidden group bg-[#1E293B]">
                 <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-slate-900 to-slate-800">
@@ -245,9 +436,9 @@ export function CoursePlayerPage() {
                   <p className="text-white font-medium text-sm">
                     {lessonData?.lesson?.title ?? currentLesson.title}
                   </p>
-                  {currentLesson.durationMinutes != null && (
+                  {currentLesson.duration != null && (
                     <p className="text-slate-400 text-xs mt-1">
-                      {currentLesson.durationMinutes} min
+                      {currentLesson.duration} min
                     </p>
                   )}
                 </div>
@@ -285,9 +476,19 @@ export function CoursePlayerPage() {
                   <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">
                     {lessonData?.lesson?.title ?? currentLesson?.title ?? '—'}
                   </h2>
-                  {lessonData?.lesson?.content && (
+                  {isLiveSessionLesson ? (
+                    <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-100">
+                      {currentLessonClassroom?.status === 'live'
+                        ? 'The classroom is currently live. Join from the panel above to participate in real time.'
+                        : currentLessonClassroom?.status === 'scheduled'
+                          ? formatCountdown(currentLessonClassroom.scheduledAt)
+                          : currentLessonClassroom?.status === 'ended' && liveSessionRecordingUrl
+                            ? 'This live lesson has ended and the recording is available above.'
+                            : 'This live lesson will appear here once a classroom session is linked.'}
+                    </div>
+                  ) : typeof lessonData?.lesson?.content === 'string' && (
                     <p className="text-slate-400 text-base leading-relaxed whitespace-pre-wrap">
-                      {String(lessonData.lesson.content)}
+                      {lessonData.lesson.content}
                     </p>
                   )}
                 </div>
@@ -457,9 +658,8 @@ export function CoursePlayerPage() {
 
         {/* ── Right Sidebar Syllabus ── */}
         <aside
-          className={`fixed md:absolute right-0 top-14 bottom-0 w-[350px] lg:w-[400px] bg-[#1E293B] border-l border-white/5 flex flex-col transition-transform duration-300 z-20 shadow-2xl ${
-            rightPanelOpen ? 'translate-x-0' : 'translate-x-full'
-          }`}
+          className={`fixed md:absolute right-0 top-14 bottom-0 w-[350px] lg:w-[400px] bg-[#1E293B] border-l border-white/5 flex flex-col transition-transform duration-300 z-20 shadow-2xl ${rightPanelOpen ? 'translate-x-0' : 'translate-x-full'
+            }`}
         >
           <div className="p-4 border-b border-white/5 bg-[#0F172A] flex items-center justify-between">
             <div>
@@ -513,11 +713,10 @@ export function CoursePlayerPage() {
                           <button
                             key={lesson._id}
                             onClick={() => setActiveLessonId(lesson._id)}
-                            className={`w-full text-left p-3 rounded-xl transition-all flex items-start gap-3 group ${
-                              isActive
-                                ? 'bg-primary text-black'
-                                : 'hover:bg-white/5 text-slate-400'
-                            }`}
+                            className={`w-full text-left p-3 rounded-xl transition-all flex items-start gap-3 group ${isActive
+                              ? 'bg-primary text-black'
+                              : 'hover:bg-white/5 text-slate-400'
+                              }`}
                           >
                             <div className="mt-0.5 opacity-80 shrink-0">
                               <LessonIcon
@@ -528,21 +727,19 @@ export function CoursePlayerPage() {
                             </div>
                             <div className="flex-1">
                               <p
-                                className={`text-sm font-semibold leading-snug line-clamp-2 ${
-                                  isActive
-                                    ? 'text-black'
-                                    : 'text-slate-200 group-hover:text-white'
-                                }`}
+                                className={`text-sm font-semibold leading-snug line-clamp-2 ${isActive
+                                  ? 'text-black'
+                                  : 'text-slate-200 group-hover:text-white'
+                                  }`}
                               >
                                 {lesson.title}
                               </p>
-                              {lesson.durationMinutes != null && (
+                              {lesson.duration != null && (
                                 <div
-                                  className={`text-xs mt-1 font-medium ${
-                                    isActive ? 'text-black/70' : 'text-slate-500'
-                                  }`}
+                                  className={`text-xs mt-1 font-medium ${isActive ? 'text-black/70' : 'text-slate-500'
+                                    }`}
                                 >
-                                  {lesson.durationMinutes}m
+                                  {lesson.duration}m
                                 </div>
                               )}
                             </div>

@@ -145,6 +145,41 @@ const TermsOfService = lazy(() => import('@/features/legal/TermsOfService'));
 const CourseDiscoveryPrototypesViewer = lazy(() =>
   import('@/features/courses/prototypes/PrototypesViewer')
 );
+const ClassroomLobbyPage = lazy(() =>
+  import('@/features/classroom/ClassroomLobbyPage').then((m) => ({
+    default: m.ClassroomLobbyPage,
+  }))
+);
+const ClassroomLivePage = lazy(() =>
+  import('@/features/classroom/ClassroomLivePage').then((m) => ({
+    default: m.ClassroomLivePage,
+  }))
+);
+const RecordingViewerPage = lazy(() =>
+  import('@/features/classroom/RecordingViewerPage').then((m) => ({
+    default: m.RecordingViewerPage,
+  }))
+);
+const ScheduleClassroomPage = lazy(() =>
+  import('@/features/classroom/ScheduleClassroomPage').then((m) => ({
+    default: m.ScheduleClassroomPage,
+  }))
+);
+const EditClassroomPage = lazy(() =>
+  import('@/features/classroom/EditClassroomPage').then((m) => ({
+    default: m.EditClassroomPage,
+  }))
+);
+const MySessionsPage = lazy(() =>
+  import('@/features/classroom/MySessionsPage').then((m) => ({
+    default: m.MySessionsPage,
+  }))
+);
+const StudentSessionsPage = lazy(() =>
+  import('@/features/classroom/StudentSessionsPage').then((m) => ({
+    default: m.StudentSessionsPage,
+  }))
+);
 
 const CoursePlayerPage = lazy(() =>
   import('@/features/courses/CoursePlayerPage').then((m) => ({ default: m.CoursePlayerPage }))
@@ -324,6 +359,23 @@ export default function App() {
                   <Route path="/forgot-password" element={<ForgotPasswordPage />} />
                   <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
                   <Route path="/global-courses" element={<GlobalCoursesPage />} />
+                  <Route path="/classrooms" element={<ClassroomLobbyPage />} />
+                  <Route
+                    path="/classrooms/:id/live"
+                    element={
+                      <AuthGuard>
+                        <ClassroomLivePage />
+                      </AuthGuard>
+                    }
+                  />
+                  <Route
+                    path="/classrooms/:id/recordings"
+                    element={
+                      <AuthGuard>
+                        <RecordingViewerPage />
+                      </AuthGuard>
+                    }
+                  />
                   <Route path="/courses" element={<CoursesPage />} />
                   <Route path="/courses/:slug" element={<CourseDetailPage />} />
                   <Route
@@ -347,6 +399,14 @@ export default function App() {
                     element={
                       <AuthGuard>
                         <MyCoursesPage />
+                      </AuthGuard>
+                    }
+                  />
+                  <Route
+                    path="/my-sessions"
+                    element={
+                      <AuthGuard>
+                        <StudentSessionsPage />
                       </AuthGuard>
                     }
                   />
@@ -419,6 +479,30 @@ export default function App() {
                     element={
                       <AuthGuard>
                         <EditCoursePage />
+                      </AuthGuard>
+                    }
+                  />
+                  <Route
+                    path="/scholar/classrooms"
+                    element={
+                      <AuthGuard>
+                        <MySessionsPage />
+                      </AuthGuard>
+                    }
+                  />
+                  <Route
+                    path="/scholar/classrooms/new"
+                    element={
+                      <AuthGuard>
+                        <ScheduleClassroomPage />
+                      </AuthGuard>
+                    }
+                  />
+                  <Route
+                    path="/scholar/classrooms/:id/edit"
+                    element={
+                      <AuthGuard>
+                        <EditClassroomPage />
                       </AuthGuard>
                     }
                   />

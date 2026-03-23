@@ -234,7 +234,8 @@ export function MyCoursesPage() {
 
   const enrollments = data?.enrollments ?? [];
   const pagination = data?.pagination;
-  const totalPages = pagination?.pages ?? 1;
+  const currentPage = pagination?.page ?? page;
+  const totalPages = pagination?.totalPages ?? 1;
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
@@ -295,7 +296,7 @@ export function MyCoursesPage() {
             Previous
           </Button>
           <span className="text-sm text-muted-foreground">
-            Page {page} of {totalPages}
+            Page {currentPage} of {totalPages}
           </span>
           <Button
             variant="outline"

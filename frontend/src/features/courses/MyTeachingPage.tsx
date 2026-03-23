@@ -21,7 +21,7 @@ import {
   useMyTeaching,
   useDeleteCourse,
   usePublishCourse,
-  type CourseDetail,
+  type TeachingCourse,
 } from './useCourses';
 
 const STATUS_OPTIONS = [
@@ -50,6 +50,9 @@ export function MyTeachingPage() {
   const { data, isLoading, error } = useMyTeaching(statusFilter || undefined, page);
   const deleteCourse = useDeleteCourse();
   const publishCourse = usePublishCourse();
+  const pagination = data?.pagination;
+  const currentPage = pagination?.page ?? page;
+  const totalPages = pagination?.totalPages ?? 1;
 
   // Scholar-only guard
   if (user && user.role !== 'scholar' && user.role !== 'admin') {
@@ -173,24 +176,24 @@ export function MyTeachingPage() {
           </div>
 
           {/* Pagination */}
-          {data.pagination.pages > 1 && (
+          {totalPages > 1 && (
             <div className="flex items-center justify-center gap-2 mt-8">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
-                disabled={page === 1}
+                disabled={currentPage === 1}
               >
                 Previous
               </Button>
               <span className="text-sm text-muted-foreground">
-                Page {page} of {data.pagination.pages}
+                Page {currentPage} of {totalPages}
               </span>
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setPage((p) => Math.min(data.pagination.pages, p + 1))}
-                disabled={page === data.pagination.pages}
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
               >
                 Next
               </Button>
@@ -247,7 +250,7 @@ export function MyTeachingPage() {
 // ── Course Row ────────────────────────────────────────
 
 interface CourseRowProps {
-  course: CourseDetail;
+  course: TeachingCourse;
   openMenu: string | null;
   setOpenMenu: (slug: string | null) => void;
   onEdit: () => void;
