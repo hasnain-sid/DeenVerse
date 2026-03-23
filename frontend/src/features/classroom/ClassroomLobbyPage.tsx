@@ -93,6 +93,14 @@ const ACCESS_META = {
   },
 } as const;
 
+function getAccessMeta(access: string) {
+  if (access in ACCESS_META) {
+    return ACCESS_META[access as keyof typeof ACCESS_META];
+  }
+
+  return ACCESS_META.public;
+}
+
 function asDate(value?: string) {
   return value ? new Date(value) : null;
 }
@@ -233,7 +241,7 @@ interface ScheduleCardProps {
 
 function ScheduleCard({ classroom, onOpen }: ScheduleCardProps) {
   const typeMeta = CLASSROOM_TYPE_META[classroom.type];
-  const accessMeta = ACCESS_META[classroom.access];
+  const accessMeta = getAccessMeta(classroom.access);
   const courseLabel = getCourseLabel(classroom);
   const AccessIcon = accessMeta.icon;
 
@@ -493,7 +501,7 @@ function ClassroomDetailPanel({
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="rounded-2xl border bg-card p-4">
                   <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Access</p>
-                  <p className="mt-2 text-sm font-medium text-foreground">{ACCESS_META[classroom.access].label}</p>
+                  <p className="mt-2 text-sm font-medium text-foreground">{getAccessMeta(classroom.access).label}</p>
                 </div>
                 <div className="rounded-2xl border bg-card p-4">
                   <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">Format</p>

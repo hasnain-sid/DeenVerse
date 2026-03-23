@@ -740,7 +740,7 @@ function SettingsPanel({
 
         <div className="mt-6 space-y-3">
           {items.map((item) => (
-            <label key={item.key} className="flex items-start justify-between gap-4 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+            <label key={String(item.key)} className="flex items-start justify-between gap-4 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
               <div>
                 <p className="text-sm font-semibold text-slate-900">{item.label}</p>
                 <p className="mt-1 text-xs text-slate-500">{item.description}</p>
@@ -749,7 +749,7 @@ function SettingsPanel({
                 type="checkbox"
                 checked={Boolean(draft[item.key])}
                 onChange={(event) =>
-                  setDraft((currentDraft) => ({
+                  setDraft((currentDraft: Partial<ClassroomSettingsState>) => ({
                     ...currentDraft,
                     [item.key]: event.target.checked,
                   }))
@@ -1402,7 +1402,7 @@ export function ClassroomLivePage() {
         return;
       }
 
-      setSettingsState((currentSettings) => ({ ...currentSettings, ...settings }));
+      setSettingsState((currentSettings: ClassroomSettingsState | undefined) => ({ ...currentSettings, ...settings }));
       if (settings.chatEnabled === false) {
         setChatOpen(false);
       }
@@ -1625,7 +1625,7 @@ export function ClassroomLivePage() {
         classroomId,
         settings,
       });
-      setSettingsState((currentSettings) => ({ ...currentSettings, ...settings }));
+      setSettingsState((currentSettings: ClassroomSettingsState | undefined) => ({ ...currentSettings, ...settings }));
       setSettingsOpen(false);
     } catch {
       // Mutation hooks show user-facing errors already.
