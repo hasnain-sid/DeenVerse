@@ -1,12 +1,25 @@
 import { Server } from "socket.io";
 import jwt from "jsonwebtoken";
 import { User } from "../models/userSchema.js";
+import { Classroom } from "../models/classroomSchema.js";
 
 /**
  * In-memory map of userId → Set<socketId>.
  * A single user may be connected from multiple tabs/devices.
  */
 const onlineUsers = new Map(); // userId → Set<socketId>
+
+/**
+ * In-memory hand-raise queue per classroom.
+ * classroomId → Array<{ userId, name, timestamp }>
+ */
+const handQueues = new Map();
+
+/**
+ * In-memory throttle tracker for whiteboard snapshot saves.
+ * classroomId → lastSaveTimestamp (ms)
+ */
+const whiteboardSaveTimestamps = new Map();
 
 /**
  * Get the Socket.IO server instance.
@@ -156,6 +169,185 @@ export function initSocket(httpServer, corsOptions) {
       }
     });
 
+    // ─── Classroom: join Socket.IO room ─────────────
+    socket.on("classroom:join-room", ({ classroomId }) => {
+      if (!classroomId) return;
+      socket.join(`classroom:${classroomId}`);
+    });
+
+    // ─── Classroom: leave Socket.IO room ────────────
+    socket.on("classroom:leave-room", ({ classroomId }) => {
+      if (!classroomId) return;
+      socket.leave(`classroom:${classroomId}`);
+      // Clean up hand queue on leave
+      const queue = handQueues.get(classroomId);
+      if (queue) {
+        const idx = queue.findIndex((h) => h.userId === userId);
+        if (idx !== -1) queue.splice(idx, 1);
+        if (queue.length === 0) handQueues.delete(classroomId);
+      }
+    });
+
+    // ─── Classroom: chat message ────────────────────
+    socket.on("classroom:message:send", async ({ classroomId, message }) => {
+      if (!classroomId || !message || message.trim().length === 0) return;
+
+      try {
+        const user = await User.findById(userId).select("name username avatar");
+        if (!user) return;
+
+        const chatMessage = {
+          id: `${Date.now()}-${socket.id}`,
+          userId,
+          name: user.name || user.username,
+          avatar: user.avatar,
+          text: message.trim().slice(0, 500),
+          createdAt: new Date().toISOString(),
+        };
+
+        io.to(`classroom:${classroomId}`).emit("classroom:message:new", {
+          classroomId,
+          message: chatMessage,
+        });
+      } catch {
+        // Silently ignore chat errors
+      }
+    });
+
+    // ─── Classroom: raise hand ──────────────────────
+    socket.on("classroom:raise-hand", async ({ classroomId }) => {
+      if (!classroomId) return;
+
+      if (!handQueues.has(classroomId)) {
+        handQueues.set(classroomId, []);
+      }
+      const queue = handQueues.get(classroomId);
+
+      // Don't add if already in queue
+      if (queue.some((h) => h.userId === userId)) return;
+
+      try {
+        const user = await User.findById(userId).select("name username").lean();
+        const name = user?.name || user?.username || "Unknown";
+
+        queue.push({ userId, name, timestamp: Date.now() });
+
+        // Broadcast hand queue to the classroom room (host will see it)
+        io.to(`classroom:${classroomId}`).emit("classroom:hand-queue", {
+          classroomId,
+          queue,
+        });
+      } catch {
+        // Silently ignore
+      }
+    });
+
+    // ─── Classroom: lower hand ──────────────────────
+    socket.on("classroom:lower-hand", ({ classroomId }) => {
+      if (!classroomId) return;
+
+      const queue = handQueues.get(classroomId);
+      if (!queue) return;
+
+      const idx = queue.findIndex((h) => h.userId === userId);
+      if (idx !== -1) queue.splice(idx, 1);
+      if (queue.length === 0) handQueues.delete(classroomId);
+
+      io.to(`classroom:${classroomId}`).emit("classroom:hand-queue", {
+        classroomId,
+        queue: queue || [],
+      });
+    });
+
+    // ─── Classroom: grant speak (host only) ─────────
+    socket.on("classroom:grant-speak", ({ classroomId, userId: targetUserId }) => {
+      if (!classroomId || !targetUserId) return;
+
+      // Remove from hand queue
+      const queue = handQueues.get(classroomId);
+      if (queue) {
+        const idx = queue.findIndex((h) => h.userId === targetUserId);
+        if (idx !== -1) queue.splice(idx, 1);
+        if (queue.length === 0) handQueues.delete(classroomId);
+
+        // Broadcast updated queue
+        io.to(`classroom:${classroomId}`).emit("classroom:hand-queue", {
+          classroomId,
+          queue: queue || [],
+        });
+      }
+
+      // Notify the granted user
+      io.to(`user:${targetUserId}`).emit("classroom:speak-granted", {
+        classroomId,
+      });
+    });
+
+    // ─── Classroom: whiteboard save (host, throttled) ───
+    socket.on("classroom:whiteboard-save", async ({ classroomId, snapshot }) => {
+      if (!classroomId || !snapshot) return;
+
+      // Throttle: max once per 30s per classroom
+      const now = Date.now();
+      const lastSave = whiteboardSaveTimestamps.get(classroomId) || 0;
+      if (now - lastSave < 30_000) return;
+
+      try {
+        const classroom = await Classroom.findById(classroomId)
+          .select("host status")
+          .lean();
+        if (!classroom || classroom.status !== "live") return;
+        if (classroom.host.toString() !== userId) return;
+
+        whiteboardSaveTimestamps.set(classroomId, now);
+        await Classroom.updateOne(
+          { _id: classroomId },
+          { $set: { whiteboardSnapshot: snapshot } }
+        );
+      } catch {
+        // Silently ignore save errors
+      }
+    });
+
+    // ─── Classroom: whiteboard load (participant requests snapshot) ─
+    socket.on("classroom:whiteboard-load", async ({ classroomId }, callback) => {
+      if (!classroomId || typeof callback !== "function") return;
+
+      try {
+        const classroom = await Classroom.findById(classroomId)
+          .select("whiteboardSnapshot")
+          .lean();
+        callback({ snapshot: classroom?.whiteboardSnapshot || null });
+      } catch {
+        callback({ snapshot: null });
+      }
+    });
+
+    // ─── Classroom: whiteboard clear (host only) ────────
+    socket.on("classroom:whiteboard-clear", async ({ classroomId }) => {
+      if (!classroomId) return;
+
+      try {
+        const classroom = await Classroom.findById(classroomId)
+          .select("host status")
+          .lean();
+        if (!classroom || classroom.status !== "live") return;
+        if (classroom.host.toString() !== userId) return;
+
+        await Classroom.updateOne(
+          { _id: classroomId },
+          { $unset: { whiteboardSnapshot: 1 } }
+        );
+
+        // Broadcast clear to all participants in the room
+        io.to(`classroom:${classroomId}`).emit("classroom:whiteboard-cleared", {
+          classroomId,
+        });
+      } catch {
+        // Silently ignore clear errors
+      }
+    });
+
     // ─── Disconnect ─────────────────────────────────
     socket.on("disconnect", () => {
       console.log(`🔌 Socket disconnected: ${socket.id} (user: ${userId})`);
@@ -198,6 +390,21 @@ export function isUserOnline(userId) {
  */
 export function getOnlineUserIds() {
   return [...onlineUsers.keys()];
+}
+
+/**
+ * Clear the hand-raise queue for a classroom.
+ * Called when a classroom session ends.
+ */
+export function clearHandQueue(classroomId) {
+  handQueues.delete(String(classroomId));
+}
+
+/**
+ * Get the current hand-raise queue for a classroom.
+ */
+export function getHandQueue(classroomId) {
+  return handQueues.get(String(classroomId)) || [];
 }
 
 // ── Helper: parse a specific cookie from the raw cookie header ──
