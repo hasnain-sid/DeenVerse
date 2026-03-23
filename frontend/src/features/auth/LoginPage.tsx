@@ -110,7 +110,6 @@ export function LoginPage() {
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
-  const registerPassword = useWatch({ control: registerForm.control, name: 'password' });
 
   const loginMutation = useLogin();
   const registerMutation = useRegister();
@@ -127,6 +126,8 @@ export function LoginPage() {
     defaultValues: { name: '', username: '', email: '', password: '', confirmPassword: '' },
     mode: 'onChange', // Real-time validation feedback
   });
+
+  const registerPassword = useWatch({ control: registerForm.control, name: 'password' });
 
   const handleLogin = async (data: LoginFormData) => {
     try {

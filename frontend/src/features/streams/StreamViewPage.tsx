@@ -81,7 +81,7 @@ export function StreamViewPage() {
     // Try native HLS support (Safari)
     if (video.canPlayType('application/vnd.apple.mpegurl')) {
       video.src = stream.playbackUrl;
-      video.play().catch(() => {});
+      video.play().catch(() => { });
       return;
     }
 
@@ -90,11 +90,12 @@ export function StreamViewPage() {
     import('hls.js')
       .then(({ default: Hls }) => {
         if (!Hls.isSupported()) return;
-        hls = new Hls({ enableWorker: true, lowLatencyMode: true });
-        hls.loadSource(stream.playbackUrl);
-        hls.attachMedia(video);
-        hls.on(Hls.Events.MANIFEST_PARSED, () => {
-          video.play().catch(() => {});
+        const hlsInstance = new Hls({ enableWorker: true, lowLatencyMode: true });
+        hls = hlsInstance;
+        hlsInstance.loadSource(stream.playbackUrl);
+        hlsInstance.attachMedia(video);
+        hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
+          video.play().catch(() => { });
         });
       })
       .catch(() => {
