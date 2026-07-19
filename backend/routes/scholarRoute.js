@@ -15,6 +15,8 @@ import {
   stripeConnectOnboardHandler,
   stripeExpressDashboardHandler,
   stripeStatusHandler,
+  scholarEarningsHandler,
+  scholarEarningsDetailsHandler,
 } from "../controller/scholarController.js";
 
 const router = express.Router();
@@ -22,6 +24,10 @@ const router = express.Router();
 // ── Authenticated user routes ────────────────────────
 router.post("/apply", isAuthenticated, scholarApplicationValidationRules(), applyForScholarHandler);
 router.get("/application-status", isAuthenticated, getApplicationStatusHandler);
+
+// ── Scholar routes (Earnings) ────────────────────────
+router.get("/earnings", isAuthenticated, isScholar, scholarEarningsHandler);
+router.get("/earnings/details", isAuthenticated, isScholar, scholarEarningsDetailsHandler);
 
 // ── Scholar routes (Stripe Connect) ──────────────────
 router.post("/stripe/connect", isAuthenticated, isScholar, stripeConnectOnboardHandler);

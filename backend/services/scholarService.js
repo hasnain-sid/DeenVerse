@@ -1,4 +1,8 @@
+import mongoose from "mongoose";
 import { User } from "../models/userSchema.js";
+import { Course } from "../models/courseSchema.js";
+import { Payment } from "../models/paymentSchema.js";
+import { ScholarPayment } from "../models/scholarPaymentSchema.js";
 import { AppError } from "../utils/AppError.js";
 import { createAndEmitNotification } from "./notificationService.js";
 import {
@@ -290,4 +294,130 @@ export async function getStripeConnectStatus(userId) {
 
   const result = await getConnectAccountStatus(connectId);
   return result;
+}
+
+// ── Earnings ─────────────────────────────────────────
+
+const PERIOD_MONTHS = { month: 1, quarter: 3, year: 12 };
+
+function earningsPeriodStart(period) {
+  const start = new Date();
+  start.setMonth(start.getMonth() - (PERIOD_MONTHS[period] ?? 1));
+  return start;
+}
+
+// Payment amounts are stored in cents (Stripe convention); the earnings
+// dashboard renders raw values as dollars, so convert at the API boundary.
+const centsToDollars = (cents) => Math.round(cents ?? 0) / 100;
+
+/**
+ * Earnings overview for a scholar: period totals plus per-course breakdown.
+ * @param {string} userId
+ * @param {'month'|'quarter'|'year'} period
+ */
+export async function getScholarEarnings(userId, period = "month") {
+  const courses = await Course.find({ instructor: userId }).select("title").lean();
+  const courseIds = courses.map((c) => c._id);
+  const titleById = new Map(courses.map((c) => [String(c._id), c.title]));
+
+  const rows = await Payment.aggregate([
+    {
+      $match: {
+        course: { $in: courseIds },
+        type: "course-purchase",
+        status: "completed",
+        createdAt: { $gte: earningsPeriodStart(period) },
+      },
+    },
+    {
+      $group: {
+        _id: "$course",
+        revenue: { $sum: "$amount" },
+        platformFee: { $sum: "$platformFee" },
+        net: { $sum: "$scholarPayout" },
+        studentCount: { $sum: 1 },
+      },
+    },
+    { $sort: { revenue: -1 } },
+  ]);
+
+  return {
+    totalRevenue: centsToDollars(rows.reduce((sum, r) => sum + r.revenue, 0)),
+    platformFee: centsToDollars(rows.reduce((sum, r) => sum + r.platformFee, 0)),
+    netEarnings: centsToDollars(rows.reduce((sum, r) => sum + r.net, 0)),
+    breakdown: rows.map((row) => ({
+      courseId: String(row._id),
+      title: titleById.get(String(row._id)) ?? "Untitled course",
+      revenue: centsToDollars(row.revenue),
+      studentCount: row.studentCount,
+    })),
+  };
+}
+
+/**
+ * Paginated transaction history for a scholar: course sales (Payment)
+ * unioned with payouts (ScholarPayment), newest first.
+ * @param {string} userId
+ */
+export async function getScholarEarningsDetails(userId, page = 1, limit = 20) {
+  const courses = await Course.find({ instructor: userId }).select("title").lean();
+  const courseIds = courses.map((c) => c._id);
+  const titleById = new Map(courses.map((c) => [String(c._id), c.title]));
+
+  const [result] = await Payment.aggregate([
+    { $match: { course: { $in: courseIds }, type: "course-purchase" } },
+    {
+      $project: {
+        type: { $literal: "course_sale" },
+        course: 1,
+        amount: 1,
+        netAmount: "$scholarPayout",
+        status: 1,
+        createdAt: 1,
+      },
+    },
+    {
+      $unionWith: {
+        coll: ScholarPayment.collection.name,
+        pipeline: [
+          { $match: { scholar: new mongoose.Types.ObjectId(String(userId)) } },
+          {
+            $project: {
+              type: { $literal: "payout" },
+              amount: {
+                $ifNull: ["$courseRevenue.scholarAmount", { $ifNull: ["$stipend.amount", 0] }],
+              },
+              status: 1,
+              createdAt: 1,
+            },
+          },
+        ],
+      },
+    },
+    { $sort: { createdAt: -1, _id: -1 } },
+    {
+      $facet: {
+        transactions: [{ $skip: (page - 1) * limit }, { $limit: limit }],
+        total: [{ $count: "count" }],
+      },
+    },
+  ]);
+
+  // Collapse backend status vocabularies onto the dashboard's completed/pending/failed set
+  const statusMap = { paid: "completed", processing: "pending", refunded: "failed" };
+  const transactions = (result?.transactions ?? []).map((tx) => ({
+    _id: String(tx._id),
+    type: tx.type,
+    courseTitle: tx.course ? titleById.get(String(tx.course)) : undefined,
+    amount: centsToDollars(tx.amount),
+    netAmount: tx.netAmount != null ? centsToDollars(tx.netAmount) : undefined,
+    status: statusMap[tx.status] ?? tx.status,
+    createdAt: tx.createdAt,
+  }));
+
+  const total = result?.total?.[0]?.count ?? 0;
+  return {
+    transactions,
+    pagination: { page, limit, total, pages: Math.ceil(total / limit) || 1 },
+  };
 }

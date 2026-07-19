@@ -8,6 +8,8 @@ import {
   connectStripe,
   getStripeDashboard,
   getStripeConnectStatus,
+  getScholarEarnings,
+  getScholarEarningsDetails,
 } from "../services/scholarService.js";
 
 export const applyForScholarHandler = async (req, res, next) => {
@@ -68,6 +70,31 @@ export const listScholarsHandler = async (req, res, next) => {
     const limit = Math.min(50, Math.max(1, parseInt(req.query.limit, 10) || 10));
 
     const result = await listScholars(page, limit);
+    return res.status(200).json({ ...result, success: true });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// ── Earnings handlers ───────────────────────────────
+
+export const scholarEarningsHandler = async (req, res, next) => {
+  try {
+    const period = ["month", "quarter", "year"].includes(req.query.period)
+      ? req.query.period
+      : "month";
+    const result = await getScholarEarnings(req.user, period);
+    return res.status(200).json({ ...result, success: true });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const scholarEarningsDetailsHandler = async (req, res, next) => {
+  try {
+    const page = Math.max(1, parseInt(req.query.page, 10) || 1);
+    const limit = Math.min(50, Math.max(1, parseInt(req.query.limit, 10) || 20));
+    const result = await getScholarEarningsDetails(req.user, page, limit);
     return res.status(200).json({ ...result, success: true });
   } catch (error) {
     next(error);
