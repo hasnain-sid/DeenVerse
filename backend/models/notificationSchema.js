@@ -24,6 +24,9 @@ const notificationSchema = new mongoose.Schema(
       ref: "Post",
       default: null,
     },
+    // System notification content (course reviews, etc.)
+    message: { type: String, default: null },
+    link: { type: String, default: null },
     read: {
       type: Boolean,
       default: false,

@@ -106,7 +106,7 @@ export async function createFollowNotification(recipientId, senderId) {
  * Create a generic notification and emit it in real-time.
  * Used by other services (post likes, replies, mentions, reposts).
  */
-export async function createAndEmitNotification({ recipientId, senderId, type, postId }) {
+export async function createAndEmitNotification({ recipientId, senderId, type, postId, message, link }) {
   if (recipientId.toString() === senderId.toString()) return; // Don't notify yourself
 
   const notification = await Notification.create({
@@ -114,6 +114,8 @@ export async function createAndEmitNotification({ recipientId, senderId, type, p
     sender: senderId,
     type,
     post: postId || null,
+    ...(message && { message }),
+    ...(link && { link }),
   });
 
   await emitNotification(recipientId, notification);
