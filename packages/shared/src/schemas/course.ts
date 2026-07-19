@@ -100,6 +100,39 @@ export const enrollCourseSchema = z.object({
   paymentSessionId: z.string().optional(),
 });
 
+export const quizQuestionOptionSchema = z.object({
+  text: z.string().min(1),
+  isCorrect: z.boolean(),
+});
+
+export const quizQuestionSchema = z.object({
+  text: z.string().min(1),
+  type: z.enum(['mcq', 'true-false', 'short-answer', 'essay', 'quran-recitation']),
+  options: z.array(quizQuestionOptionSchema).optional(),
+  points: z.number().min(0).optional(),
+  explanation: z.string().optional(),
+  ayahRef: z.string().optional(),
+});
+
+export const createQuizSchema = z.object({
+  title: z.string().min(1).max(200),
+  type: z.enum(['quiz', 'exam', 'certification-exam']).optional(),
+  timeLimit: z.number().min(0).optional(),
+  passingScore: z.number().min(0).max(100),
+  maxAttempts: z.number().min(1).optional(),
+  questions: z.array(quizQuestionSchema).min(1),
+  lesson: z.string().optional(),
+  shuffleQuestions: z.boolean().optional(),
+  showCorrectAnswers: z.boolean().optional(),
+});
+
+export const updateQuizSchema = createQuizSchema.partial();
+
+export const updateProgressSchema = z.object({
+  lessonId: z.string().min(1),
+  completed: z.boolean(),
+});
+
 export const quizAnswerSchema = z.object({
   questionIndex: z.number(),
   answer: z.any(),
@@ -140,6 +173,11 @@ export type CourseModule = z.infer<typeof courseModuleSchema>;
 export type CreateCourse = z.infer<typeof createCourseSchema>;
 export type UpdateCourse = z.infer<typeof updateCourseSchema>;
 export type EnrollCourse = z.infer<typeof enrollCourseSchema>;
+export type QuizQuestionOption = z.infer<typeof quizQuestionOptionSchema>;
+export type QuizQuestion = z.infer<typeof quizQuestionSchema>;
+export type CreateQuiz = z.infer<typeof createQuizSchema>;
+export type UpdateQuiz = z.infer<typeof updateQuizSchema>;
+export type UpdateProgress = z.infer<typeof updateProgressSchema>;
 export type QuizAnswer = z.infer<typeof quizAnswerSchema>;
 export type SubmitQuiz = z.infer<typeof submitQuizSchema>;
 export type CourseReview = z.infer<typeof courseReviewSchema>;
