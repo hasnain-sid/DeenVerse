@@ -175,7 +175,7 @@ export function initSocket(httpServer, corsOptions) {
 
       try {
         // Fetch classroom with host info and course data
-        const Enrollment = (await import("../models/enrollmentSchema.js")).default;
+        const { Enrollment } = await import("../models/enrollmentSchema.js");
         const classroom = await Classroom.findById(classroomId)
           .populate("host", "followers")
           .populate("course", "_id")
@@ -365,7 +365,7 @@ export function initSocket(httpServer, corsOptions) {
       if (!classroomId || typeof callback !== "function") return;
 
       try {
-        const Enrollment = (await import("../models/enrollmentSchema.js")).default;
+        const { Enrollment } = await import("../models/enrollmentSchema.js");
         const classroom = await Classroom.findById(classroomId)
           .select("whiteboardSnapshot access host course")
           .populate("host", "followers")
