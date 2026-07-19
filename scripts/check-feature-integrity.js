@@ -141,9 +141,12 @@ function getFrontendApiCalls() {
       } else if (entry.isFile() && (entry.name.endsWith('.ts') || entry.name.endsWith('.tsx'))) {
         const content = fs.readFileSync(fullPath, 'utf-8');
 
-        // Match: api.get('/path'), api.post('/path'), api.put('/path'), etc.
-        // Also match: api.get(`/path/${var}`)
-        const apiRegex = /api\.(get|post|put|delete|patch)\(\s*[`'"](\/[^`'"]*)[`'"]/g;
+        // Match plain and typed Axios calls, including multiline variants:
+        // api.get('/path'), api.get<Foo>('/path'), api.post<Bar>(
+        //   `/path/${id}`,
+        //   payload,
+        // )
+        const apiRegex = /api\.(get|post|put|delete|patch)\s*(?:<[\s\S]*?>\s*)?\(\s*[`'"](\/[^`'"]*)[`'"]/g;
         let match;
         while ((match = apiRegex.exec(content)) !== null) {
           let apiPath = match[2];
@@ -168,7 +171,8 @@ function getFrontendApiCalls() {
 
 function normalizePath(p) {
   // Remove trailing slashes, normalize param segments
-  return p.replace(/\/+$/, '')
+  return p.replace(/[?#].*$/, '')
+          .replace(/\/+$/, '')
           .replace(/\/:[^/]+/g, '/:param')  // :id, :username → :param
           .toLowerCase();
 }
