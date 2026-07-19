@@ -1,5 +1,6 @@
 import { findAyahIdBySurah, findSurahByAyahId, getAyahMeta,
   getSurahMeta, findJuz, meta } from "quran-meta/hafs";
+import { surahNamesEn } from "quran-meta";
 import { cacheGet, cacheSet } from "./cacheService.js";
 
 const ALQURAN_CLOUD_BASE =
@@ -43,6 +44,33 @@ async function fetchJson(url) {
 }
 
 // ── Public API ──────────────────────────────────────────────────
+
+let surahListCache = null;
+
+/**
+ * Static index of all 114 surahs — names, ayah counts, and the global
+ * ayah id of each surah's first verse (for surah:ayah → global mapping).
+ * Built entirely from quran-meta; no external API call.
+ */
+export function getSurahList() {
+  if (!surahListCache) {
+    surahListCache = Array.from({ length: 114 }, (_, i) => {
+      const number = i + 1;
+      const surahMeta = getSurahMeta(number);
+      const [englishName, englishTranslation] = surahNamesEn[number];
+      return {
+        number,
+        name: surahMeta.name,
+        englishName,
+        englishTranslation,
+        ayahCount: surahMeta.ayahCount,
+        firstAyahId: surahMeta.firstAyahId,
+        isMeccan: surahMeta.isMeccan,
+      };
+    });
+  }
+  return surahListCache;
+}
 
 /**
  * Fetch a single ayah (Arabic + English translation).

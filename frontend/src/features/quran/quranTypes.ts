@@ -1,5 +1,15 @@
 /** Shared TypeScript types for Quran API responses */
 
+export interface SurahInfo {
+    number: number;
+    name: string;
+    englishName: string;
+    englishTranslation: string;
+    ayahCount: number;
+    firstAyahId: number;
+    isMeccan: boolean;
+}
+
 export interface AyahResponse {
     referenceId: string;
     arabic: string;

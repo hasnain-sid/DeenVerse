@@ -1,6 +1,15 @@
-import { getAyah, getRuku, getJuz } from "../services/quranService.js";
+import { getAyah, getRuku, getJuz, getSurahList } from "../services/quranService.js";
 import { AppError } from "../utils/AppError.js";
 import logger from "../config/logger.js";
+
+/**
+ * @desc    Static index of all 114 surahs (names, ayah counts, first global ayah id)
+ * @route   GET /api/v1/quran/surahs
+ * @access  Public
+ */
+export const getSurahs = (_req, res) => {
+    res.status(200).json({ success: true, surahs: getSurahList() });
+};
 
 /**
  * @desc    Fetch a single ayah by global number

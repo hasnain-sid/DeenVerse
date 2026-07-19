@@ -3,9 +3,13 @@ import {
     getAyahByNumber,
     getRukuByNumber,
     getJuzByNumber,
+    getSurahs,
 } from "../controller/quranController.js";
 
 const router = express.Router();
+
+// GET /api/v1/quran/surahs → static surah index (114 entries)
+router.get("/surahs", getSurahs);
 
 // GET /api/v1/quran/ayah/:number → single ayah (1–6236)
 router.get("/ayah/:number", getAyahByNumber);

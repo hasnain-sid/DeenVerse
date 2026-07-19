@@ -1,26 +1,97 @@
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BookOpen, Settings, Check, AlignRight, Book, LayoutList, ChevronLeft, ChevronRight, Heart } from 'lucide-react';
-import { useAyah, useRuku, useJuz } from './useQuranReader';
+import { BookOpen, Settings, Check, AlignRight, Book, LayoutList, ChevronLeft, ChevronRight, Heart, CornerDownRight } from 'lucide-react';
+import { useAyah, useRuku, useJuz, useSurahs } from './useQuranReader';
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 
 type ReadingMode = 'ayah' | 'ruku' | 'juzz';
 
+const STORAGE_KEY = 'quran-reader-position';
+const LIMITS: Record<ReadingMode, number> = { ayah: 6236, ruku: 556, juzz: 30 };
+
+interface StoredPosition {
+    mode?: ReadingMode;
+    ayah?: number;
+    ruku?: number;
+    juz?: number;
+}
+
+function loadPosition(): StoredPosition {
+    try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) return JSON.parse(raw) as StoredPosition;
+    } catch {
+        // Corrupt or unavailable storage — start fresh
+    }
+    return {};
+}
+
+function clampOr(value: number | undefined, max: number, fallback: number) {
+    return value && Number.isInteger(value) && value >= 1 && value <= max ? value : fallback;
+}
+
 export function QuranReaderPage() {
     const navigate = useNavigate();
-    const [readingMode, setReadingMode] = useState<ReadingMode>('ruku');
+    const [readingMode, setReadingMode] = useState<ReadingMode>(() => {
+        const mode = loadPosition().mode;
+        return mode === 'ayah' || mode === 'ruku' || mode === 'juzz' ? mode : 'ruku';
+    });
     const [activeTab, setActiveTab] = useState<'translation' | 'tafseer'>('translation');
     const [arabicFont, setArabicFont] = useState('font-arabic');
     const [showSettings, setShowSettings] = useState(false);
 
-    // Navigation state for each mode
-    const [ayahNumber, setAyahNumber] = useState(1);
-    const [rukuNumber, setRukuNumber] = useState(1);
-    const [juzNumber, setJuzNumber] = useState(1);
+    // Navigation state for each mode — restored from the last visit
+    const [ayahNumber, setAyahNumber] = useState(() => clampOr(loadPosition().ayah, LIMITS.ayah, 1));
+    const [rukuNumber, setRukuNumber] = useState(() => clampOr(loadPosition().ruku, LIMITS.ruku, 1));
+    const [juzNumber, setJuzNumber] = useState(() => clampOr(loadPosition().juz, LIMITS.juzz, 1));
 
-    const ayahQuery = useAyah(ayahNumber);
-    const rukuQuery = useRuku(rukuNumber);
-    const juzQuery = useJuz(juzNumber);
+    useEffect(() => {
+        try {
+            localStorage.setItem(
+                STORAGE_KEY,
+                JSON.stringify({ mode: readingMode, ayah: ayahNumber, ruku: rukuNumber, juz: juzNumber })
+            );
+        } catch {
+            // Storage full/unavailable — persistence is best-effort
+        }
+    }, [readingMode, ayahNumber, rukuNumber, juzNumber]);
+
+    // Only the active mode's content is fetched
+    const ayahQuery = useAyah(ayahNumber, readingMode === 'ayah');
+    const rukuQuery = useRuku(rukuNumber, readingMode === 'ruku');
+    const juzQuery = useJuz(juzNumber, readingMode === 'juzz');
+    const { data: surahs } = useSurahs();
+
+    // Jump-to controls
+    const currentSurah = useMemo(
+        () => surahs?.find((s) => ayahNumber >= s.firstAyahId && ayahNumber < s.firstAyahId + s.ayahCount),
+        [surahs, ayahNumber]
+    );
+    const [jumpInput, setJumpInput] = useState('');
+
+    const handleJump = () => {
+        const n = parseInt(jumpInput, 10);
+        if (isNaN(n)) return;
+        if (readingMode === 'ayah' && currentSurah) {
+            if (n >= 1 && n <= currentSurah.ayahCount) {
+                setAyahNumber(currentSurah.firstAyahId + n - 1);
+                setJumpInput('');
+            }
+        } else if (readingMode === 'ruku' && n >= 1 && n <= LIMITS.ruku) {
+            setRukuNumber(n);
+            setJumpInput('');
+        } else if (readingMode === 'juzz' && n >= 1 && n <= LIMITS.juzz) {
+            setJuzNumber(n);
+            setJumpInput('');
+        }
+    };
 
     const isLoading =
         (readingMode === 'ayah' && ayahQuery.isLoading) ||
@@ -33,9 +104,8 @@ export function QuranReaderPage() {
         (readingMode === 'juzz' && juzQuery.isError);
 
     // Navigation helpers
-    const limits = { ayah: 6236, ruku: 556, juzz: 30 };
     const current = readingMode === 'ayah' ? ayahNumber : readingMode === 'ruku' ? rukuNumber : juzNumber;
-    const max = limits[readingMode];
+    const max = LIMITS[readingMode];
 
     const goNext = () => {
         if (readingMode === 'ayah' && ayahNumber < 6236) setAyahNumber(n => n + 1);
@@ -71,6 +141,55 @@ export function QuranReaderPage() {
                             <span className="capitalize">{mode === 'juzz' ? 'Juzz' : mode.charAt(0).toUpperCase() + mode.slice(1)}</span>
                         </button>
                     ))}
+                </div>
+            </div>
+
+            {/* Jump-to bar */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 mb-8 -mt-4">
+                {readingMode === 'ayah' && (
+                    <Select
+                        value={currentSurah ? String(currentSurah.number) : undefined}
+                        onValueChange={(v) => {
+                            const surah = surahs?.find((s) => s.number === Number(v));
+                            if (surah) setAyahNumber(surah.firstAyahId);
+                        }}
+                    >
+                        <SelectTrigger className="w-full sm:w-[260px] rounded-xl">
+                            <SelectValue placeholder={surahs ? 'Select surah' : 'Loading surahs…'} />
+                        </SelectTrigger>
+                        <SelectContent className="max-h-[320px]">
+                            {surahs?.map((s) => (
+                                <SelectItem key={s.number} value={String(s.number)}>
+                                    {s.number}. {s.englishName} · {s.name}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                )}
+                <div className="flex items-center gap-2">
+                    <input
+                        type="number"
+                        min={1}
+                        max={readingMode === 'ayah' ? currentSurah?.ayahCount ?? 1 : max}
+                        value={jumpInput}
+                        onChange={(e) => setJumpInput(e.target.value)}
+                        onKeyDown={(e) => e.key === 'Enter' && handleJump()}
+                        placeholder={
+                            readingMode === 'ayah'
+                                ? `Ayah 1–${currentSurah?.ayahCount ?? '…'}`
+                                : readingMode === 'ruku'
+                                    ? 'Ruku 1–556'
+                                    : 'Juzz 1–30'
+                        }
+                        className="w-full sm:w-36 px-4 py-2 rounded-xl bg-card border border-border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
+                    />
+                    <button
+                        onClick={handleJump}
+                        disabled={!jumpInput}
+                        className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium bg-secondary hover:bg-secondary/80 text-foreground transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                    >
+                        <CornerDownRight className="w-4 h-4" /> Go
+                    </button>
                 </div>
             </div>
 
