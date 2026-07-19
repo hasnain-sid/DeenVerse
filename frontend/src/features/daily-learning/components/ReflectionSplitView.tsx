@@ -1,5 +1,8 @@
-import { Sparkles } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Sparkles, Lock, Globe, CheckCircle2, Loader2 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
 import { ShareActionsMenu } from '@/features/share/ShareActionsMenu';
 import type { SharePayload } from '@/features/share/types';
 
@@ -52,7 +55,10 @@ export interface DailyLearningContent {
 
 interface ReflectionSplitViewProps {
     content: DailyLearningContent | null;
-    onComplete?: () => void;
+    isAuthenticated?: boolean;
+    saving?: boolean;
+    saved?: boolean;
+    onSaveReflection?: (reflectionText: string, isPrivate: boolean) => void;
 }
 
 /** Renders a single ayah view matching the Daily Learning Prototype 1 design */
@@ -131,7 +137,21 @@ function MultiAyahPanel({ content }: { content: DailyLearningContent }) {
     );
 }
 
-export function ReflectionSplitView({ content, onComplete }: ReflectionSplitViewProps) {
+export function ReflectionSplitView({
+    content,
+    isAuthenticated = false,
+    saving = false,
+    saved = false,
+    onSaveReflection,
+}: ReflectionSplitViewProps) {
+    const [reflectionText, setReflectionText] = useState('');
+    const [isPrivate, setIsPrivate] = useState(true);
+
+    // Reset the draft when the learning unit changes (tab switch / new day)
+    useEffect(() => {
+        setReflectionText('');
+    }, [content?.referenceId]);
+
     if (!content) {
         return (
             <div className="text-center py-16 text-muted-foreground">
@@ -189,13 +209,51 @@ export function ReflectionSplitView({ content, onComplete }: ReflectionSplitView
                     </p>
                 </div>
 
-                <Button
-                    onClick={onComplete}
-                    variant="secondary"
-                    className="w-full py-4 rounded-xl font-semibold bg-zinc-800/50 hover:bg-emerald-500/20 text-zinc-200 hover:text-emerald-400 border border-zinc-700/50 hover:border-emerald-500/30 transition-all duration-300"
-                >
-                    I completed this reflection
-                </Button>
+                {/* Reflection composer */}
+                {!isAuthenticated ? (
+                    <div className="bg-[#0a0a0a] border border-zinc-800/80 rounded-xl p-6 text-center">
+                        <p className="text-zinc-400 mb-4">
+                            Log in to write your reflection and track your daily learning.
+                        </p>
+                        <Button asChild variant="secondary" className="rounded-xl">
+                            <Link to="/login">Log in</Link>
+                        </Button>
+                    </div>
+                ) : saved ? (
+                    <div className="bg-[#0a0a0a] border border-emerald-500/30 rounded-xl p-6 flex items-center justify-center gap-3 text-emerald-400">
+                        <CheckCircle2 className="w-5 h-5" />
+                        <span className="font-semibold">Reflection saved for today</span>
+                    </div>
+                ) : (
+                    <div className="space-y-3">
+                        <Textarea
+                            value={reflectionText}
+                            onChange={(e) => setReflectionText(e.target.value)}
+                            placeholder="What did this teach you? Write your reflection…"
+                            maxLength={2000}
+                            className="min-h-[100px] bg-[#0a0a0a] border-zinc-800/80 text-zinc-200 placeholder:text-zinc-600 rounded-xl resize-none focus-visible:ring-emerald-500/40"
+                        />
+                        <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
+                            <button
+                                type="button"
+                                onClick={() => setIsPrivate((p) => !p)}
+                                className="flex items-center gap-2 text-sm text-zinc-400 hover:text-zinc-200 transition-colors"
+                            >
+                                {isPrivate ? <Lock className="w-4 h-4" /> : <Globe className="w-4 h-4" />}
+                                {isPrivate ? 'Private reflection' : 'Visible on your profile'}
+                            </button>
+                            <Button
+                                onClick={() => onSaveReflection?.(reflectionText.trim(), isPrivate)}
+                                disabled={saving || reflectionText.trim().length === 0}
+                                variant="secondary"
+                                className="py-4 px-6 rounded-xl font-semibold bg-zinc-800/50 hover:bg-emerald-500/20 text-zinc-200 hover:text-emerald-400 border border-zinc-700/50 hover:border-emerald-500/30 transition-all duration-300"
+                            >
+                                {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                                Save reflection
+                            </Button>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

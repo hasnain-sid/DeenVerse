@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { BookOpen } from 'lucide-react';
 import { DailyLearningTabs } from './components/DailyLearningTabs';
 import { ReflectionSplitView, type LearningUnitType } from './components/ReflectionSplitView';
+import { ReflectionHistory } from './components/ReflectionHistory';
 import { useDailyLearningContent, useSaveReflection } from './useDailyLearning';
 import { useAuthStore } from '@/stores/authStore';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -11,22 +12,24 @@ export function DailyLearningPage() {
     const { data: content, isLoading, isError } = useDailyLearningContent(activeUnit);
     const saveReflection = useSaveReflection();
     const { isAuthenticated } = useAuthStore();
+    // Track which units have been saved this visit so the composer collapses per tab
+    const [savedUnits, setSavedUnits] = useState<Partial<Record<LearningUnitType, boolean>>>({});
 
-    const handleComplete = () => {
-        if (!content) return;
+    const handleSaveReflection = (reflectionText: string, isPrivate: boolean) => {
+        if (!content || !reflectionText) return;
 
-        if (!isAuthenticated) {
-            // For unauthenticated users, just show a visual confirmation
-            return;
-        }
-
-        saveReflection.mutate({
-            learningType: content.type,
-            referenceId: content.referenceId,
-            title: content.title,
-            reflectionText: 'Completed daily reflection',
-            isPrivate: true,
-        });
+        saveReflection.mutate(
+            {
+                learningType: content.type,
+                referenceId: content.referenceId,
+                title: content.title,
+                reflectionText,
+                isPrivate,
+            },
+            {
+                onSuccess: () => setSavedUnits((prev) => ({ ...prev, [content.type]: true })),
+            }
+        );
     };
 
     return (
@@ -62,8 +65,17 @@ export function DailyLearningPage() {
                     Failed to load today's learning content. Please try again later.
                 </div>
             ) : (
-                <ReflectionSplitView content={content ?? null} onComplete={handleComplete} />
+                <ReflectionSplitView
+                    content={content ?? null}
+                    isAuthenticated={isAuthenticated}
+                    saving={saveReflection.isPending}
+                    saved={!!savedUnits[activeUnit]}
+                    onSaveReflection={handleSaveReflection}
+                />
             )}
+
+            {/* Past reflections journal */}
+            {isAuthenticated && <ReflectionHistory type={activeUnit} />}
         </div>
     );
 }
