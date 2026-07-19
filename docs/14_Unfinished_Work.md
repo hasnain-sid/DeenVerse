@@ -4,16 +4,16 @@
 
 ## 1. The unmerged branch (blocking everything)
 
-`hotfix/vercel-build-fix` is pushed but was never PR'd or merged. Until it lands on `main`, the security hardening recovered in July exists only on this branch, and `main` remains unsafe to deploy. **This is the single most important unfinished item.**
+✅ **Resolved 2026-07-20** — `hotfix/vercel-build-fix` was fast-forwarded onto `main` and pushed (tests + build verified first). `main` now carries the July security hardening.
 
 ## 2. Backends waiting for frontends ("idle inventory")
 
 | Feature | Backend | What's missing |
 |---|---|---|
-| Daily Learning | ✅ content + progress API | Finish the partially built UI (board: high priority) |
-| Quran Reader | ✅ cached alquran.cloud proxy | Finish the partially built UI (high priority) |
+| Daily Learning | ✅ content + progress API | ✅ **Done 2026-07-20** — reflection composer, login prompt, history journal |
+| Quran Reader | ✅ cached alquran.cloud proxy + surah index | ✅ **Done 2026-07-20** — surah/ayah jump navigation, position persistence |
 | Ruhani Hub | ✅ **13 routes, zero consumers** | Entire frontend (design doc exists: `docs/ruhani-hub-design.md`) |
-| Moderation | ✅ reports + 7 admin actions + audit log | Admin panel UI — and enforcement of `banned` at auth, without which the whole feature is inert |
+| Moderation | ✅ reports + 7 admin actions + audit log | Admin panel UI — `banned` enforcement at auth **done 2026-07-20** (login + every authenticated request) |
 | Analytics | ✅ event tracking (3 routes) | Dashboard UI |
 | Uploads (S3 presign) | ✅ code complete | Real-world verification: AWS env vars + bucket CORS never confirmed |
 | Email (SES) | ✅ password reset | Verification emails, digests, notification emails |
@@ -26,8 +26,8 @@
 
 State as of the July audit — most are **superseded and should be closed**, not done:
 
-- **TASK-044** — *the only genuinely urgent one*: Dependabot backlog, 3 critical / 32 high vulns, untouched since March.
-- **TASK-029** (scholar earnings overview API) — real backlog item, still plausible.
+- **TASK-044** — *the only genuinely urgent one*: Dependabot backlog, untouched since March (GitHub reported 4 critical / 98 high on push 2026-07-20).
+- **TASK-029** (scholar earnings overview API) — ✅ **done 2026-07-20**: `GET /scholars/earnings` + `/earnings/details` shipped with integration tests; close the task.
 - **TASK-030/033** stuck `in_progress`; **TASK-031/032/034, 051/052/054/055, 073–076** in backlog — all belong to a "5 prototypes" experiment that real shipped pages superseded. Close them.
 - **TASK-001/021** stuck `in review` — stale; verify and close.
 
@@ -35,8 +35,8 @@ Remember the standing rule: Tick statuses are untrustworthy in both directions �
 
 ## 5. Known dangling ends in code and config
 
-- **Orphan endpoint** `POST /user/:param` — flagged by `npm run check:integrity`, no frontend consumer. Remove it.
-- **Dead CI staging deploy** — S3/CloudFront job keyed to the deleted `redesign/v2-modern` branch. Delete or repoint.
+- ~~**Orphan endpoint** `POST /user/:param`~~ — ✅ fixed 2026-07-20: it was a dynamic `/user/${action}` template the scanner couldn't match; call sites are now static. `check:integrity` reports zero orphan frontend calls.
+- ~~**Dead CI staging deploy**~~ — ✅ removed 2026-07-20.
 - **Unused `role` enum** on the user model — admin authz still runs on `ADMIN_IDS`; consolidation planned.
 - **Unused `TTL.SESSION`** constant in `cacheService` — placed for the (unbuilt) refresh-token denylist.
 - **`certificateOnCompletion`** flag on courses — no certificate generation exists behind it.
