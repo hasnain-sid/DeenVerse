@@ -21,7 +21,7 @@ const enrollmentSchema = new mongoose.Schema(
       completedLessons: [String],
       currentModule: { type: Number, default: 0 },
       currentLesson: { type: Number, default: 0 },
-      percentComplete: { type: Number, default: 0 },
+      percentComplete: { type: Number, default: 0, min: 0, max: 100 },
       lastAccessedAt: Date,
     },
     payment: {
@@ -50,5 +50,6 @@ const enrollmentSchema = new mongoose.Schema(
 // Compound unique index — one enrollment per student per course
 enrollmentSchema.index({ student: 1, course: 1 }, { unique: true });
 enrollmentSchema.index({ course: 1, status: 1 });
+enrollmentSchema.index({ student: 1, status: 1 });
 
 export const Enrollment = mongoose.model("Enrollment", enrollmentSchema);

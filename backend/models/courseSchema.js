@@ -63,7 +63,7 @@ const courseSchema = new mongoose.Schema(
         enum: ["free", "paid", "subscription"],
         default: "free",
       },
-      amount: { type: Number, default: 0 },
+      amount: { type: Number, default: 0, min: 0 },
       currency: { type: String, default: "usd" },
       stripePriceId: String,
     },
@@ -111,13 +111,13 @@ const courseSchema = new mongoose.Schema(
       enum: ["draft", "pending-review", "published", "archived"],
       default: "draft",
     },
-    enrollmentCount: { type: Number, default: 0 },
+    enrollmentCount: { type: Number, default: 0, min: 0 },
     rating: {
-      average: { type: Number, default: 0 },
-      count: { type: Number, default: 0 },
+      average: { type: Number, default: 0, min: 0, max: 5 },
+      count: { type: Number, default: 0, min: 0 },
     },
 
-    maxStudents: { type: Number, default: 0 },
+    maxStudents: { type: Number, default: 0, min: 0 },
     certificateOnCompletion: { type: Boolean, default: false },
     autoEnroll: { type: Boolean, default: false },
 

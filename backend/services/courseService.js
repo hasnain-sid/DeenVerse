@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import slugify from "slugify";
 import { Course } from "../models/courseSchema.js";
 import { Enrollment } from "../models/enrollmentSchema.js";
@@ -10,6 +11,18 @@ import logger from "../config/logger.js";
 
 // ── Helpers ──────────────────────────────────────────
 
+let _cachedAdminIds = null;
+
+function getAdminIds() {
+  if (!_cachedAdminIds) {
+    _cachedAdminIds = (process.env.ADMIN_IDS || "")
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+  }
+  return _cachedAdminIds;
+}
+
 /**
  * Verify the user owns the course (or is admin).
  * Returns the course document.
@@ -20,10 +33,7 @@ async function verifyCourseOwnership(userId, slug) {
     throw new AppError("Course not found", 404);
   }
 
-  const adminIds = (process.env.ADMIN_IDS || "")
-    .split(",")
-    .map((s) => s.trim())
-    .filter(Boolean);
+  const adminIds = getAdminIds();
 
   const isOwner = course.instructor.toString() === userId.toString();
   const isAdmin = adminIds.includes(userId.toString());
@@ -455,18 +465,13 @@ export async function enrollInCourse(userId, slug, paymentSessionId) {
     throw new AppError("Already enrolled in this course", 400);
   }
 
-  // Check max students limit (0 = unlimited)
-  if (course.maxStudents > 0 && course.enrollmentCount >= course.maxStudents) {
-    throw new AppError("This course has reached its maximum number of students", 400);
-  }
-
   const enrollmentData = {
     student: userId,
     course: course._id,
     status: "active",
   };
 
-  // Handle paid courses
+  // Handle paid courses — validate payment before starting transaction
   if (course.pricing.type === "paid" && !course.autoEnroll) {
     if (!paymentSessionId) {
       throw new AppError("Payment required", 402);
@@ -476,6 +481,7 @@ export async function enrollInCourse(userId, slug, paymentSessionId) {
       stripeSessionId: paymentSessionId,
       status: "completed",
       course: course._id,
+      user: userId,
     });
     if (!payment) {
       throw new AppError("Payment required", 402);
@@ -488,18 +494,43 @@ export async function enrollInCourse(userId, slug, paymentSessionId) {
     };
   }
 
-  const enrollment = await Enrollment.create(enrollmentData);
+  // Atomic enrollment: transaction prevents race conditions on maxStudents
+  // and ensures all three writes (enrollment, course count, instructor count) succeed together
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  try {
+    // Atomic capacity check + increment — prevents two concurrent enrollments
+    // from both passing the maxStudents check
+    const capacityUpdate = await Course.findOneAndUpdate(
+      {
+        _id: course._id,
+        ...(course.maxStudents > 0
+          ? { $expr: { $lt: ["$enrollmentCount", "$maxStudents"] } }
+          : {}),
+      },
+      { $inc: { enrollmentCount: 1 } },
+      { new: true, session }
+    );
+    if (!capacityUpdate) {
+      throw new AppError("This course has reached its maximum number of students", 400);
+    }
 
-  // Increment course enrollment count
-  await Course.updateOne({ _id: course._id }, { $inc: { enrollmentCount: 1 } });
+    const enrollment = await Enrollment.create([enrollmentData], { session });
 
-  // Increment instructor's totalStudents
-  await User.updateOne(
-    { _id: course.instructor },
-    { $inc: { "scholarProfile.totalStudents": 1 } }
-  );
+    await User.updateOne(
+      { _id: course.instructor },
+      { $inc: { "scholarProfile.totalStudents": 1 } },
+      { session }
+    );
 
-  return { enrollment };
+    await session.commitTransaction();
+    return { enrollment: enrollment[0] };
+  } catch (err) {
+    await session.abortTransaction();
+    throw err;
+  } finally {
+    session.endSession();
+  }
 }
 
 /**
@@ -531,6 +562,10 @@ export async function updateProgress(userId, slug, lessonId, completed, enrollme
     throw new AppError("Enrollment not found", 404);
   }
 
+  if (!["active", "completed"].includes(enrollmentDoc.status)) {
+    throw new AppError("Cannot update progress on a dropped or suspended enrollment", 400);
+  }
+
   // Fetch full course if not already available
   const courseDoc = course || await Course.findOne({ slug }).lean();
   if (!courseDoc) {
@@ -538,14 +573,26 @@ export async function updateProgress(userId, slug, lessonId, completed, enrollme
   }
 
   if (completed) {
-    // Add lessonId if not already present
-    if (!enrollmentDoc.progress.completedLessons.includes(lessonId)) {
-      enrollmentDoc.progress.completedLessons.push(lessonId);
-    }
+    await Enrollment.updateOne(
+      { _id: enrollment._id },
+      {
+        $addToSet: { "progress.completedLessons": lessonId },
+        $set: { "progress.lastAccessedAt": new Date() },
+      }
+    );
   } else {
-    // Allow un-completing a lesson
-    enrollmentDoc.progress.completedLessons =
-      enrollmentDoc.progress.completedLessons.filter((id) => id !== lessonId);
+    await Enrollment.updateOne(
+      { _id: enrollment._id },
+      {
+        $pull: { "progress.completedLessons": lessonId },
+        $set: { "progress.lastAccessedAt": new Date() },
+      }
+    );
+  }
+
+  const updated = await Enrollment.findById(enrollment._id);
+  if (!updated) {
+    throw new AppError("Enrollment not found", 404);
   }
 
   // Count total lessons across all modules
@@ -555,28 +602,24 @@ export async function updateProgress(userId, slug, lessonId, completed, enrollme
   }
 
   // Recalculate percent complete
-  enrollmentDoc.progress.percentComplete =
+  updated.progress.percentComplete =
     totalLessons > 0
-      ? Math.round(
-          (enrollmentDoc.progress.completedLessons.length / totalLessons) * 100
-        )
+      ? Math.round((updated.progress.completedLessons.length / totalLessons) * 100)
       : 0;
 
-  enrollmentDoc.progress.lastAccessedAt = new Date();
-
   // Auto-complete if 100%
-  if (enrollmentDoc.progress.percentComplete === 100 && enrollmentDoc.status !== "completed") {
-    enrollmentDoc.status = "completed";
-    enrollmentDoc.completedAt = new Date();
-  } else if (enrollmentDoc.progress.percentComplete < 100 && enrollmentDoc.status === "completed") {
+  if (updated.progress.percentComplete === 100 && updated.status !== "completed") {
+    updated.status = "completed";
+    updated.completedAt = new Date();
+  } else if (updated.progress.percentComplete < 100 && updated.status === "completed") {
     // Re-activate if un-completing brought it below 100
-    enrollmentDoc.status = "active";
-    enrollmentDoc.completedAt = undefined;
+    updated.status = "active";
+    updated.completedAt = undefined;
   }
 
-  await enrollmentDoc.save();
+  await updated.save();
 
-  return { enrollment: enrollmentDoc.toObject() };
+  return { enrollment: updated.toObject() };
 }
 
 /**
@@ -724,11 +767,14 @@ export async function reviewCourse(adminId, slug, decision, reason) {
   }
 
   // Notify the instructor
+  const statusText = decision === "approved" ? "approved and published" : "returned for revisions";
   try {
     await createAndEmitNotification({
       recipientId: course.instructor,
       senderId: adminId,
       type: "system",
+      message: `Your course "${course.title}" has been ${statusText}.`,
+      link: `/courses/${course.slug}`,
     });
   } catch (err) {
     logger.warn(`Failed to send course review notification to instructor ${course.instructor}`, {
