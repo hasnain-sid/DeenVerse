@@ -41,6 +41,9 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+        cleanupOutdatedCaches: true,
+        skipWaiting: true,
+        clientsClaim: true,
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
@@ -58,9 +61,14 @@ export default defineConfig({
             options: { cacheName: 'hadith-cache', expiration: { maxEntries: 100, maxAgeSeconds: 24 * 60 * 60 } },
           },
           {
-            urlPattern: /\/api\/.*/i,
+            // Cache non-auth API reads only; never cache auth/session endpoints.
+            urlPattern: /\/api\/v1\/(?!user\/(login|logout|register|refresh|me|forgot-password|reset-password)).*/i,
             handler: 'NetworkFirst',
-            options: { cacheName: 'api-cache', expiration: { maxEntries: 50, maxAgeSeconds: 5 * 60 } },
+            options: {
+              cacheName: 'api-cache',
+              cacheableResponse: { statuses: [200] },
+              expiration: { maxEntries: 50, maxAgeSeconds: 5 * 60 },
+            },
           },
         ],
       },
