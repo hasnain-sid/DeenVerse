@@ -19,11 +19,11 @@ const quizAttemptSchema = new mongoose.Schema(
         isCorrect: Boolean,
       },
     ],
-    score: Number,
+    score: { type: Number, min: 0, max: 100 },
     passed: Boolean,
     startedAt: { type: Date, default: Date.now },
     submittedAt: Date,
-    attempt: { type: Number, required: true },
+    attempt: { type: Number, required: true, min: 1 },
   },
   { timestamps: true }
 );

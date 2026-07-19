@@ -8,13 +8,16 @@ import { AppError } from "../utils/AppError.js";
 
 // ── Helpers ──────────────────────────────────────────
 
-const ADMIN_IDS_CACHE = null;
+let _cachedAdminIds = null;
 
 function getAdminIds() {
-  return (process.env.ADMIN_IDS || "")
-    .split(",")
-    .map((s) => s.trim())
-    .filter(Boolean);
+  if (!_cachedAdminIds) {
+    _cachedAdminIds = (process.env.ADMIN_IDS || "")
+      .split(",")
+      .map((s) => s.trim())
+      .filter(Boolean);
+  }
+  return _cachedAdminIds;
 }
 
 async function isUserAdmin(userId) {
@@ -40,6 +43,60 @@ async function verifyCourseOwnershipForQuiz(userId, courseId) {
   }
 
   return course;
+}
+
+function serializeQuizMeta(quiz) {
+  return {
+    _id: String(quiz._id),
+    title: quiz.title,
+    type: quiz.type,
+    timeLimit: quiz.timeLimit,
+    passingScore: quiz.passingScore,
+    maxAttempts: quiz.maxAttempts,
+    shuffleQuestions: quiz.shuffleQuestions,
+    showCorrectAnswers: quiz.showCorrectAnswers,
+    totalQuestions: quiz.questions?.length || 0,
+  };
+}
+
+function serializeAttempt(attempt) {
+  return {
+    _id: String(attempt._id),
+    attempt: attempt.attempt,
+    startedAt: attempt.startedAt,
+    submittedAt: attempt.submittedAt || null,
+    score: attempt.score ?? null,
+    passed: attempt.passed ?? null,
+  };
+}
+
+function serializeQuestionForStart(question, index) {
+  const serialized = {
+    _id: question._id ? String(question._id) : `question-${index}`,
+    text: question.text,
+    type: question.type,
+    points: question.points || 1,
+  };
+
+  if (question.ayahRef) {
+    serialized.ayahRef = question.ayahRef;
+  }
+
+  if (question.options && question.options.length > 0) {
+    serialized.options = question.options.map((opt) => ({ text: opt.text }));
+  }
+
+  return serialized;
+}
+
+function serializeQuestionForResults(question, index) {
+  const serialized = {
+    ...serializeQuestionForStart(question, index),
+    explanation: question.explanation || null,
+    correctOptionIndex: question.options?.findIndex((opt) => opt.isCorrect) ?? null,
+  };
+
+  return serialized;
 }
 
 // ── Scholar Quiz CRUD ────────────────────────────────
@@ -105,7 +162,15 @@ export async function deleteQuiz(userId, quizId) {
 
   await verifyCourseOwnershipForQuiz(userId, quiz.course);
 
-  // Clean up related attempts
+  // Soft-archive if students have submitted attempts (preserves grade history)
+  const hasAttempts = await QuizAttempt.exists({ quiz: quiz._id, submittedAt: { $ne: null } });
+  if (hasAttempts) {
+    quiz.status = "archived";
+    await quiz.save();
+    return { message: "Quiz archived (has existing student attempts)" };
+  }
+
+  // No submitted attempts — safe to hard delete
   await QuizAttempt.deleteMany({ quiz: quiz._id });
   await quiz.deleteOne();
 
@@ -127,6 +192,10 @@ export async function startQuiz(userId, quizId) {
   const quiz = await Quiz.findById(quizId).lean();
   if (!quiz) {
     throw new AppError("Quiz not found", 404);
+  }
+
+  if (quiz.status === "archived") {
+    throw new AppError("This quiz is no longer available", 410);
   }
 
   // Verify enrollment
@@ -158,31 +227,12 @@ export async function startQuiz(userId, quizId) {
     startedAt: new Date(),
   });
 
-  // Strip correct answers from questions
-  const strippedQuestions = quiz.questions.map((q) => {
-    const question = {
-      text: q.text,
-      type: q.type,
-      points: q.points,
-      ayahRef: q.ayahRef || undefined,
-    };
-
-    if (q.options && q.options.length > 0) {
-      question.options = q.options.map((opt) => ({ text: opt.text }));
-    }
-
-    return question;
-  });
-
   return {
-    attempt: {
-      id: attempt._id,
-      attempt: attempt.attempt,
-      startedAt: attempt.startedAt,
-    },
-    questions: strippedQuestions,
-    timeLimit: quiz.timeLimit,
-    totalQuestions: quiz.questions.length,
+    quiz: serializeQuizMeta(quiz),
+    attempt: serializeAttempt(attempt),
+    questions: quiz.questions.map((question, index) =>
+      serializeQuestionForStart(question, index)
+    ),
   };
 }
 
@@ -233,19 +283,15 @@ export async function submitQuiz(userId, quizId, attemptId, answers) {
   let earnedPoints = 0;
   let totalPoints = 0;
   const gradedAnswers = [];
+  const answerMap = new Map((answers || []).map((ans) => [ans.questionIndex, ans.answer]));
 
   for (const question of quiz.questions) {
     totalPoints += question.points || 1;
   }
 
-  for (const ans of answers) {
-    const { questionIndex, answer } = ans;
+  for (let questionIndex = 0; questionIndex < quiz.questions.length; questionIndex += 1) {
     const question = quiz.questions[questionIndex];
-
-    if (!question) {
-      gradedAnswers.push({ questionIndex, answer, isCorrect: false });
-      continue;
-    }
+    const answer = answerMap.has(questionIndex) ? answerMap.get(questionIndex) : null;
 
     let isCorrect = false;
 
@@ -314,20 +360,20 @@ export async function submitQuiz(userId, quizId, attemptId, answers) {
 
   // Build response
   const response = {
+    quiz: serializeQuizMeta(quiz),
+    attempt: serializeAttempt(attempt),
     score,
     passed,
-    attempt: attempt.attempt,
     earnedPoints,
     totalPoints,
+    answers: gradedAnswers,
   };
 
   // Include correct answers if quiz allows it
   if (quiz.showCorrectAnswers) {
-    response.correctAnswers = quiz.questions.map((q, idx) => ({
-      questionIndex: idx,
-      correctOption: q.options?.findIndex((o) => o.isCorrect) ?? null,
-      explanation: q.explanation || null,
-    }));
+    response.questions = quiz.questions.map((question, index) =>
+      serializeQuestionForResults(question, index)
+    );
   }
 
   return response;
@@ -358,17 +404,11 @@ export async function getQuizResults(userId, quizId) {
     .map((a) => a.score);
 
   return {
-    quiz: {
-      _id: quiz._id,
-      title: quiz.title,
-      type: quiz.type,
-      passingScore: quiz.passingScore,
-      maxAttempts: quiz.maxAttempts,
-    },
-    attempts,
-    bestScore: scores.length > 0 ? Math.max(...scores) : null,
+    quiz: serializeQuizMeta(quiz),
+    attempts: attempts.map((attempt) => serializeAttempt(attempt)),
+    bestScore: scores.length > 0 ? Math.max(...scores) : 0,
     passed: attempts.some((a) => a.passed === true),
     attemptsUsed: attempts.length,
-    attemptsRemaining: quiz.maxAttempts - attempts.length,
+    attemptsRemaining: Math.max(quiz.maxAttempts - attempts.length, 0),
   };
 }
