@@ -275,7 +275,7 @@ export function useFollow() {
 
   return useMutation({
     mutationFn: async ({ userId, action }: { userId: string; action: 'follow' | 'unfollow' }) => {
-      const { data } = await api.post(`/user/${action}`, { id: userId });
+      const { data } = await api.post(action === 'follow' ? '/user/follow' : '/user/unfollow', { id: userId });
       return data;
     },
     onSuccess: (_data, { action }) => {
