@@ -402,11 +402,17 @@ describe("Payment Flow", () => {
       },
     });
 
-    // Create course
+    // Create course (valid against the real courseSchema, which is registered
+    // whenever any imported service pulls in models/courseSchema.js)
     const Course = mongoose.model("Course");
     await Course.create({
       title: "Intro to Tafseer",
       slug: "intro-to-tafseer",
+      description: "Foundations of Quranic exegesis.",
+      category: "tafseer",
+      level: "beginner",
+      type: "self-paced",
+      pricing: { type: "paid", amount: 4999 },
       price: 4999,
       instructor: instructor._id,
     });

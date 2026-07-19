@@ -206,8 +206,14 @@ export async function createCheckoutSession(userId, courseSlug, successUrl, canc
     throw new AppError("Instructor has not completed Stripe Connect setup", 400);
   }
 
+  // Course price lives at pricing.amount on the current schema; legacy docs used price
+  const price = course.pricing?.amount ?? course.price;
+  if (!price || price <= 0) {
+    throw new AppError("This course is not available for purchase", 400);
+  }
+
   const commissionRate = parseFloat(process.env.COURSE_COMMISSION_RATE || "0.30");
-  const applicationFee = Math.round(course.price * commissionRate);
+  const applicationFee = Math.round(price * commissionRate);
 
   try {
     const session = await getStripe().checkout.sessions.create({
@@ -218,7 +224,7 @@ export async function createCheckoutSession(userId, courseSlug, successUrl, canc
           price_data: {
             currency: "usd",
             product_data: { name: course.title },
-            unit_amount: course.price,
+            unit_amount: price,
           },
           quantity: 1,
         },
