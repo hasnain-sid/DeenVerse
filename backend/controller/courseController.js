@@ -1,4 +1,13 @@
 import {
+  createCourseSchema,
+  updateCourseSchema,
+  courseModuleSchema,
+  enrollCourseSchema,
+  updateProgressSchema,
+  courseReviewSchema,
+} from "@deenverse/shared";
+import { AppError } from "../utils/AppError.js";
+import {
   createCourse,
   browseCourses,
   getCourseBySlug,
@@ -23,7 +32,11 @@ import {
 
 export const createCourseHandler = async (req, res, next) => {
   try {
-    const result = await createCourse(req.user, req.body);
+    const parsed = createCourseSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return next(new AppError(parsed.error.errors[0].message, 400));
+    }
+    const result = await createCourse(req.user, parsed.data);
     return res.status(201).json({ ...result, success: true });
   } catch (error) {
     next(error);
@@ -102,7 +115,11 @@ export const getCourseBySlugHandler = async (req, res, next) => {
 export const updateCourseHandler = async (req, res, next) => {
   try {
     const { slug } = req.params;
-    const result = await updateCourse(req.user, slug, req.body);
+    const parsed = updateCourseSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return next(new AppError(parsed.error.errors[0].message, 400));
+    }
+    const result = await updateCourse(req.user, slug, parsed.data);
     return res.status(200).json({ ...result, success: true });
   } catch (error) {
     next(error);
@@ -134,7 +151,11 @@ export const publishCourseHandler = async (req, res, next) => {
 export const addModuleHandler = async (req, res, next) => {
   try {
     const { slug } = req.params;
-    const result = await addModule(req.user, slug, req.body);
+    const parsed = courseModuleSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return next(new AppError(parsed.error.errors[0].message, 400));
+    }
+    const result = await addModule(req.user, slug, parsed.data);
     return res.status(201).json({ ...result, success: true });
   } catch (error) {
     next(error);
@@ -144,7 +165,11 @@ export const addModuleHandler = async (req, res, next) => {
 export const updateModuleHandler = async (req, res, next) => {
   try {
     const { slug, moduleIndex } = req.params;
-    const result = await updateModule(req.user, slug, moduleIndex, req.body);
+    const parsed = courseModuleSchema.partial().safeParse(req.body);
+    if (!parsed.success) {
+      return next(new AppError(parsed.error.errors[0].message, 400));
+    }
+    const result = await updateModule(req.user, slug, moduleIndex, parsed.data);
     return res.status(200).json({ ...result, success: true });
   } catch (error) {
     next(error);
@@ -166,8 +191,11 @@ export const deleteModuleHandler = async (req, res, next) => {
 export const enrollInCourseHandler = async (req, res, next) => {
   try {
     const { slug } = req.params;
-    const { paymentSessionId } = req.body;
-    const result = await enrollInCourse(req.user, slug, paymentSessionId);
+    const parsed = enrollCourseSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return next(new AppError(parsed.error.errors[0].message, 400));
+    }
+    const result = await enrollInCourse(req.user, slug, parsed.data.paymentSessionId);
     return res.status(200).json({ ...result, success: true });
   } catch (error) {
     next(error);
@@ -186,7 +214,11 @@ export const getCourseProgressHandler = async (req, res, next) => {
 export const updateProgressHandler = async (req, res, next) => {
   try {
     const { slug } = req.params;
-    const { lessonId, completed } = req.body;
+    const parsed = updateProgressSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return next(new AppError(parsed.error.errors[0].message, 400));
+    }
+    const { lessonId, completed } = parsed.data;
     const result = await updateProgress(req.user, slug, lessonId, completed, req.enrollment, req.course);
     return res.status(200).json({ ...result, success: true });
   } catch (error) {
@@ -222,7 +254,11 @@ export const getAdminCoursesHandler = async (req, res, next) => {
 export const reviewCourseHandler = async (req, res, next) => {
   try {
     const { slug } = req.params;
-    const { decision, reason } = req.body;
+    const parsed = courseReviewSchema.safeParse(req.body);
+    if (!parsed.success) {
+      return next(new AppError(parsed.error.errors[0].message, 400));
+    }
+    const { decision, reason } = parsed.data;
     const result = await reviewCourse(req.user, slug, decision, reason);
     return res.status(200).json({ ...result, success: true });
   } catch (error) {

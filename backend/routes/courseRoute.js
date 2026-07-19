@@ -48,9 +48,9 @@ router.put("/:slug/progress", isAuthenticated, isEnrolled, updateProgressHandler
 router.get("/:slug/lessons/:lessonId", isAuthenticated, getLessonContentHandler);
 
 // ── Module management ────────────────────────────────
-router.post("/:slug/modules", isAuthenticated, addModuleHandler);
-router.put("/:slug/modules/:moduleIndex", isAuthenticated, updateModuleHandler);
-router.delete("/:slug/modules/:moduleIndex", isAuthenticated, deleteModuleHandler);
+router.post("/:slug/modules", isAuthenticated, isScholar, addModuleHandler);
+router.put("/:slug/modules/:moduleIndex", isAuthenticated, isScholar, updateModuleHandler);
+router.delete("/:slug/modules/:moduleIndex", isAuthenticated, isScholar, deleteModuleHandler);
 
 // ── Quiz management (scholar) ────────────────────────
 router.post("/:slug/quizzes", isAuthenticated, isScholar, createQuizHandler);
