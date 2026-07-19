@@ -595,14 +595,19 @@ export async function leaveClassroom(userId, classroomId) {
     await participant.save();
   }
 
-  // Remove from participants array + decrement count
-  await Classroom.updateOne(
-    { _id: classroomId, participantCount: { $gt: 0 } },
-    {
-      $pull: { participants: userId },
-      $inc: { participantCount: -1 },
+    // Check if user is actually in the participants array before decrementing
+    const wasParticipant = classroom.participants?.includes(userId);
+
+    // Remove from participants array
+    if (wasParticipant) {
+      await Classroom.updateOne(
+        { _id: classroomId, participantCount: { $gt: 0 } },
+        {
+          $pull: { participants: userId },
+          $inc: { participantCount: -1 },
+        }
+      );
     }
-  );
 
   // If host leaves, set auto-end timer
   const isHost = classroom.host.toString() === userId.toString();
@@ -751,14 +756,19 @@ export async function kickParticipant(hostUserId, classroomId, participantUserId
     await participant.save();
   }
 
-  // Remove from classroom.participants + decrement count
-  await Classroom.updateOne(
-    { _id: classroomId, participantCount: { $gt: 0 } },
-    {
-      $pull: { participants: participantUserId },
-      $inc: { participantCount: -1 },
+    // Check if user is actually in the participants array before decrementing
+    const wasParticipant = classroom.participants?.includes(participantUserId);
+
+    // Remove from classroom.participants
+    if (wasParticipant) {
+      await Classroom.updateOne(
+        { _id: classroomId, participantCount: { $gt: 0 } },
+        {
+          $pull: { participants: participantUserId },
+          $inc: { participantCount: -1 },
+        }
+      );
     }
-  );
 
   // Emit Socket.IO event to kicked participant
   try {
@@ -904,9 +914,21 @@ export async function stopRecording(userId, classroomId) {
   const egressId = classroom.activeEgressId;
   await livekitService.stopRecording(egressId);
 
-  // Construct the S3 key pattern used by LiveKit Egress
-  const s3Key = `classrooms/${classroomId}/${classroom.livekitRoomName}`;
-  const recordingUrl = `https://${S3_BUCKETS.recordings}.s3.${process.env.AWS_REGION || "us-east-1"}.amazonaws.com/${s3Key}`;
+  // Query egress to get the actual output file path
+  let s3Key = null;
+  try {
+    const egressInfo = await livekitService.getEgressInfo(egressId);
+    if (egressInfo?.result?.file?.filepath) {
+      s3Key = egressInfo.result.file.filepath;
+    }
+  } catch (err) {
+    logger.warn(`[Classroom] Failed to get egress info, using default key pattern: ${err.message}`);
+  }
+
+  // Fallback key if we can't get it from egress
+  if (!s3Key) {
+    s3Key = `classrooms/${classroomId}/${classroom.livekitRoomName}`;
+  }
 
   classroom.recordings.push({
     egressId,
@@ -928,7 +950,7 @@ export async function stopRecording(userId, classroomId) {
     // Socket not initialised — skip
   }
 
-  return { recordingUrl };
+  return { recordingUrl: s3Key };
 }
 
 // ── Get Recordings ───────────────────────────────────

@@ -4,6 +4,7 @@ import {
   RoomServiceClient,
   EgressClient,
   EncodedFileType,
+  EncodedFileOutput,
   S3Upload,
   RoomCompositeEgressRequest,
   EncodingOptionsPreset,
@@ -303,5 +304,25 @@ export async function stopRecording(egressId) {
     return { egressId: info.egressId };
   } catch (err) {
     throw new AppError(`Failed to stop recording: ${err.message}`, 502);
+  }
+}
+
+/**
+ * Get egress information (including output file path).
+ *
+ * @param {string} egressId
+ * @returns {Promise<object>} Egress info with result/file path details
+ */
+export async function getEgressInfo(egressId) {
+  if (!isLivekitConfigured() || egressId.startsWith("placeholder")) {
+    return {};
+  }
+
+  try {
+    const egress = getEgressClient();
+    const info = await egress.getEgress(egressId);
+    return info;
+  } catch (err) {
+    throw new AppError(`Failed to get egress info: ${err.message}`, 502);
   }
 }

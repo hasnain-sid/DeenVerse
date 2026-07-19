@@ -51,6 +51,7 @@ export const S3_BUCKETS = {
   avatars: process.env.S3_BUCKET_AVATARS || "deenverse-avatars",
   media: process.env.S3_BUCKET_MEDIA || "deenverse-media",
   streams: process.env.S3_BUCKET_STREAMS || "deenverse-streams",
+  recordings: process.env.S3_BUCKET_RECORDINGS || "deenverse-recordings",
 };
 
 /**

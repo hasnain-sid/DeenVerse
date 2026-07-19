@@ -64,6 +64,7 @@ const classroomSchema = new mongoose.Schema(
     },
     startedAt: Date,
     endedAt: Date,
+    deletedAt: Date, // Soft delete marker for ended classrooms
 
     // Participants
     maxParticipants: {

@@ -677,6 +677,7 @@ describe("leaveClassroom", () => {
       host: { toString: () => HOST_ID },
       status: "live",
       participantCount: 5,
+       participants: [HOST_ID, USER_ID], // Include USER_ID so they can leave
     });
     Classroom.findById.mockResolvedValue(doc);
     Classroom.updateOne.mockResolvedValue({});

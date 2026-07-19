@@ -170,9 +170,49 @@ export function initSocket(httpServer, corsOptions) {
     });
 
     // ─── Classroom: join Socket.IO room ─────────────
-    socket.on("classroom:join-room", ({ classroomId }) => {
+    socket.on("classroom:join-room", async ({ classroomId }) => {
       if (!classroomId) return;
-      socket.join(`classroom:${classroomId}`);
+
+      try {
+        // Fetch classroom with host info and course data
+        const Enrollment = (await import("../models/enrollmentSchema.js")).default;
+        const classroom = await Classroom.findById(classroomId)
+          .populate("host", "followers")
+          .populate("course", "_id")
+          .lean();
+
+        if (!classroom) {
+          console.warn(`[Socket] Classroom ${classroomId} not found`);
+          return;
+        }
+
+        // Apply the same access control as HTTP /join
+        if (classroom.access === "course-only" && classroom.course) {
+          const enrolled = await Enrollment.findOne({
+            student: userId,
+            course: classroom.course._id,
+            status: "active",
+          }).lean();
+          if (!enrolled) {
+            console.warn(`[Socket] User ${userId} not enrolled in course for classroom ${classroomId}`);
+            return;
+          }
+        } else if (classroom.access === "followers") {
+          const hostFollowers = classroom.host?.followers || [];
+          const isFollower = hostFollowers.some((f) => f.toString() === userId.toString());
+          const isHost = classroom.host._id.toString() === userId.toString();
+          if (!isFollower && !isHost) {
+            console.warn(`[Socket] User ${userId} not a follower for classroom ${classroomId}`);
+            return;
+          }
+        }
+        // access === "public" → allow (already authenticated via auth middleware)
+
+        // Authorization passed, join the room
+        socket.join(`classroom:${classroomId}`);
+      } catch (err) {
+        console.error("[Socket] Error joining classroom room:", err);
+      }
     });
 
     // ─── Classroom: leave Socket.IO room ────────────
@@ -260,27 +300,38 @@ export function initSocket(httpServer, corsOptions) {
     });
 
     // ─── Classroom: grant speak (host only) ─────────
-    socket.on("classroom:grant-speak", ({ classroomId, userId: targetUserId }) => {
+    socket.on("classroom:grant-speak", async ({ classroomId, userId: targetUserId }) => {
       if (!classroomId || !targetUserId) return;
 
-      // Remove from hand queue
-      const queue = handQueues.get(classroomId);
-      if (queue) {
-        const idx = queue.findIndex((h) => h.userId === targetUserId);
-        if (idx !== -1) queue.splice(idx, 1);
-        if (queue.length === 0) handQueues.delete(classroomId);
+      try {
+        // Verify caller is the host of this classroom
+        const classroom = await Classroom.findById(classroomId);
+        if (!classroom || classroom.host.toString() !== userId) {
+          console.warn(`[Socket] Unauthorized speak grant attempt by ${userId} in classroom ${classroomId}`);
+          return;
+        }
 
-        // Broadcast updated queue
-        io.to(`classroom:${classroomId}`).emit("classroom:hand-queue", {
+        // Remove from hand queue
+        const queue = handQueues.get(classroomId);
+        if (queue) {
+          const idx = queue.findIndex((h) => h.userId === targetUserId);
+          if (idx !== -1) queue.splice(idx, 1);
+          if (queue.length === 0) handQueues.delete(classroomId);
+
+          // Broadcast updated queue
+          io.to(`classroom:${classroomId}`).emit("classroom:hand-queue", {
+            classroomId,
+            queue: queue || [],
+          });
+        }
+
+        // Notify the granted user
+        io.to(`user:${targetUserId}`).emit("classroom:speak-granted", {
           classroomId,
-          queue: queue || [],
         });
+      } catch (err) {
+        console.error("[Socket] Error granting speak:", err);
       }
-
-      // Notify the granted user
-      io.to(`user:${targetUserId}`).emit("classroom:speak-granted", {
-        classroomId,
-      });
     });
 
     // ─── Classroom: whiteboard save (host, throttled) ───
@@ -314,11 +365,46 @@ export function initSocket(httpServer, corsOptions) {
       if (!classroomId || typeof callback !== "function") return;
 
       try {
+        const Enrollment = (await import("../models/enrollmentSchema.js")).default;
         const classroom = await Classroom.findById(classroomId)
-          .select("whiteboardSnapshot")
+          .select("whiteboardSnapshot access host course")
+          .populate("host", "followers")
+          .populate("course", "_id")
           .lean();
+
+        if (!classroom) {
+          callback({ snapshot: null });
+          return;
+        }
+
+        // Apply access control before returning snapshot
+        if (classroom.access === "course-only" && classroom.course) {
+          const enrolled = await Enrollment.findOne({
+            student: userId,
+            course: classroom.course._id,
+            status: "active",
+          }).lean();
+          if (!enrolled) {
+            console.warn(`[Socket] User ${userId} not enrolled in course, denying whiteboard load for ${classroomId}`);
+            callback({ snapshot: null });
+            return;
+          }
+        } else if (classroom.access === "followers") {
+          const hostFollowers = classroom.host?.followers || [];
+          const isFollower = hostFollowers.some((f) => f.toString() === userId.toString());
+          const isHost = classroom.host._id.toString() === userId.toString();
+          if (!isFollower && !isHost) {
+            console.warn(`[Socket] User ${userId} not a follower, denying whiteboard load for ${classroomId}`);
+            callback({ snapshot: null });
+            return;
+          }
+        }
+        // access === "public" → allow (already authenticated via auth middleware)
+
+        // Authorization passed, return snapshot
         callback({ snapshot: classroom?.whiteboardSnapshot || null });
-      } catch {
+      } catch (err) {
+        console.error("[Socket] Error loading whiteboard:", err);
         callback({ snapshot: null });
       }
     });
