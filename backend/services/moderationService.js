@@ -3,6 +3,7 @@ import { AuditLog } from "../models/auditLogSchema.js";
 import { User } from "../models/userSchema.js";
 import { Post } from "../models/postSchema.js";
 import { AppError } from "../utils/AppError.js";
+import { cacheDel } from "./cacheService.js";
 
 // ── Report CRUD ──────────────────────────────────────
 
@@ -139,6 +140,7 @@ async function applyModeration(adminId, report, resolution, details) {
 
     case "ban":
       await User.findByIdAndUpdate(report.targetId, { banned: true, bannedAt: new Date() });
+      await cacheDel(`user:banned:${report.targetId}`);
       await AuditLog.create({
         admin: adminId,
         action: "ban_user",
@@ -177,6 +179,7 @@ export async function banUser(adminId, userId, reason) {
   user.banned = true;
   user.bannedAt = new Date();
   await user.save();
+  await cacheDel(`user:banned:${userId}`);
 
   await AuditLog.create({
     admin: adminId,
@@ -198,6 +201,7 @@ export async function unbanUser(adminId, userId) {
   user.bannedAt = undefined;
   user.mutedUntil = undefined;
   await user.save();
+  await cacheDel(`user:banned:${userId}`);
 
   await AuditLog.create({
     admin: adminId,

@@ -55,6 +55,10 @@ export const loginUser = async (credentials) => {
         throw new AppError("Invalid email or password", 401);
     }
 
+    if (user.banned) {
+        throw new AppError("Your account has been suspended. Contact support if you believe this is a mistake.", 403);
+    }
+
     const accessToken = generateAccessToken(user._id);
     const refreshToken = generateRefreshToken(user._id);
 

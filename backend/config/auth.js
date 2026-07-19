@@ -1,5 +1,7 @@
 import jwt from "jsonwebtoken";
 import { AppError } from '../utils/AppError.js';
+import { User } from '../models/userSchema.js';
+import { cacheGet, cacheSet } from '../services/cacheService.js';
 
 /**
  * Resolve the JWT secrets from environment variables.
@@ -51,6 +53,25 @@ function extractToken(req) {
   return { token: null, source: null };
 }
 
+const BAN_CHECK_TTL = 60; // seconds
+
+/**
+ * Reject requests from banned accounts. The lookup is cached briefly so the
+ * per-request cost stays low; moderation invalidates the key on ban/unban.
+ */
+async function assertNotBanned(userId) {
+  const cacheKey = `user:banned:${userId}`;
+  let banned = await cacheGet(cacheKey);
+  if (banned === null || banned === undefined) {
+    const user = await User.findById(userId).select("banned").lean();
+    banned = !!user?.banned;
+    await cacheSet(cacheKey, banned, BAN_CHECK_TTL);
+  }
+  if (banned === true || banned === "true") {
+    throw new AppError("Your account has been suspended. Contact support if you believe this is a mistake.", 403);
+  }
+}
+
 /**
  * Required auth — rejects with 401 if no valid token.
  * Uses access secret for header tokens, refresh secret for cookie tokens.
@@ -68,9 +89,13 @@ const isAuthenticated = async (req, res, next) => {
     const decoded = source === 'cookie'
       ? verifyRefreshToken(token)
       : verifyToken(token);
+    await assertNotBanned(decoded.userId);
     req.user = decoded.userId;
     next();
   } catch (error) {
+    if (error instanceof AppError) {
+      return next(error);
+    }
     if (error.message === "JWT secret is not configured") {
       console.error("FATAL: TOKEN_SECRET is not set in environment variables");
       return next(new AppError("Server configuration error", 500));
