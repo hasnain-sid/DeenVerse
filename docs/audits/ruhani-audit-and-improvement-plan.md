@@ -6,7 +6,9 @@
 >
 > The feature now works, is trustworthy, and does what it was designed to do: guided questions are answerable fields rather than decoration, the Tafakkur → Tadabbur → Tazkia → Tafakkur spiral is a walkable cycle, Tadabbur works on all 6,236 ayahs, and the journal supports edit, delete, search, and export. **505 backend tests across 26 suites, all passing.**
 >
-> **Remaining**: Phase D (Guided Session, per-user rotation, custom habits, canonical ayah text + audio + tafsir) and Phase E (seasonal content, annual review, scholarly review process). Neither is required for the feature to stand on its own.
+> **Phase D is partially shipped**: the Guided Session is built and rotation is now per-user and history-aware. Still open: custom habits, canonical text/audio/tafsir for the 31 curated ayahs, and notification suppression. **527 backend tests across 27 suites, all passing.**
+>
+> **Remaining**: the rest of Phase D, and all of Phase E (seasonal content, annual review, scholarly review process). None of it is required for the feature to stand on its own.
 > **Companion doc**: [`docs/ruhani-hub-design.md`](../ruhani-hub-design.md) (original design). This document audits reality against it and proposes what to build next.
 
 ---
@@ -328,7 +330,7 @@ A user can spend fifteen minutes on a deep reflection and lose all of it to a re
 
 3. **Tell the user up front**, not at the end — a quiet inline note when unauthenticated: *"You're not signed in. Your reflection is saved on this device; sign in to keep it in your journal."*
 
-### 4.5 Everyone in the world gets the same topic on the same day — **P1 (product)**
+### 4.5 Everyone in the world gets the same topic on the same day — **P1 (product)** — ✅ FIXED (Phase D)
 
 [`ruhaniService.js:16-22`](../../backend/services/ruhaniService.js#L16) rotates by day-of-year modulo list length, globally. Combined with a 30-topic list, every user sees an identical 30-day loop, forever, in the same order.
 
@@ -913,9 +915,65 @@ class of bug (a typo silently dropping a "continue" button) is exactly what prev
 **Not done, deliberately**: progressive one-prompt-at-a-time reveal on mobile (§6.3 lists it as a
 "consider"). Three stacked textareas is still a lot on a phone — worth revisiting with real usage.
 
-### Phase D — Depth (1–2 weeks) 🟢
+### Phase D — Depth — 🟡 PARTIALLY COMPLETE 2026-07-21
 
-Guided Session (Phase 3); per-user rotation with history; custom habits; canonical ayah text + audio + tafsir; notification suppression.
+| # | Task | Status |
+|---|---|---|
+| D1 | Guided Session (design doc Phase 3) | ✅ Done |
+| D2 | Per-user rotation with history | ✅ Done |
+| D3 | Custom, server-persisted habits | ❌ Not started |
+| D4 | Canonical ayah text + audio + tafsir in Tadabbur | ⚠️ Partial |
+| D5 | Notification suppression inside the hub | ❌ Not started |
+
+**D1 — the Guided Session exists.** [`spiritualSessionSchema.js`](../../backend/models/spiritualSessionSchema.js)
+plus `GET /session/suggest`, `POST /session`, `PUT /session/:id`, `GET /sessions`, and
+[`GuidedSessionPage`](../../frontend/src/features/ruhani/GuidedSessionPage.tsx) — time selection →
+arrival → Tafakkur → Tadabbur → Tazkia → summary, reusing `GuidedReflectionForm` at each step and
+chaining each practice to the previous via `linkedPracticeId`.
+
+Two deliberate departures from the original spec, both following the design's own philosophy over
+its own feature list:
+
+- **No countdown timer.** The doc specified a `SessionTimer`; §8.1 of this document already argued
+  against it. Progress is shown as position in the journey (three bars), never as time remaining.
+  A clock ticking down during contemplation contradicts the entire premise of the space. The
+  per-step allocation still appears, as "about 5 min" — guidance, not pressure.
+- **Abandoning is recorded, not punished.** Leaving mid-session marks it `abandoned` and returns
+  the user to the hub with no message about it. The reflections already saved are unaffected,
+  because they are independent `SpiritualPractice` documents — a session record never owns a user's
+  writing.
+
+The session record is metadata only; deleting one would never take reflections with it.
+
+**D2 — rotation is per-user and history-aware.** `getTodayTafakkurTopic(userId)` seeds the
+rotation from a hash of the user id, so two people no longer walk an identical 30-day loop in
+lockstep, and the day index is now **UTC-stable** — previously it derived from server local time,
+so the topic flipped mid-afternoon in much of the world. The public `today` endpoints use
+`optionalAuth`, so signed-in users get their own rotation without the route requiring a session.
+
+`suggestSession` additionally:
+- skips any topic practised in the last 21 days, falling back to the full rotation once everything
+  is recent;
+- **resurfaces a trait the user recently rated 1–2** — struggling with something is a better reason
+  to revisit it than to move on. The UI says so plainly: *"Sabr felt hard recently. Let's sit with
+  it again."*
+
+All rule-based, no model calls, as §8.3 argued for.
+
+**D4 — partial.** `GET /quran/ayah/by-key/:verseKey` (Phase C) means uncurated ayahs already render
+canonical text. The 31 **curated** entries still use the hand-copied `arabicText` strings in
+`tadabburAyahs.js`, and there is still no recitation audio and no tafsir. §7.4 remains open, and
+matters most for §10.1 (Quranic text is the highest-stakes accuracy surface in the app).
+
+**Removed**: `frontend/src/features/ruhani/stores/ruhaniStore.ts`. It was written as the Phase 3
+scaffold and never imported anywhere; the built session keeps its state locally in one route, where
+a global store would be indirection without a reader. Deleted rather than left as permanently dead
+code — recoverable from git history if a future multi-route session needs it.
+
+**Verification**: 527 backend tests across 27 suites, all passing — 22 new, covering rotation
+determinism and per-user divergence, history exclusion and its fallback, low-rating trait
+resurfacing, session lifecycle, and ownership (a session cannot attach or expose another user's
+practice). `tsc --noEmit` clean; production build succeeds.
 
 ### Phase E — Differentiation (ongoing) 🔵
 

@@ -22,6 +22,35 @@ export type UpdatePracticePayload = Partial<
     Pick<SpiritualPracticePayload, 'reflectionText' | 'guidedAnswers' | 'habitChecks' | 'traitRating' | 'isPrivate'>
 >;
 
+export interface SessionSuggestion {
+    topic: TafakkurTopic;
+    ayah: TadabburAyah;
+    trait: TazkiaTrait;
+    revisitingTrait: boolean;
+}
+
+export interface SpiritualSession {
+    _id: string;
+    duration: number | null;
+    status: 'in-progress' | 'completed' | 'abandoned';
+    topicSlug: string;
+    verseKey: string;
+    traitSlug: string;
+    tafakkurPracticeId: string | null;
+    tadabburPracticeId: string | null;
+    tazkiaPracticeId: string | null;
+    sessionAction?: string;
+    completedAt: string | null;
+    createdAt: string;
+}
+
+export interface SessionUpdatePayload {
+    step?: 'tafakkur' | 'tadabbur' | 'tazkia';
+    practiceId?: string;
+    status?: 'in-progress' | 'completed' | 'abandoned';
+    sessionAction?: string;
+}
+
 export const ruhaniApi = {
     getTafakkurTopics: async (): Promise<TafakkurTopic[]> => {
         const { data } = await api.get<TafakkurTopic[]>('/ruhani/tafakkur/topics');
@@ -78,6 +107,16 @@ export const ruhaniApi = {
     },
     getStats: async (): Promise<RuhaniStats> => {
         const { data } = await api.get<RuhaniStats>('/ruhani/stats');
+        return data;
+    },
+
+    // ── Guided sessions ──────────────────────────────────────────
+    startSession: async (duration: number | null): Promise<{ session: SpiritualSession } & SessionSuggestion> => {
+        const { data } = await api.post('/ruhani/session', { duration });
+        return data;
+    },
+    updateSession: async (id: string, payload: SessionUpdatePayload): Promise<SpiritualSession> => {
+        const { data } = await api.put<SpiritualSession>(`/ruhani/session/${id}`, payload);
         return data;
     },
 };

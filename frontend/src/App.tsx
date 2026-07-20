@@ -122,7 +122,10 @@ const TopicDetailPage = lazy(() =>
 const MoodDetailPage = lazy(() =>
   import('@/features/quran-topics/MoodDetailPage').then((m) => ({ default: m.MoodDetailPage }))
 );
-// Ruhani Hub Phase 1 & 2 Pages
+// Ruhani Hub Pages
+const GuidedSessionPage = lazy(() =>
+  import('@/features/ruhani/GuidedSessionPage').then((m) => ({ default: m.GuidedSessionPage }))
+);
 const RuhaniHubPage = lazy(() =>
   import('@/features/ruhani/RuhaniHubPage').then((m) => ({ default: m.RuhaniHubPage }))
 );
@@ -335,6 +338,14 @@ export default function App() {
                   <Route path="/ruhani/tafakkur" element={<TafakkurPage />} />
                   <Route path="/ruhani/tadabbur" element={<TadabburPage />} />
                   <Route path="/ruhani/tazkia" element={<TazkiaPage />} />
+                  <Route
+                    path="/ruhani/session"
+                    element={
+                      <AuthGuard>
+                        <GuidedSessionPage />
+                      </AuthGuard>
+                    }
+                  />
                   <Route
                     path="/ruhani/journal"
                     element={

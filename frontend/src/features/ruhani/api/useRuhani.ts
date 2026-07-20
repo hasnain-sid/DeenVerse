@@ -1,5 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { ruhaniApi, SpiritualPracticePayload, UpdatePracticePayload } from './ruhaniApi';
+import {
+    ruhaniApi,
+    SpiritualPracticePayload,
+    UpdatePracticePayload,
+    SessionUpdatePayload,
+} from './ruhaniApi';
 import toast from 'react-hot-toast';
 import axios from 'axios';
 
@@ -128,6 +133,35 @@ export const useRuhaniJournal = (page = 1, limit = 20, type?: string, enabled = 
         staleTime: 5 * 60 * 1000,
         enabled,
         placeholderData: (previous) => previous, // keeps results steady while typing
+    });
+};
+
+export const useStartSession = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (duration: number | null) => ruhaniApi.startSession(duration),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['ruhani', 'sessions'] });
+        },
+        onError: (error) => {
+            toast.error(extractMessage(error) || 'Could not start the session. Please try again.');
+        },
+    });
+};
+
+export const useUpdateSession = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: ({ id, payload }: { id: string; payload: SessionUpdatePayload }) =>
+            ruhaniApi.updateSession(id, payload),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['ruhani', 'sessions'] });
+        },
+        // Session bookkeeping failing should not interrupt a practice in progress —
+        // the user's reflections are already saved independently.
+        onError: () => { /* silent by design */ },
     });
 };
 

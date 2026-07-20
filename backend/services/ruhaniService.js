@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { SpiritualPractice } from "../models/spiritualPracticeSchema.js";
+import { SpiritualSession } from "../models/spiritualSessionSchema.js";
 import { AppError } from "../utils/AppError.js";
 import { tafakkurTopics } from "../data/tafakkurTopics.js";
 import { tazkiaTraits } from "../data/tazkiaTraits.js";
@@ -18,12 +19,32 @@ export function getAllTafakkurTopics() {
     return tafakkurTopics;
 }
 
-export function getTodayTafakkurTopic() {
-    const start = new Date(new Date().getFullYear(), 0, 0);
-    const diff = Date.now() - start.getTime();
-    const oneDay = 86_400_000; // 1000 * 60 * 60 * 24
-    const dayOfYear = Math.floor(diff / oneDay);
-    return tafakkurTopics[dayOfYear % tafakkurTopics.length];
+/** Stable small integer from a string, so a user's rotation is theirs but deterministic. */
+function hashToInt(input) {
+    let hash = 0;
+    for (let i = 0; i < input.length; i++) {
+        hash = (hash << 5) - hash + input.charCodeAt(i);
+        hash |= 0; // keep in 32-bit range
+    }
+    return Math.abs(hash);
+}
+
+/** UTC-stable day index, so the topic doesn't flip mid-afternoon in some timezones. */
+function dayIndex() {
+    return Math.floor(Date.now() / 86_400_000);
+}
+
+/**
+ * Today's rotating Tafakkur topic.
+ *
+ * Seeded per user so two people don't walk an identical 30-day loop in lockstep.
+ * Anonymous callers get the unseeded rotation.
+ *
+ * @param {string|null} userId
+ */
+export function getTodayTafakkurTopic(userId = null) {
+    const seed = userId ? hashToInt(String(userId)) : 0;
+    return tafakkurTopics[(dayIndex() + seed) % tafakkurTopics.length];
 }
 
 export function getTafakkurTopicBySlug(slug) {
@@ -53,13 +74,10 @@ export function getAllTadabburAyahs() {
  * Uses a different rotation offset so it doesn't always sync with Tafakkur.
  * @returns {object} single tadabbur ayah
  */
-export function getTodayTadabburAyah() {
-    const start = new Date(new Date().getFullYear(), 0, 0);
-    const diff = Date.now() - start.getTime();
-    const oneDay = 86_400_000;
-    const dayOfYear = Math.floor(diff / oneDay);
+export function getTodayTadabburAyah(userId = null) {
+    const seed = userId ? hashToInt(String(userId)) : 0;
     // Offset by 7 so it doesn't sync with Tafakkur's rotation
-    return tadabburAyahs[(dayOfYear + 7) % tadabburAyahs.length];
+    return tadabburAyahs[(dayIndex() + seed + 7) % tadabburAyahs.length];
 }
 
 /**
@@ -304,6 +322,173 @@ export async function exportJournal(userId) {
         exportedAt: new Date().toISOString(),
         totalEntries: practices.length,
         practices,
+    };
+}
+
+/* ──────────────────────────────── Guided sessions ───────────────────────────── */
+
+/** How long a topic stays "recently done" and is skipped when suggesting. */
+const RECENT_WINDOW_DAYS = 21;
+
+/**
+ * Choose content for a guided session, avoiding what the user has just done.
+ *
+ * Deliberately rule-based, not a model: the inputs are a handful of slugs and
+ * dates, and a deterministic table is cheaper, explainable, and never surprises
+ * someone mid-practice.
+ *
+ * @param {string} userId
+ */
+export async function suggestSession(userId) {
+    const since = new Date(Date.now() - RECENT_WINDOW_DAYS * 86_400_000);
+    const recent = await SpiritualPractice.find({ userId, createdAt: { $gte: since } })
+        .select("practiceType sourceRef traitRating createdAt")
+        .lean();
+
+    const recentTopics = new Set(
+        recent.filter((p) => p.practiceType === "tafakkur").map((p) => p.sourceRef)
+    );
+
+    // Prefer something unseen; fall back to the full rotation once they've done everything
+    const fresh = tafakkurTopics.filter((t) => !recentTopics.has(t.slug));
+    const pool = fresh.length > 0 ? fresh : tafakkurTopics;
+    const topic = pool[(dayIndex() + hashToInt(String(userId))) % pool.length];
+
+    // Walk the spiral forward from the chosen topic
+    const ayah =
+        tadabburAyahs.find((a) => a.verseKey === topic.linkedAyahKey) ??
+        getTodayTadabburAyah(userId);
+
+    // A trait the user recently rated 1–2 is resurfaced — struggling with something
+    // is a better reason to revisit it than to move on.
+    const struggling = recent
+        .filter((p) => p.practiceType === "tazkia" && p.traitRating != null && p.traitRating <= 2)
+        .sort((a, b) => b.createdAt - a.createdAt)[0];
+
+    const traitSlug =
+        (struggling && tazkiaTraits.find((t) => t.slug === struggling.sourceRef)?.slug) ||
+        ayah.linkedTraitSlug ||
+        topic.linkedTazkiaTraits?.[0];
+
+    const trait = tazkiaTraits.find((t) => t.slug === traitSlug) ?? tazkiaTraits[0];
+
+    return {
+        topic,
+        ayah,
+        trait,
+        /** True when the trait was chosen because the user found it hard recently. */
+        revisitingTrait: Boolean(struggling && trait.slug === struggling.sourceRef),
+    };
+}
+
+/**
+ * Open a guided session. The content is captured now so the session stays
+ * coherent even if the user takes a break mid-way.
+ *
+ * @param {string} userId
+ * @param {{ duration?: number|null }} options
+ */
+export async function startSession(userId, { duration = null } = {}) {
+    if (duration != null && (!Number.isFinite(duration) || duration < 1 || duration > 240)) {
+        throw new AppError("duration must be between 1 and 240 minutes", 400);
+    }
+
+    const { topic, ayah, trait } = await suggestSession(userId);
+
+    const session = await SpiritualSession.create({
+        userId,
+        duration: duration ?? null,
+        status: "in-progress",
+        topicSlug: topic.slug,
+        verseKey: ayah.verseKey,
+        traitSlug: trait.slug,
+    });
+
+    return { session, topic, ayah, trait };
+}
+
+/**
+ * Attach a completed practice to its session step, or close the session out.
+ *
+ * @param {string} userId
+ * @param {string} sessionId
+ * @param {object} payload
+ */
+export async function updateSession(userId, sessionId, payload) {
+    if (!mongoose.Types.ObjectId.isValid(sessionId)) {
+        throw new AppError("Invalid session ID", 400);
+    }
+
+    const { step, practiceId, status, sessionAction } = payload;
+
+    const updates = {};
+
+    if (step) {
+        const field = {
+            tafakkur: "tafakkurPracticeId",
+            tadabbur: "tadabburPracticeId",
+            tazkia: "tazkiaPracticeId",
+        }[step];
+        if (!field) throw new AppError("step must be tafakkur, tadabbur, or tazkia", 400);
+        if (!mongoose.Types.ObjectId.isValid(practiceId)) {
+            throw new AppError("A valid practiceId is required for this step", 400);
+        }
+        // The practice must be the user's own before it can be attached
+        const owned = await SpiritualPractice.exists({ _id: practiceId, userId });
+        if (!owned) throw new AppError("Practice not found", 404);
+        updates[field] = practiceId;
+    }
+
+    if (status) {
+        if (!["in-progress", "completed", "abandoned"].includes(status)) {
+            throw new AppError("Invalid session status", 400);
+        }
+        updates.status = status;
+        if (status === "completed") updates.completedAt = new Date();
+    }
+
+    if (sessionAction !== undefined) {
+        if (typeof sessionAction !== "string" || sessionAction.length > 2000) {
+            throw new AppError("sessionAction must be a string of 2,000 characters or fewer", 400);
+        }
+        updates.sessionAction = sessionAction;
+    }
+
+    if (Object.keys(updates).length === 0) {
+        throw new AppError("No session fields to update", 400);
+    }
+
+    const updated = await SpiritualSession.findOneAndUpdate(
+        { _id: sessionId, userId },
+        { $set: updates },
+        { new: true, runValidators: true }
+    );
+
+    if (!updated) throw new AppError("Session not found", 404);
+    return updated;
+}
+
+/**
+ * A user's guided sessions, newest first.
+ * @param {string} userId
+ */
+export async function getSessions(userId, { page = 1, limit = 20 } = {}) {
+    const safePage = Number.isFinite(page) ? Math.max(1, Math.floor(page)) : 1;
+    const safeLimit = Number.isFinite(limit)
+        ? Math.min(100, Math.max(1, Math.floor(limit)))
+        : 20;
+    const skip = (safePage - 1) * safeLimit;
+
+    const [sessions, total] = await Promise.all([
+        SpiritualSession.find({ userId }).sort({ createdAt: -1 }).skip(skip).limit(safeLimit),
+        SpiritualSession.countDocuments({ userId }),
+    ]);
+
+    return {
+        sessions,
+        totalPages: Math.ceil(total / safeLimit),
+        currentPage: safePage,
+        totalEntries: total,
     };
 }
 

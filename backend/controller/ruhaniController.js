@@ -23,7 +23,8 @@ export const getTafakkurTopics = (req, res, next) => {
  */
 export const getTodayTafakkurTopic = (req, res, next) => {
     try {
-        res.status(200).json(ruhaniService.getTodayTafakkurTopic());
+        // req.user is present via optionalAuth — signed-in users get their own rotation
+        res.status(200).json(ruhaniService.getTodayTafakkurTopic(req.user ?? null));
     } catch (error) {
         logger.error("Error fetching today's Tafakkur topic:", error);
         next(new AppError("Failed to fetch today's topic", 500));
@@ -95,7 +96,7 @@ export const getTadabburAyahs = (req, res, next) => {
  */
 export const getTodayTadabburAyah = (req, res, next) => {
     try {
-        res.status(200).json(ruhaniService.getTodayTadabburAyah());
+        res.status(200).json(ruhaniService.getTodayTadabburAyah(req.user ?? null));
     } catch (error) {
         logger.error("Error fetching today's Tadabbur ayah:", error);
         next(new AppError("Failed to fetch today's ayah", 500));
@@ -224,6 +225,76 @@ export const exportJournal = async (req, res, next) => {
     } catch (error) {
         logger.error("Error exporting journal:", error);
         next(new AppError("Failed to export journal", 500));
+    }
+};
+
+/* ──────────────────────────────── Guided sessions ───────────────────────────── */
+
+/**
+ * @desc    Suggest content for a guided session (topic + ayah + trait)
+ * @route   GET /api/v1/ruhani/session/suggest
+ * @access  Private
+ */
+export const suggestSession = async (req, res, next) => {
+    try {
+        res.status(200).json(await ruhaniService.suggestSession(req.user));
+    } catch (error) {
+        if (error instanceof AppError) return next(error);
+        logger.error("Error suggesting session:", error);
+        next(new AppError("Failed to suggest a session", 500));
+    }
+};
+
+/**
+ * @desc    Start a guided session
+ * @route   POST /api/v1/ruhani/session
+ * @access  Private
+ */
+export const startSession = async (req, res, next) => {
+    try {
+        const result = await ruhaniService.startSession(req.user, {
+            duration: req.body.duration ?? null,
+        });
+        res.status(201).json(result);
+    } catch (error) {
+        if (error instanceof AppError) return next(error);
+        logger.error("Error starting session:", error);
+        next(new AppError("Failed to start session", 500));
+    }
+};
+
+/**
+ * @desc    Advance or close a guided session
+ * @route   PUT /api/v1/ruhani/session/:id
+ * @access  Private
+ */
+export const updateSession = async (req, res, next) => {
+    try {
+        const updated = await ruhaniService.updateSession(req.user, req.params.id, req.body);
+        res.status(200).json(updated);
+    } catch (error) {
+        if (error instanceof AppError) return next(error);
+        logger.error("Error updating session:", error);
+        next(new AppError("Failed to update session", 500));
+    }
+};
+
+/**
+ * @desc    List the user's guided sessions
+ * @route   GET /api/v1/ruhani/sessions
+ * @access  Private
+ */
+export const getSessions = async (req, res, next) => {
+    try {
+        const { page = 1, limit = 20 } = req.query;
+        const result = await ruhaniService.getSessions(req.user, {
+            page: Number(page),
+            limit: Number(limit),
+        });
+        res.status(200).json(result);
+    } catch (error) {
+        logger.error("Error fetching sessions:", error);
+        next(new AppError("Failed to fetch sessions", 500));
     }
 };
 

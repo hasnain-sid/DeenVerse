@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Moon, BookOpen, Heart, BookMarked, ArrowRight, RotateCcw } from 'lucide-react';
+import { Moon, BookOpen, Heart, BookMarked, ArrowRight, RotateCcw, Sparkles } from 'lucide-react';
 import { useRuhaniJournal, useTodayTafakkurTopic, useRuhaniStats } from './api/useRuhani';
 import { listDrafts } from './hooks/useReflectionDraft';
 import { useAuthStore } from '@/stores/authStore';
@@ -97,6 +97,23 @@ export function RuhaniHubPage() {
                         </div>
                     </button>
                 )}
+
+                {/* Guided session — the recommended path for anyone with real time set aside */}
+                <button
+                    onClick={() => navigate('/ruhani/session')}
+                    className="w-full mb-12 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800/50 bg-white dark:bg-zinc-900/20 hover:bg-zinc-50 dark:hover:bg-zinc-900/40 hover:border-zinc-300 dark:hover:border-zinc-700/50 transition-all duration-500 flex items-center justify-between gap-4 text-left group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400"
+                >
+                    <div className="flex items-center gap-4">
+                        <Sparkles className="w-5 h-5 text-zinc-400 dark:text-zinc-500 shrink-0" aria-hidden="true" />
+                        <div>
+                            <h3 className="text-zinc-800 dark:text-zinc-200 font-medium">Start a Guided Session</h3>
+                            <p className="text-zinc-600 dark:text-zinc-400 text-sm mt-1">
+                                We'll weave all three practices into one journey.
+                            </p>
+                        </div>
+                    </div>
+                    <ArrowRight className="w-4 h-4 text-zinc-500 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 shrink-0" aria-hidden="true" />
+                </button>
 
                 <p className="text-xs tracking-widest uppercase text-zinc-500 dark:text-zinc-500 font-semibold mb-6 text-center">
                     Or choose your own path

@@ -294,6 +294,32 @@ export const updatePracticeValidationRules = () => [
     handleValidationErrors
 ];
 
+// ── Guided session validation ─────────────────────────
+export const startSessionValidationRules = () => [
+    // null means open-ended — the user has not put a clock on it
+    body('duration')
+        .optional({ nullable: true })
+        .isInt({ min: 1, max: 240 }).withMessage('duration must be between 1 and 240 minutes'),
+    handleValidationErrors
+];
+
+export const updateSessionValidationRules = () => [
+    body('step')
+        .optional()
+        .isIn(['tafakkur', 'tadabbur', 'tazkia']).withMessage('Invalid session step'),
+    body('practiceId')
+        .optional()
+        .isMongoId().withMessage('practiceId must be a valid id'),
+    body('status')
+        .optional()
+        .isIn(['in-progress', 'completed', 'abandoned']).withMessage('Invalid session status'),
+    body('sessionAction')
+        .optional()
+        .isString().withMessage('sessionAction must be a string')
+        .isLength({ max: 2000 }).withMessage('sessionAction cannot exceed 2,000 characters'),
+    handleValidationErrors
+];
+
 // ── Profile update validation ─────────────────────────
 export const updateProfileValidationRules = () => [
     body('name')
