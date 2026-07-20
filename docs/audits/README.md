@@ -9,3 +9,4 @@ Point-in-time audits and reviews of the DeenVerse codebase. Regenerate or append
 | [deep-code-review.md](deep-code-review.md) | Critical/Medium/Minor findings + prioritized recommendations | 2026-07-19 |
 | [project-state-and-roadmap.md](project-state-and-roadmap.md) | Feature-state reconstruction (done/partial/broken/missing) + forward roadmap | 2026-07-19 |
 | [final-report-2026-07-20.md](final-report-2026-07-20.md) | Capstone: health score, full status, priorities, refactor ROI, path forward | 2026-07-20 |
+| [ruhani-audit-and-improvement-plan.md](ruhani-audit-and-improvement-plan.md) | Ruhani Space end-to-end: P0 save-breaking validator bug, dead code, design gaps, phased improvement roadmap | 2026-07-20 |

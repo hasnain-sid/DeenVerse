@@ -218,3 +218,17 @@
 .hadith-accent {
   border-left: 3px solid hsl(var(--primary));
 }
+
+/* ===== Reduced motion =====
+   Honours the OS "reduce motion" setting. Durations collapse to ~0 rather than
+   `animation: none` so anything listening for animationend/transitionend still fires. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -200,15 +200,97 @@ export const resetPasswordValidationRules = () => [
 ];
 
 // ── Spiritual practice validation ─────────────────────
+// Field names and limits must match the client payload (SpiritualPracticePayload
+// in frontend/src/features/ruhani/api/ruhaniApi.ts) and spiritualPracticeSchema.js.
 export const savePracticeValidationRules = () => [
-    body('type')
+    body('practiceType')
         .notEmpty().withMessage('Practice type is required')
-        .isIn(['tafakkur', 'tadabbur', 'tazkia'])
-        .withMessage('Invalid practice type'),
-    body('content')
+        .bail()
+        .isIn(['tafakkur', 'tadabbur', 'tazkia']).withMessage('Invalid practice type'),
+
+    body('sourceRef')
+        .trim()
+        .notEmpty().withMessage('sourceRef is required')
+        .isLength({ max: 200 }).withMessage('sourceRef cannot exceed 200 characters'),
+
+    body('sourceTitle')
+        .trim()
+        .notEmpty().withMessage('sourceTitle is required')
+        .isLength({ max: 500 }).withMessage('sourceTitle cannot exceed 500 characters'),
+
+    body('reflectionText')
         .optional()
-        .isString().withMessage('Content must be a string')
-        .isLength({ max: 2000 }).withMessage('Content cannot exceed 2000 characters'),
+        .isString().withMessage('reflectionText must be a string')
+        .isLength({ max: 10000 }).withMessage('Reflection cannot exceed 10,000 characters'),
+
+    body('guidedAnswers')
+        .optional()
+        .isArray({ max: 20 }).withMessage('guidedAnswers must contain 20 entries or fewer'),
+    body('guidedAnswers.*.prompt')
+        .optional()
+        .isString().withMessage('Guided answer prompt must be a string')
+        .isLength({ max: 500 }).withMessage('Guided answer prompt cannot exceed 500 characters'),
+    body('guidedAnswers.*.answer')
+        .optional()
+        .isString().withMessage('Guided answer must be a string')
+        .isLength({ max: 5000 }).withMessage('Guided answer cannot exceed 5,000 characters'),
+
+    body('habitChecks')
+        .optional()
+        .isArray({ max: 50 }).withMessage('habitChecks must contain 50 entries or fewer'),
+    body('habitChecks.*.habit')
+        .optional()
+        .isString().withMessage('Habit must be a string')
+        .isLength({ max: 200 }).withMessage('Habit cannot exceed 200 characters'),
+    body('habitChecks.*.completed')
+        .optional()
+        .isBoolean().withMessage('Habit completed must be a boolean'),
+
+    body('traitRating')
+        .optional()
+        .isInt({ min: 1, max: 5 }).withMessage('traitRating must be between 1 and 5'),
+
+    body('isPrivate')
+        .optional()
+        .isBoolean().withMessage('isPrivate must be a boolean'),
+
+    body('linkedPracticeId')
+        .optional()
+        .isMongoId().withMessage('linkedPracticeId must be a valid id'),
+
+    handleValidationErrors
+];
+
+// Editing an existing practice. practiceType/sourceRef/sourceTitle are immutable —
+// they identify what was contemplated, so only the user's own writing is editable.
+export const updatePracticeValidationRules = () => [
+    body('reflectionText')
+        .optional()
+        .isString().withMessage('reflectionText must be a string')
+        .isLength({ max: 10000 }).withMessage('Reflection cannot exceed 10,000 characters'),
+
+    body('guidedAnswers')
+        .optional()
+        .isArray({ max: 20 }).withMessage('guidedAnswers must contain 20 entries or fewer'),
+    body('guidedAnswers.*.prompt')
+        .optional()
+        .isString().isLength({ max: 500 }).withMessage('Guided answer prompt cannot exceed 500 characters'),
+    body('guidedAnswers.*.answer')
+        .optional()
+        .isString().isLength({ max: 5000 }).withMessage('Guided answer cannot exceed 5,000 characters'),
+
+    body('habitChecks')
+        .optional()
+        .isArray({ max: 50 }).withMessage('habitChecks must contain 50 entries or fewer'),
+
+    body('traitRating')
+        .optional()
+        .isInt({ min: 1, max: 5 }).withMessage('traitRating must be between 1 and 5'),
+
+    body('isPrivate')
+        .optional()
+        .isBoolean().withMessage('isPrivate must be a boolean'),
+
     handleValidationErrors
 ];
 

@@ -1,7 +1,14 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { ruhaniApi, SpiritualPracticePayload } from './ruhaniApi';
+import { ruhaniApi, SpiritualPracticePayload, UpdatePracticePayload } from './ruhaniApi';
 import toast from 'react-hot-toast';
 import axios from 'axios';
+
+/** Pulls the server's error message out of an axios error, if there is one. */
+function extractMessage(error: unknown): string | undefined {
+    return axios.isAxiosError(error)
+        ? (error.response?.data as { message?: string } | undefined)?.message
+        : undefined;
+}
 
 export const useRuhaniTopics = () => {
     return useQuery({
@@ -69,28 +76,66 @@ export const useSavePractice = () => {
                 return;
             }
 
-            const message = axios.isAxiosError(error)
-                ? (error.response?.data as { message?: string } | undefined)?.message
-                : undefined;
-
-            toast.error(message || 'Failed to save reflection. Please try again.');
+            toast.error(extractMessage(error) || 'Failed to save reflection. Please try again.');
         },
     });
 };
 
-export const useRuhaniJournal = (page = 1, limit = 20, type?: string, enabled = true) => {
-    return useQuery({
-        queryKey: ['ruhani', 'journal', page, limit, type],
-        queryFn: () => ruhaniApi.getJournal({ page, limit, type }),
-        staleTime: 5 * 60 * 1000,
-        enabled,
+export const useUpdatePractice = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: ({ id, payload }: { id: string; payload: UpdatePracticePayload }) =>
+            ruhaniApi.updatePractice(id, payload),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['ruhani', 'journal'] });
+            toast.success('Reflection updated');
+        },
+        onError: (error) => {
+            toast.error(extractMessage(error) || 'Failed to update reflection. Please try again.');
+        },
     });
 };
 
-export const useRuhaniStats = () => {
+export const useDeletePractice = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (id: string) => ruhaniApi.deletePractice(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['ruhani', 'journal'] });
+            queryClient.invalidateQueries({ queryKey: ['ruhani', 'stats'] });
+            toast.success('Reflection deleted');
+        },
+        onError: (error) => {
+            toast.error(extractMessage(error) || 'Failed to delete reflection. Please try again.');
+        },
+    });
+};
+
+export const useExportJournal = () => {
+    return useMutation({
+        mutationFn: () => ruhaniApi.exportJournal(),
+        onSuccess: () => toast.success('Journal downloaded'),
+        onError: () => toast.error('Failed to export journal. Please try again.'),
+    });
+};
+
+export const useRuhaniJournal = (page = 1, limit = 20, type?: string, enabled = true, q?: string) => {
+    return useQuery({
+        queryKey: ['ruhani', 'journal', page, limit, type, q],
+        queryFn: () => ruhaniApi.getJournal({ page, limit, type, q }),
+        staleTime: 5 * 60 * 1000,
+        enabled,
+        placeholderData: (previous) => previous, // keeps results steady while typing
+    });
+};
+
+export const useRuhaniStats = (enabled = true) => {
     return useQuery({
         queryKey: ['ruhani', 'stats'],
         queryFn: ruhaniApi.getStats,
         staleTime: 5 * 60 * 1000,
+        enabled,
     });
 };

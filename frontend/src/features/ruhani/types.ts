@@ -23,6 +23,10 @@ export interface TazkiaTrait {
     description: string;
     muhasabaPrompts: string[];
     actionTemplate: string;
+    /** Closes the spiral: which sign in creation to contemplate next. */
+    suggestedTafakkurSlug?: string;
+    /** The bridge text shown when handing back to Tafakkur. */
+    transitionPrompt?: string;
 }
 
 export interface TadabburAyah {

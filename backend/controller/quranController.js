@@ -1,4 +1,4 @@
-import { getAyah, getRuku, getJuz, getSurahList } from "../services/quranService.js";
+import { getAyah, getRuku, getJuz, getSurahList, findAyahIdBySurah } from "../services/quranService.js";
 import { AppError } from "../utils/AppError.js";
 import logger from "../config/logger.js";
 
@@ -27,6 +27,45 @@ export const getAyahByNumber = async (req, res, next) => {
         res.status(200).json({ success: true, ...ayah });
     } catch (error) {
         logger.error("Error fetching ayah:", error);
+        next(new AppError("Failed to fetch ayah", 500));
+    }
+};
+
+/**
+ * @desc    Fetch a single ayah by "surah:ayah" key (e.g. "7:57")
+ * @route   GET /api/v1/quran/ayah/by-key/:verseKey
+ * @access  Public
+ *
+ * Lets callers that think in verse references — the Quran reader, Ruhani
+ * Tadabbur — resolve an ayah without first converting to a global 1–6236 id.
+ */
+export const getAyahByVerseKey = async (req, res, next) => {
+    try {
+        const match = /^(\d{1,3}):(\d{1,3})$/.exec(req.params.verseKey ?? "");
+        if (!match) {
+            return next(new AppError('verseKey must look like "surah:ayah", e.g. 7:57', 400));
+        }
+
+        const surah = parseInt(match[1], 10);
+        const ayah = parseInt(match[2], 10);
+        if (surah < 1 || surah > 114) {
+            return next(new AppError("Surah must be between 1 and 114", 400));
+        }
+
+        let globalAyahNumber;
+        try {
+            globalAyahNumber = findAyahIdBySurah(surah, ayah);
+        } catch {
+            return next(new AppError(`Surah ${surah} has no ayah ${ayah}`, 400));
+        }
+        if (!globalAyahNumber || globalAyahNumber < 1 || globalAyahNumber > 6236) {
+            return next(new AppError(`Surah ${surah} has no ayah ${ayah}`, 400));
+        }
+
+        const result = await getAyah(globalAyahNumber);
+        res.status(200).json({ success: true, ...result });
+    } catch (error) {
+        logger.error("Error fetching ayah by verse key:", error);
         next(new AppError("Failed to fetch ayah", 500));
     }
 };

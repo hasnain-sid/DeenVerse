@@ -11,7 +11,9 @@ export const tazkiaTraits = [
             "Where did I try to control an outcome instead of doing my part and trusting Allah?",
             "What would my actions look like if I truly believed Allah is sufficient for me?"
         ],
-        actionTemplate: "Tomorrow, when I feel anxious about [task/worry], I will say 'Hasbunallah wa ni'mal Wakil' and actively let go of the outcome."
+        actionTemplate: "Tomorrow, when I feel anxious about [task/worry], I will say 'Hasbunallah wa ni'mal Wakil' and actively let go of the outcome.",
+        suggestedTafakkurSlug: "animals-and-instinct",
+        transitionPrompt: "The bird leaves its nest empty and returns full — it does not carry the day's provision with it. Sit with how creation is fed without anxiety."
     },
     {
         slug: "sabr",
@@ -25,7 +27,9 @@ export const tazkiaTraits = [
             "Did I show patience at the *first* stroke of a calamity/annoyance?",
             "How can I reframe my current struggle as an opportunity for reward?"
         ],
-        actionTemplate: "The next time I am annoyed by [trigger], I will remain silent for 10 seconds and make a dua for patience."
+        actionTemplate: "The next time I am annoyed by [trigger], I will remain silent for 10 seconds and make a dua for patience.",
+        suggestedTafakkurSlug: "trees-and-seasons",
+        transitionPrompt: "A tree does not rush winter, and it does not doubt spring. Contemplate how creation waits without complaining."
     },
     {
         slug: "shukr",
@@ -39,7 +43,9 @@ export const tazkiaTraits = [
             "Did I properly thank the people who helped me today?",
             "Am I using the health/wealth/time Allah gave me to disobey Him?"
         ],
-        actionTemplate: "I will specifically thank [Name] today and write down 3 things I take for granted that I am grateful for."
+        actionTemplate: "I will specifically thank [Name] today and write down 3 things I take for granted that I am grateful for.",
+        suggestedTafakkurSlug: "the-human-body",
+        transitionPrompt: "You have thanked Allah with your tongue. Now consider the body that let you speak — every system running unasked, all day, for years."
     },
     {
         slug: "sidq",
@@ -53,7 +59,9 @@ export const tazkiaTraits = [
             "Did I make a promise I don't intend to keep?",
             "Am I truthful with myself about my flaws, or do I rationalize them away?"
         ],
-        actionTemplate: "Today I will correct one situation where I was not fully honest, even if it is uncomfortable."
+        actionTemplate: "Today I will correct one situation where I was not fully honest, even if it is uncomfortable.",
+        suggestedTafakkurSlug: "mountains",
+        transitionPrompt: "Mountains do not shift to suit the weather. Reflect on what it means for something to simply be what it is."
     },
     {
         slug: "ikhlas",
@@ -67,7 +75,9 @@ export const tazkiaTraits = [
             "If no one ever found out about my worship, would I still do it with the same effort?",
             "What hidden motive might be tainting an act I consider 'good'?"
         ],
-        actionTemplate: "I will do one secret good deed today — something only Allah will know about."
+        actionTemplate: "I will do one secret good deed today — something only Allah will know about.",
+        suggestedTafakkurSlug: "seeds-and-growth",
+        transitionPrompt: "A seed does its hardest work underground where no one applauds. Contemplate the labour Allah sees that no one else does."
     },
     {
         slug: "tawadu",
@@ -81,7 +91,9 @@ export const tazkiaTraits = [
             "Did I struggle to accept being corrected or proven wrong?",
             "When did ego stop me from apologizing or doing something good?"
         ],
-        actionTemplate: "I will actively listen and accept the opinion of someone else tomorrow without trying to prove I know better."
+        actionTemplate: "I will actively listen and accept the opinion of someone else tomorrow without trying to prove I know better.",
+        suggestedTafakkurSlug: "the-moon",
+        transitionPrompt: "The moon lights the night with borrowed light and never claims it as its own. Sit with whose light you are reflecting."
     },
     {
         slug: "rahma",
@@ -95,7 +107,9 @@ export const tazkiaTraits = [
             "Did I judge someone's mistake instead of finding an excuse or making dua for them?",
             "How could I have shown more compassion to someone who annoyed me today?"
         ],
-        actionTemplate: "I will do one unprompted act of kindness or mercy for [Name/Animal/Stranger] tomorrow."
+        actionTemplate: "I will do one unprompted act of kindness or mercy for [Name/Animal/Stranger] tomorrow.",
+        suggestedTafakkurSlug: "rain-and-water",
+        transitionPrompt: "Rain does not choose whose field it falls on. Contemplate a mercy that arrives without asking whether it was deserved."
     },
     {
         slug: "afw",
@@ -109,7 +123,9 @@ export const tazkiaTraits = [
             "If Allah forgave me as reluctantly as I forgive others, would I be at peace?",
             "What is stopping me from letting go of this specific hurt?"
         ],
-        actionTemplate: "I will make dua for [person who wronged me] and consciously release the resentment I am holding."
+        actionTemplate: "I will make dua for [person who wronged me] and consciously release the resentment I am holding.",
+        suggestedTafakkurSlug: "unexpected-mercies",
+        transitionPrompt: "You have chosen to pardon someone. Now recall the times you were pardoned without ever knowing it."
     },
     {
         slug: "qanaa",
@@ -123,7 +139,9 @@ export const tazkiaTraits = [
             "Am I chasing something because I genuinely need it, or because others have it?",
             "What do I already have that millions of people would consider a dream?"
         ],
-        actionTemplate: "I will spend 5 minutes tonight listing 10 things I have that money cannot buy."
+        actionTemplate: "I will spend 5 minutes tonight listing 10 things I have that money cannot buy.",
+        suggestedTafakkurSlug: "hunger",
+        transitionPrompt: "Contentment is easiest to understand when something is missing. Reflect on hunger — and on how little it takes to be filled."
     },
     {
         slug: "hilm",
@@ -137,7 +155,9 @@ export const tazkiaTraits = [
             "When I am angry, do I speak from my ego or from principle?",
             "How would the Prophet ﷺ have handled the situation that angered me today?"
         ],
-        actionTemplate: "The next time I feel anger rising, I will change my position (sit if standing, lie if sitting), seek refuge from Shaytan, and stay silent until it passes."
+        actionTemplate: "The next time I feel anger rising, I will change my position (sit if standing, lie if sitting), seek refuge from Shaytan, and stay silent until it passes.",
+        suggestedTafakkurSlug: "seas-and-oceans",
+        transitionPrompt: "Storms rearrange the surface of the ocean and never reach its depths. Contemplate what it means to be deep enough to stay still."
     },
     {
         slug: "wafa",
@@ -151,7 +171,9 @@ export const tazkiaTraits = [
             "How faithful am I to my covenant with Allah — the prayers, the obligations?",
             "Do people trust my word, or have I given them reason to doubt me?"
         ],
-        actionTemplate: "I will fulfill one overdue promise or commitment this week, no matter how small."
+        actionTemplate: "I will fulfill one overdue promise or commitment this week, no matter how small.",
+        suggestedTafakkurSlug: "the-sun",
+        transitionPrompt: "The sun has kept every appointment it was given, without exception, for your whole life. Sit with what faithfulness looks like."
     },
     {
         slug: "hayaa",
@@ -165,7 +187,9 @@ export const tazkiaTraits = [
             "Is my online behavior consistent with how I present myself in the masjid?",
             "Where has my sense of shame eroded, and what normalized it?"
         ],
-        actionTemplate: "Before my next private moment of temptation, I will remind myself: 'Allah is watching even when no one else is.'"
+        actionTemplate: "Before my next private moment of temptation, I will remind myself: 'Allah is watching even when no one else is.'",
+        suggestedTafakkurSlug: "the-sky",
+        transitionPrompt: "The sky is above you in every place you have ever stood. Contemplate living beneath a gaze you can never step outside of."
     },
     {
         slug: "muraqaba",
@@ -179,7 +203,9 @@ export const tazkiaTraits = [
             "If a camera recorded my entire day and it was played for everyone, what moments would embarrass me?",
             "When I am alone, does my behavior change? What does that say about my muraqaba?"
         ],
-        actionTemplate: "I will set 3 reminders today to pause and say 'Allah is watching me' and correct my state."
+        actionTemplate: "I will set 3 reminders today to pause and say 'Allah is watching me' and correct my state.",
+        suggestedTafakkurSlug: "the-stars",
+        transitionPrompt: "The stars kept watch over travellers who never looked up. Reflect on being watched over rather than merely watched."
     },
     {
         slug: "zuhd",
@@ -193,7 +219,9 @@ export const tazkiaTraits = [
             "Am I delaying akhirah-building actions because I am chasing dunya goals?",
             "If I died tonight, what worldly pursuit would I regret spending time on?"
         ],
-        actionTemplate: "I will give away one possession I am attached to this week as an exercise in detachment."
+        actionTemplate: "I will give away one possession I am attached to this week as an exercise in detachment.",
+        suggestedTafakkurSlug: "aging",
+        transitionPrompt: "Nothing you can hold on to stays. Contemplate how creation itself is always in the act of letting go."
     },
     {
         slug: "khushoo",
@@ -207,7 +235,9 @@ export const tazkiaTraits = [
             "What distracts me most during salah? What am I doing about it?",
             "Do I pray as if it is my last prayer, or as a thing to rush through and finish?"
         ],
-        actionTemplate: "In my next prayer, I will recite the opening surah slowly enough to reflect on the meaning of each verse."
+        actionTemplate: "In my next prayer, I will recite the opening surah slowly enough to reflect on the meaning of each verse.",
+        suggestedTafakkurSlug: "death",
+        transitionPrompt: "Nothing produces stillness like remembering the end. Sit with death — not morbidly, but honestly."
     },
     {
         slug: "husn-al-dhann",
@@ -221,7 +251,9 @@ export const tazkiaTraits = [
             "When something went wrong, was my first thought about Allah's plan negative or trusting?",
             "Am I carrying suspicion about someone that I should address directly or let go?"
         ],
-        actionTemplate: "The next time I suspect someone's motive, I will find 3 possible positive explanations before reacting."
+        actionTemplate: "The next time I suspect someone's motive, I will find 3 possible positive explanations before reacting.",
+        suggestedTafakkurSlug: "clouds",
+        transitionPrompt: "The heaviest, darkest clouds are the ones carrying the rain. Contemplate how often what looks like a threat is a mercy."
     },
     {
         slug: "karam",
@@ -235,7 +267,9 @@ export const tazkiaTraits = [
             "Was I generous with my time and attention to my family, or only generous with money?",
             "When was the last time I gave sadaqah that actually required sacrifice?"
         ],
-        actionTemplate: "I will give [specific amount/thing] in sadaqah today, choosing an amount that I will actually feel."
+        actionTemplate: "I will give [specific amount/thing] in sadaqah today, choosing an amount that I will actually feel.",
+        suggestedTafakkurSlug: "bees",
+        transitionPrompt: "The bee makes far more honey than it will ever need, and gives the rest away. Reflect on generosity built into creation."
     },
     {
         slug: "adl",
@@ -249,7 +283,9 @@ export const tazkiaTraits = [
             "Am I fair in how I divide my time between my obligations (family, work, worship)?",
             "Have I judged someone by a different standard than I judge myself?"
         ],
-        actionTemplate: "I will correct one unfair situation this week — even if the fairness is not in my favor."
+        actionTemplate: "I will correct one unfair situation this week — even if the fairness is not in my favor.",
+        suggestedTafakkurSlug: "day-and-night",
+        transitionPrompt: "Neither day nor night takes more than its share. Contemplate the balance holding creation together."
     },
     {
         slug: "mujahadah",
@@ -263,7 +299,9 @@ export const tazkiaTraits = [
             "Where did I take the easy path when I knew the harder path was better for my soul?",
             "What is the one habit I keep saying I'll change but haven't actually started working on?"
         ],
-        actionTemplate: "I will deny my nafs one specific desire tomorrow [e.g., sleeping in, junk food, idle scrolling] and replace it with an act of worship."
+        actionTemplate: "I will deny my nafs one specific desire tomorrow [e.g., sleeping in, junk food, idle scrolling] and replace it with an act of worship.",
+        suggestedTafakkurSlug: "the-earth",
+        transitionPrompt: "The earth must be broken open before it will bear anything. Sit with what has to give way in you."
     },
     {
         slug: "shajaa",
@@ -277,6 +315,8 @@ export const tazkiaTraits = [
             "Am I avoiding a difficult but necessary conversation with someone?",
             "What truth am I afraid to confront in my own life?"
         ],
-        actionTemplate: "I will address one thing I have been avoiding out of fear this week — whether it is a conversation, a decision, or a truth about myself."
+        actionTemplate: "I will address one thing I have been avoiding out of fear this week — whether it is a conversation, a decision, or a truth about myself.",
+        suggestedTafakkurSlug: "the-oppressed-finding-relief",
+        transitionPrompt: "Relief has always come to those who stood firm when standing firm was costly. Contemplate how Allah answers those who hold their ground."
     }
 ];

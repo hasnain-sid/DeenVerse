@@ -1,6 +1,7 @@
 import express from "express";
 import {
     getAyahByNumber,
+    getAyahByVerseKey,
     getRukuByNumber,
     getJuzByNumber,
     getSurahs,
@@ -10,6 +11,10 @@ const router = express.Router();
 
 // GET /api/v1/quran/surahs → static surah index (114 entries)
 router.get("/surahs", getSurahs);
+
+// GET /api/v1/quran/ayah/by-key/7:57 → single ayah by "surah:ayah"
+// Registered before "/ayah/:number" so the literal segment is not swallowed by the param route
+router.get("/ayah/by-key/:verseKey", getAyahByVerseKey);
 
 // GET /api/v1/quran/ayah/:number → single ayah (1–6236)
 router.get("/ayah/:number", getAyahByNumber);

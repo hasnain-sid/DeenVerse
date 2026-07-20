@@ -140,9 +140,10 @@ export const saveSpiritualPractice = async (req, res, next) => {
  */
 export const getUserPractices = async (req, res, next) => {
     try {
-        const { type, limit = 20, page = 1 } = req.query;
+        const { type, limit = 20, page = 1, q } = req.query;
         const result = await ruhaniService.getPractices(req.user, {
             type,
+            q,
             page: Number(page),
             limit: Number(limit),
         });
@@ -170,11 +171,61 @@ export const getPracticeById = async (req, res, next) => {
 };
 
 /**
+ * @desc    Update a practice's reflection content
+ * @route   PATCH /api/v1/ruhani/practices/:id
+ * @access  Private
+ */
+export const updatePractice = async (req, res, next) => {
+    try {
+        const updated = await ruhaniService.updatePractice(req.user, req.params.id, req.body);
+        res.status(200).json(updated);
+    } catch (error) {
+        if (error instanceof AppError) return next(error);
+        logger.error("Error updating practice:", error);
+        next(new AppError("Failed to update practice", 500));
+    }
+};
+
+/**
+ * @desc    Permanently delete a practice
+ * @route   DELETE /api/v1/ruhani/practices/:id
+ * @access  Private
+ */
+export const deletePractice = async (req, res, next) => {
+    try {
+        const result = await ruhaniService.deletePractice(req.user, req.params.id);
+        res.status(200).json(result);
+    } catch (error) {
+        if (error instanceof AppError) return next(error);
+        logger.error("Error deleting practice:", error);
+        next(new AppError("Failed to delete practice", 500));
+    }
+};
+
+/**
  * @desc    Get user's spiritual practices (journal) — alias for getUserPractices
  * @route   GET /api/v1/ruhani/journal
  * @access  Private
  */
 export const getJournal = getUserPractices;
+
+/**
+ * @desc    Export the user's entire journal as a downloadable file
+ * @route   GET /api/v1/ruhani/journal/export
+ * @access  Private
+ */
+export const exportJournal = async (req, res, next) => {
+    try {
+        const data = await ruhaniService.exportJournal(req.user);
+        const filename = `ruhani-journal-${new Date().toISOString().slice(0, 10)}.json`;
+        res.setHeader("Content-Type", "application/json; charset=utf-8");
+        res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+        res.status(200).send(JSON.stringify(data, null, 2));
+    } catch (error) {
+        logger.error("Error exporting journal:", error);
+        next(new AppError("Failed to export journal", 500));
+    }
+};
 
 /**
  * @desc    Get user's spiritual practice stats

@@ -12,10 +12,16 @@ import {
     saveSpiritualPractice,
     getUserPractices,
     getPracticeById,
+    updatePractice,
+    deletePractice,
     getJournal,
+    exportJournal,
     getStats,
 } from "../controller/ruhaniController.js";
-import { savePracticeValidationRules } from "../middlewares/validators.js";
+import {
+    savePracticeValidationRules,
+    updatePracticeValidationRules,
+} from "../middlewares/validators.js";
 import { practiceLimiter } from "../middlewares/rateLimiter.js";
 
 const router = express.Router();
@@ -36,6 +42,11 @@ router.get("/tadabbur/ayah/:verseKey", getTadabburAyahByVerseKey);
 router.post("/practice", isAuthenticated, practiceLimiter, savePracticeValidationRules(), saveSpiritualPractice);
 router.get("/practices", isAuthenticated, getUserPractices);
 router.get("/practices/:id", isAuthenticated, getPracticeById);
+router.patch("/practices/:id", isAuthenticated, practiceLimiter, updatePracticeValidationRules(), updatePractice);
+router.delete("/practices/:id", isAuthenticated, deletePractice);
+
+// Registered before "/journal" so the literal path is not shadowed by any future param route
+router.get("/journal/export", isAuthenticated, exportJournal);
 router.get("/journal", isAuthenticated, getJournal);
 router.get("/stats", isAuthenticated, getStats);
 

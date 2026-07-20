@@ -10,7 +10,17 @@ export interface SpiritualPracticePayload {
     habitChecks?: { habit: string; completed: boolean }[];
     traitRating?: number;
     isPrivate?: boolean;
+    /** Chains this practice to the previous step of a spiral session. */
+    linkedPracticeId?: string;
 }
+
+/**
+ * Editable fields only. practiceType/sourceRef/sourceTitle identify what was
+ * contemplated and are rejected server-side.
+ */
+export type UpdatePracticePayload = Partial<
+    Pick<SpiritualPracticePayload, 'reflectionText' | 'guidedAnswers' | 'habitChecks' | 'traitRating' | 'isPrivate'>
+>;
 
 export const ruhaniApi = {
     getTafakkurTopics: async (): Promise<TafakkurTopic[]> => {
@@ -41,7 +51,28 @@ export const ruhaniApi = {
         const { data } = await api.post('/ruhani/practice', payload);
         return data;
     },
-    getJournal: async (params: { page?: number; limit?: number; type?: string }): Promise<JournalResponse> => {
+    updatePractice: async (id: string, payload: UpdatePracticePayload) => {
+        const { data } = await api.patch(`/ruhani/practices/${id}`, payload);
+        return data;
+    },
+    deletePractice: async (id: string) => {
+        const { data } = await api.delete<{ deleted: boolean; id: string }>(`/ruhani/practices/${id}`);
+        return data;
+    },
+    /** Downloads the user's full journal as a JSON file. */
+    exportJournal: async () => {
+        const response = await api.get('/ruhani/journal/export', { responseType: 'blob' });
+
+        const url = URL.createObjectURL(response.data as Blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `ruhani-journal-${new Date().toISOString().slice(0, 10)}.json`;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
+    },
+    getJournal: async (params: { page?: number; limit?: number; type?: string; q?: string }): Promise<JournalResponse> => {
         const { data } = await api.get<JournalResponse>('/ruhani/journal', { params });
         return data;
     },

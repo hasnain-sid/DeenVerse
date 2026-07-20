@@ -15,6 +15,20 @@ export function useAyah(globalNumber: number, enabled = true) {
     });
 }
 
+/** Fetch a single ayah by "surah:ayah" key (e.g. "7:57") */
+export function useAyahByVerseKey(verseKey: string | undefined, enabled = true) {
+    return useQuery<AyahResponse>({
+        queryKey: ['quran', 'ayah', 'by-key', verseKey],
+        queryFn: async () => {
+            const { data } = await api.get(`/quran/ayah/by-key/${encodeURIComponent(verseKey!)}`);
+            return data;
+        },
+        staleTime: 7 * 24 * 60 * 60 * 1000,
+        enabled: enabled && !!verseKey && /^\d{1,3}:\d{1,3}$/.test(verseKey),
+        retry: false, // a bad key won't become good on retry
+    });
+}
+
 /** Fetch a complete ruku by number (1–556) */
 export function useRuku(rukuNumber: number, enabled = true) {
     return useQuery<RukuResponse>({
