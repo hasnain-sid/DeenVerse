@@ -23,19 +23,17 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
-      - name: Install shared deps
-        working-directory: packages/shared
-        run: npm ci --ignore-scripts
+      # Install from the repo root in one shot. `npm ci` inside a workspace
+      # directory wipes the root node_modules and installs only that workspace's
+      # subtree, so chaining per-directory installs silently uninstalls the
+      # previous one. packages/mobile is excluded — CI never builds it.
+      - name: Install workspace deps
+        run: npm ci --include-workspace-root -w packages/shared -w frontend
 
       # @deenverse/shared is consumed via its "exports" map, which points at dist/.
-      # dist/ is gitignored, so every job that resolves the package must build it first.
+      # dist/ is gitignored, so every job that resolves the package must build it.
       - name: Build shared package
-        working-directory: packages/shared
-        run: npm run build
-
-      - name: Install frontend deps
-        working-directory: frontend
-        run: npm ci --ignore-scripts
+        run: npm run build:shared
 
       - name: TypeScript check (frontend)
         working-directory: frontend
@@ -65,19 +63,15 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
+      # --include-workspace-root matters here: jest and babel live in the ROOT
+      # devDependencies, and backend's test script runs ../node_modules/jest.
+      - name: Install workspace deps
+        run: npm ci --include-workspace-root -w packages/shared -w backend
+
       # backend/jest.config.cjs maps @deenverse/shared straight to
       # packages/shared/dist/index.js, so the file has to exist before jest runs.
-      - name: Install shared deps
-        working-directory: packages/shared
-        run: npm ci --ignore-scripts
-
       - name: Build shared package
-        working-directory: packages/shared
-        run: npm run build
-
-      - name: Install backend deps
-        working-directory: backend
-        run: npm ci
+        run: npm run build:shared
 
       - name: Run backend tests
         working-directory: backend
@@ -97,18 +91,12 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
+      - name: Install workspace deps
+        run: npm ci --include-workspace-root -w packages/shared -w frontend
+
       # frontend depends on file:../packages/shared, resolved through dist/
-      - name: Install shared deps
-        working-directory: packages/shared
-        run: npm ci --ignore-scripts
-
       - name: Build shared package
-        working-directory: packages/shared
-        run: npm run build
-
-      - name: Install frontend deps
-        working-directory: frontend
-        run: npm ci
+        run: npm run build:shared
 
       - name: Build frontend
         working-directory: frontend
