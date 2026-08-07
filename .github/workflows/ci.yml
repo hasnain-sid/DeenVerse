@@ -118,16 +118,35 @@ jobs:
     needs: [test-backend, build-frontend]
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     environment: production
+    env:
+      # The `secrets` context is not available in a job-level `if:` (only github,
+      # needs, vars and inputs are), so presence is surfaced here as a flag and the
+      # deploy steps are gated on it. With no AWS credentials configured the job
+      # reports that it skipped instead of failing the whole run.
+      AWS_CONFIGURED: ${{ secrets.AWS_ACCESS_KEY_ID != '' && secrets.AWS_SECRET_ACCESS_KEY != '' && vars.S3_PROD_BUCKET != '' }}
     steps:
       - uses: actions/checkout@v4
 
+      - name: Report deploy configuration
+        run: |
+          if [ "$AWS_CONFIGURED" = "true" ]; then
+            echo "AWS credentials present — deploying to production."
+          else
+            echo "::notice title=Production deploy skipped::AWS credentials are not configured, so the S3 upload and CloudFront invalidation were skipped. Everything else in this run passed."
+            echo "To enable deploys, set these on the repository:"
+            echo "  secrets: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY"
+            echo "  variables: S3_PROD_BUCKET, CF_PROD_DISTRIBUTION_ID, AWS_REGION (optional)"
+          fi
+
       - name: Download frontend build
+        if: env.AWS_CONFIGURED == 'true'
         uses: actions/download-artifact@v4
         with:
           name: frontend-dist
           path: frontend/dist
 
       - name: Configure AWS credentials
+        if: env.AWS_CONFIGURED == 'true'
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
@@ -135,6 +154,7 @@ jobs:
           aws-region: ${{ vars.AWS_REGION || 'us-east-1' }}
 
       - name: Deploy frontend to S3 (production)
+        if: env.AWS_CONFIGURED == 'true'
         run: |
           aws s3 sync frontend/dist/ s3://${{ vars.S3_PROD_BUCKET }} \
             --delete \
@@ -145,6 +165,7 @@ jobs:
             --cache-control "no-cache"
 
       - name: Invalidate CloudFront (production)
+        if: env.AWS_CONFIGURED == 'true' && vars.CF_PROD_DISTRIBUTION_ID != ''
         run: |
           aws cloudfront create-invalidation \
             --distribution-id ${{ vars.CF_PROD_DISTRIBUTION_ID }} \
