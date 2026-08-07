@@ -52,27 +52,25 @@ export function GuidedSessionPage() {
     /** Each step's saved practice id, so the spiral is chained end to end. */
     const [practiceIds, setPracticeIds] = useState<Record<string, string>>({});
     const [startedAt, setStartedAt] = useState<number | null>(null);
-    const [elapsed, setElapsed] = useState(0);
+    /** Captured once when the session closes — reading the clock during render is impure. */
+    const [minutesSpent, setMinutesSpent] = useState<number | null>(null);
     const contentRef = useRef<HTMLDivElement>(null);
 
-    // Ambient progress only — no countdown, no numbers, no chime. A visible clock
-    // during contemplation contradicts the whole point of the space.
-    useEffect(() => {
-        if (!startedAt || step === 'choose' || step === 'summary') return;
-        const id = setInterval(() => setElapsed(Date.now() - startedAt), 15_000);
-        return () => clearInterval(id);
-    }, [startedAt, step]);
+    // Note: there is deliberately no ticking clock. Elapsed time is read once at the
+    // summary; a countdown during contemplation would contradict the point of the space.
 
     // Move focus to the top of each new step for keyboard and screen-reader users
     useEffect(() => {
         contentRef.current?.focus();
     }, [step]);
 
-    const prompts =
-        step === 'tafakkur' ? content?.topic.guidedQuestions ?? []
-            : step === 'tadabbur' ? content?.ayah.guidedQuestions ?? []
-                : step === 'tazkia' ? content?.trait.muhasabaPrompts ?? []
+    const promptsFor = (s: Step): string[] =>
+        s === 'tafakkur' ? content?.topic.guidedQuestions ?? []
+            : s === 'tadabbur' ? content?.ayah.guidedQuestions ?? []
+                : s === 'tazkia' ? content?.trait.muhasabaPrompts ?? []
                     : [];
+
+    const prompts = promptsFor(step);
 
     const handleBegin = (duration: number | null) => {
         if (!isAuthenticated) {
@@ -97,7 +95,7 @@ export function GuidedSessionPage() {
     };
 
     const goToStep = (next: Step) => {
-        setValue(emptyGuidedValue(0));
+        setValue(emptyGuidedValue(promptsFor(next).length));
         setStep(next);
     };
 
@@ -142,6 +140,9 @@ export function GuidedSessionPage() {
                             id: session._id,
                             payload: { status: 'completed', sessionAction: value.freeform.trim() },
                         });
+                        if (startedAt) {
+                            setMinutesSpent(Math.max(1, Math.round((Date.now() - startedAt) / 60_000)));
+                        }
                         setStep('summary');
                     }
                 },
@@ -240,7 +241,7 @@ export function GuidedSessionPage() {
 
     // ── Summary ─────────────────────────────────────────────────────
     if (step === 'summary') {
-        const minutes = startedAt ? Math.max(1, Math.round((Date.now() - startedAt) / 60_000)) : null;
+        const minutes = minutesSpent;
         return shell(
             <div className="space-y-10">
                 <div className="text-center space-y-4">
@@ -392,9 +393,7 @@ export function GuidedSessionPage() {
 
             <div className="flex items-center justify-between gap-4 flex-wrap pt-2">
                 <p className="text-xs text-zinc-500 dark:text-zinc-500">
-                    {elapsed > 0 && session.duration
-                        ? 'Take the time you need.'
-                        : 'Nothing here is required.'}
+                    Nothing here is required.
                 </p>
                 <button
                     onClick={handleSaveStep}

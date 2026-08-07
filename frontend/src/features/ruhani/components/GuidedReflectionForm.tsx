@@ -19,9 +19,17 @@ export function emptyGuidedValue(promptCount: number): GuidedReflectionValue {
     return { answers: Array.from({ length: promptCount }, () => ''), freeform: '' };
 }
 
-/** True once the user has written anything at all — used to gate saving. */
+/**
+ * True once the user has written anything at all — used to gate saving.
+ *
+ * Tolerates holes and undefined entries: answers can be sparse when a caller
+ * seeds an empty array and the user fills a later prompt first.
+ */
 export function hasGuidedContent(value: GuidedReflectionValue): boolean {
-    return value.answers.some((a) => a.trim().length > 0) || value.freeform.trim().length > 0;
+    return (
+        value.answers.some((a) => (a ?? '').trim().length > 0) ||
+        value.freeform.trim().length > 0
+    );
 }
 
 /**
@@ -55,8 +63,12 @@ export function GuidedReflectionForm({
     freeformPlaceholder = 'Optional — whatever else came up.',
 }: GuidedReflectionFormProps) {
     const setAnswer = (index: number, answer: string) => {
-        const answers = [...value.answers];
-        answers[index] = answer;
+        // Build a dense array sized to the prompts. Spreading a sparse array turns
+        // its holes into undefined, which then blows up anything calling .trim().
+        const answers = Array.from(
+            { length: prompts.length },
+            (_, i) => (i === index ? answer : value.answers[i] ?? '')
+        );
         onChange({ ...value, answers });
     };
 
