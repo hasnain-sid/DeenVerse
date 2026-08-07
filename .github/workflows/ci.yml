@@ -27,6 +27,12 @@ jobs:
         working-directory: packages/shared
         run: npm ci --ignore-scripts
 
+      # @deenverse/shared is consumed via its "exports" map, which points at dist/.
+      # dist/ is gitignored, so every job that resolves the package must build it first.
+      - name: Build shared package
+        working-directory: packages/shared
+        run: npm run build
+
       - name: Install frontend deps
         working-directory: frontend
         run: npm ci --ignore-scripts
@@ -59,6 +65,16 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
 
+      # backend/jest.config.cjs maps @deenverse/shared straight to
+      # packages/shared/dist/index.js, so the file has to exist before jest runs.
+      - name: Install shared deps
+        working-directory: packages/shared
+        run: npm ci --ignore-scripts
+
+      - name: Build shared package
+        working-directory: packages/shared
+        run: npm run build
+
       - name: Install backend deps
         working-directory: backend
         run: npm ci
@@ -80,6 +96,15 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
+
+      # frontend depends on file:../packages/shared, resolved through dist/
+      - name: Install shared deps
+        working-directory: packages/shared
+        run: npm ci --ignore-scripts
+
+      - name: Build shared package
+        working-directory: packages/shared
+        run: npm run build
 
       - name: Install frontend deps
         working-directory: frontend
