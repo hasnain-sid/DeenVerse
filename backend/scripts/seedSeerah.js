@@ -119,13 +119,23 @@ const counts = {
   links: { inserted: 0, skipped: 0 },
 };
 
-/** Strip the `_expectedFailure` documentation key before it reaches Mongoose. */
-const stripMeta = ({ _expectedFailure, ...rest }) => rest;
+/**
+ * Strip `_`-prefixed documentation keys (`_expectedFailure`, `_seedFixture`) before a
+ * record reaches Mongoose. Strict mode would drop them silently anyway; removing them
+ * explicitly keeps the seeded document identical to the file minus the annotations.
+ */
+const stripMeta = (record) =>
+  Object.fromEntries(
+    Object.entries(record).filter(([key]) => !key.startsWith("_"))
+  );
 
 // ── 1. Events (natural key: slug, derived from title) ─
 for (const raw of events) {
   const seed = stripMeta(raw);
-  const slug = slugify(seed.title ?? "", { lower: true, strict: true });
+  // Match how the model resolves it: an explicit slug wins, otherwise it derives from
+  // the title. Checking the wrong one would break idempotency on the second run.
+  const slug =
+    seed.slug || slugify(seed.title ?? "", { lower: true, strict: true });
 
   if (await SeerahEvent.exists({ slug })) {
     counts.events.skipped++;

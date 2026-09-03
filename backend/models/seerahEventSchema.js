@@ -55,6 +55,17 @@ const seerahEventSchema = new mongoose.Schema(
 
 // Auto-generate slug from title before saving (mirrors courseSchema.js:132-147)
 seerahEventSchema.pre("save", async function (next) {
+  /**
+   * An explicitly supplied slug wins on creation.
+   *
+   * Curated events carry short, stable ids that deliberately differ from the title —
+   * "spoils-dispute" for "Dispute over the Badr spoils" — and those ids are the natural
+   * key links resolve against and the segment they appear under in public URLs (§3.4).
+   * Deriving over the top of them would break both. Uniqueness is still enforced by the
+   * unique index below.
+   */
+  if (this.isNew && this.slug) return next();
+
   if (!this.isModified("title")) return next();
 
   const baseSlug = slugify(this.title, { lower: true, strict: true });
