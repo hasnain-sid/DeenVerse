@@ -15,6 +15,23 @@ These overlap with the Critical review findings and are treated as a single "sec
 - **Coverage is phase-shaped** (#14): the 392 backend tests exhaustively cover the *newest* code (courses, quizzes, classrooms, scholars, Stripe) and completely ignore the *oldest and most-used* code — auth, users, posts, feed, chat, streams, notifications. Any refactor of the social core is currently flying blind.
 - **The frontend has zero tests** — no Vitest, no RTL, nothing. The only gates are `tsc --noEmit` and ESLint.
 - No E2E/smoke coverage of the deployed app.
+- **Critical dependency advisories: triaged, none runtime-reachable.** GitHub reports 5 critical on
+  the default branch; `npm audit` against the committed lockfile shows 3 distinct critical advisories.
+  The gap is unreconciled — Dependabot appears to count per-manifest across the 4 workspaces, but
+  that was not verified, so **2 critical alerts remain unaccounted for** and someone with access to
+  the Security tab should confirm they are duplicates before this is closed.
+
+  | Package | Path | Scope | Reachable here? | Fix |
+  |---|---|---|---|---|
+  | `fast-xml-parser` 5.3.4 | `backend` → `@aws-sdk/client-ivs` → `@aws-sdk/core` → `@aws-sdk/xml-builder` | **runtime** | **No.** Every advisory needs attacker-controlled XML. The app parses none: body parsers are `express.json` + `express.urlencoded` only, and the sole XML in the backend is the *generated* sitemap (`seoMeta.js`, string-built, never parsed). This parser only ever sees AWS API responses, so exploiting it means controlling AWS's responses. | Transitive bump, non-breaking |
+  | `shell-quote` 1.8.3 | `packages/mobile` → `react-native` → `react-devtools-core` | dev | No. Dev tooling for the mobile package, which CI never builds. Absent from backend and frontend runtime. | Transitive bump, non-breaking |
+  | `tar` 6.2.1 | `packages/mobile` → `expo` → `@expo/cli` (and → `cacache`) | dev | No. Expo build tooling only. | **Breaking:** needs `expo` 52 → 57 (`isSemVerMajor`) |
+
+  Nothing here is an emergency, which is why it is filed rather than fixed. Priority order when it is
+  picked up: the two non-breaking transitive bumps first, then decide whether `packages/mobile` is
+  alive at all — an unbuilt, CI-excluded workspace is carrying the only breaking upgrade and most of
+  the alert volume. Retiring or refreshing it would close more of this register than patching it.
+
 - **`mongodb-memory-server` startup timeout is too short for slower machines.** Six suites
   (`scholarEarnings`, `ruhaniSession`, `ruhaniPractice`, and all three `smoke/*`) fail with
   `Instance failed to start within 10000ms` — 135 occurrences in one run. It is not worker
