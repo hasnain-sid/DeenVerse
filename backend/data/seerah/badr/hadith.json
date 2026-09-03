@@ -1,0 +1,47 @@
+[
+  {
+    "collection": "bukhari",
+    "number": "PLACEHOLDER-0001",
+    "hadeethencId": null,
+    "sunnahComUrl": null,
+    "gradings": [
+      {
+        "grade": "sahih",
+        "grader": "Placeholder Grader One",
+        "source": "PLACEHOLDER — invented grading, cites nothing real."
+      },
+      {
+        "grade": "hasan",
+        "grader": "Placeholder Grader Two",
+        "source": "PLACEHOLDER — second grading exists only to exercise the plural-gradings array."
+      }
+    ],
+    "gloss": "PLACEHOLDER GLOSS. Fixture text standing in for an original-prose summary of a matn. Not a translation and not a real report.",
+    "matnArabicExcerpt": null
+  },
+  {
+    "collection": "muslim",
+    "number": "PLACEHOLDER-0002",
+    "hadeethencId": null,
+    "sunnahComUrl": null,
+    "gradings": [
+      {
+        "grade": "ungraded",
+        "grader": "Placeholder Grader One",
+        "source": "PLACEHOLDER — invented."
+      }
+    ],
+    "gloss": "PLACEHOLDER GLOSS. Fixture text only.",
+    "matnArabicExcerpt": null
+  },
+  {
+    "_expectedFailure": "collection is not in the schema enum — this record MUST be reported as failed",
+    "collection": "not-a-real-collection",
+    "number": "PLACEHOLDER-0003",
+    "hadeethencId": null,
+    "sunnahComUrl": null,
+    "gradings": [],
+    "gloss": "PLACEHOLDER GLOSS. This record fails validation on purpose.",
+    "matnArabicExcerpt": null
+  }
+]

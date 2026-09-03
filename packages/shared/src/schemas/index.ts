@@ -5,6 +5,7 @@ export * from './scholar.js';
 export * from './payment.js';
 export * from './course.js';
 export * from './classroom.js';
+export * from './knowledge.js';
 
 // ===== Authentication Schemas =====
 

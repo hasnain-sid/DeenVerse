@@ -75,6 +75,25 @@ const userSchema = new mongoose.Schema({
     applicationDate:{ type:Date, default:undefined },
     rejectionReason:{ type:String, default:undefined }
   },
+  /**
+   * Authority to review knowledge-graph edges. A grant, not a role: a user may be a
+   * scholar AND hold a reviewer grant, and a reviewer need not be a scholar. Modelled
+   * embedded rather than as a `role` enum value on purpose — `scholar` is a seller role
+   * whose credentials are self-reported and never verified, and it has no domain
+   * scoping and no revocation path (§1.3).
+   *
+   * Admin-granted only, with `basis` recording what credential was actually inspected.
+   * Revocation sets `revokedAt`; decisions already made stay, but stop conferring
+   * authority (see ReviewDecision.authorityWithdrawn).
+   */
+  reviewerProfile:{
+    domains:[{ type:String, enum:['hadith-grading','asbab-al-nuzul','seerah-chronology','tafsir-attribution'] }],
+    grantedBy:{ type:mongoose.Schema.Types.ObjectId, ref:'User', default:undefined },
+    grantedAt:{ type:Date, default:undefined },
+    basis:{ type:String, default:'' },
+    revokedAt:{ type:Date, default:undefined },
+    revokedReason:{ type:String, default:undefined }
+  },
   banned:{
     type:Boolean,
     default:false

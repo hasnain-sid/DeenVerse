@@ -1,0 +1,60 @@
+[
+  {
+    "title": "Test Event One",
+    "titleArabic": "",
+    "segment": "badr",
+    "dating": [
+      {
+        "source": "Placeholder Source A, Volume 0, Page 0",
+        "hijriYear": 2,
+        "hijriMonth": 9,
+        "hijriDay": 17,
+        "note": "PLACEHOLDER — invented dating, not attested anywhere."
+      },
+      {
+        "source": "Placeholder Source B, Volume 0, Page 0",
+        "hijriYear": 2,
+        "hijriMonth": 9,
+        "note": "PLACEHOLDER — second dating exists only to exercise the plural-dating array."
+      }
+    ],
+    "narrativeOrder": 1,
+    "summary": "PLACEHOLDER SUMMARY. This is fixture text for the seed script and carries no historical claim. Real event summaries must be written in original prose by a qualified author from primary sources before M2.",
+    "participants": ["Placeholder Person One", "Placeholder Person Two"],
+    "places": ["Placeholder Location One"]
+  },
+  {
+    "title": "Test Event Two",
+    "titleArabic": "",
+    "segment": "badr",
+    "dating": [
+      {
+        "source": "Placeholder Source A, Volume 0, Page 0",
+        "hijriYear": 2,
+        "hijriMonth": 9,
+        "hijriDay": 18,
+        "note": "PLACEHOLDER — invented dating."
+      }
+    ],
+    "narrativeOrder": 2,
+    "summary": "PLACEHOLDER SUMMARY. Fixture text only. No historical claim is made or implied.",
+    "participants": ["Placeholder Person One"],
+    "places": ["Placeholder Location Two"]
+  },
+  {
+    "title": "Test Event Three",
+    "titleArabic": "",
+    "segment": "badr",
+    "dating": [
+      {
+        "source": "Placeholder Source C, Volume 0, Page 0",
+        "hijriYear": 2,
+        "note": "PLACEHOLDER — year only, to exercise optional month/day."
+      }
+    ],
+    "narrativeOrder": 3,
+    "summary": "PLACEHOLDER SUMMARY. Fixture text only. This event is the target of the link that fails validation on purpose.",
+    "participants": [],
+    "places": []
+  }
+]

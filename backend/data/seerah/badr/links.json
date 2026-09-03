@@ -1,0 +1,125 @@
+[
+  {
+    "from": { "type": "ayah", "ref": "8:9" },
+    "to": { "type": "seerahEvent", "ref": "test-event-one" },
+    "relation": "revealed_concerning",
+    "source": {
+      "work": "Placeholder Asbab Work",
+      "locator": "PLACEHOLDER, on 8:9",
+      "url": null
+    },
+    "grading": {
+      "label": "mursal",
+      "basis": "PLACEHOLDER BASIS. Invented justification; cites no real chain."
+    },
+    "confidence": "reported",
+    "disagreement": { "flag": false, "summary": "" },
+    "snapshotNote": "PLACEHOLDER fixture link"
+  },
+  {
+    "from": { "type": "ayah", "ref": "8:17" },
+    "to": { "type": "seerahEvent", "ref": "test-event-one" },
+    "relation": "references",
+    "source": {
+      "work": "Placeholder Asbab Work",
+      "locator": "PLACEHOLDER, on 8:17",
+      "url": null
+    },
+    "grading": {
+      "label": "textual",
+      "basis": "PLACEHOLDER BASIS."
+    },
+    "confidence": "established",
+    "disagreement": { "flag": false, "summary": "" },
+    "snapshotNote": "PLACEHOLDER fixture link"
+  },
+  {
+    "from": { "type": "ayah", "ref": "3:123" },
+    "to": { "type": "seerahEvent", "ref": "test-event-two" },
+    "relation": "thematically_related",
+    "source": {
+      "work": "Placeholder Curatorial Note",
+      "locator": "PLACEHOLDER",
+      "url": null
+    },
+    "grading": {
+      "label": "curatorial",
+      "basis": "PLACEHOLDER BASIS. Curatorial link, no transmitted claim."
+    },
+    "confidence": "weak",
+    "disagreement": {
+      "flag": true,
+      "summary": "PLACEHOLDER. Exercises the disagreement flag and its summary field."
+    },
+    "snapshotNote": "PLACEHOLDER fixture link"
+  },
+  {
+    "from": { "type": "seerahEvent", "ref": "test-event-one" },
+    "to": { "type": "hadithRef", "ref": "bukhari:PLACEHOLDER-0001" },
+    "relation": "attested_by",
+    "source": {
+      "work": "Placeholder Collection",
+      "locator": "PLACEHOLDER-0001",
+      "url": null
+    },
+    "grading": {
+      "label": "sahih",
+      "basis": "PLACEHOLDER BASIS."
+    },
+    "confidence": "established",
+    "disagreement": { "flag": false, "summary": "" },
+    "snapshotNote": "PLACEHOLDER fixture link"
+  },
+  {
+    "from": { "type": "seerahEvent", "ref": "test-event-two" },
+    "to": { "type": "hadithRef", "ref": "muslim:PLACEHOLDER-0002" },
+    "relation": "dated_by",
+    "source": {
+      "work": "Placeholder Collection",
+      "locator": "PLACEHOLDER-0002",
+      "url": null
+    },
+    "grading": {
+      "label": "hasan",
+      "basis": "PLACEHOLDER BASIS."
+    },
+    "confidence": "reported",
+    "disagreement": { "flag": false, "summary": "" },
+    "snapshotNote": "PLACEHOLDER fixture link"
+  },
+  {
+    "from": { "type": "ayah", "ref": "8:9" },
+    "to": { "type": "tafsirPassage", "ref": "wahidi-asbab:8:9" },
+    "relation": "explained_by",
+    "source": {
+      "work": "Placeholder Tafsir Work",
+      "locator": "PLACEHOLDER, on 8:9",
+      "url": null
+    },
+    "grading": {
+      "label": "no-isnad",
+      "basis": "PLACEHOLDER BASIS."
+    },
+    "confidence": "reported",
+    "disagreement": { "flag": false, "summary": "" },
+    "snapshotNote": "PLACEHOLDER fixture link"
+  },
+  {
+    "_expectedFailure": "revealed_concerning + curatorial grading — MUST be rejected by the pre-validate hook",
+    "from": { "type": "ayah", "ref": "9:40" },
+    "to": { "type": "seerahEvent", "ref": "test-event-three" },
+    "relation": "revealed_concerning",
+    "source": {
+      "work": "Placeholder Work",
+      "locator": "PLACEHOLDER",
+      "url": null
+    },
+    "grading": {
+      "label": "curatorial",
+      "basis": "PLACEHOLDER BASIS. This combination is structurally invalid on purpose."
+    },
+    "confidence": "weak",
+    "disagreement": { "flag": false, "summary": "" },
+    "snapshotNote": "PLACEHOLDER fixture link — expected to fail"
+  }
+]
