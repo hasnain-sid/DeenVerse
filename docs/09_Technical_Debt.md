@@ -15,6 +15,15 @@ These overlap with the Critical review findings and are treated as a single "sec
 - **Coverage is phase-shaped** (#14): the 392 backend tests exhaustively cover the *newest* code (courses, quizzes, classrooms, scholars, Stripe) and completely ignore the *oldest and most-used* code — auth, users, posts, feed, chat, streams, notifications. Any refactor of the social core is currently flying blind.
 - **The frontend has zero tests** — no Vitest, no RTL, nothing. The only gates are `tsc --noEmit` and ESLint.
 - No E2E/smoke coverage of the deployed app.
+- **`mongodb-memory-server` startup timeout is too short for slower machines.** Six suites
+  (`scholarEarnings`, `ruhaniSession`, `ruhaniPractice`, and all three `smoke/*`) fail with
+  `Instance failed to start within 10000ms` — 135 occurrences in one run. It is not worker
+  contention: running `--runInBand` rescued only `phase2.smoke`. It is the library's 10s default
+  being too tight when the mongod binary starts cold from a synced/scanned directory.
+  `MONGOMS_INSTANCE_STARTUP_TIMEOUT=60000` turns them green with no code change. **Fix:** set
+  `instanceStartupTimeout` (or that env var) in `backend/jest.config.cjs` so the suite is
+  reproducible off CI. Until then a local "full green" run needs that variable exported, which
+  makes it easy to mistake an environmental failure for a regression.
 
 ## Theme 3: Scale debt
 
