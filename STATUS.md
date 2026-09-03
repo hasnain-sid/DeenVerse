@@ -339,7 +339,10 @@ build on top of an existing social/LMS app, not a continuation of it.
 
 ## Known Issues / Tech Debt
 
-### 1. Paid course purchase is broken end-to-end
+### 1. Paid course purchase is broken end-to-end — FIXED in `f454557`
+
+> **Resolved.** Kept here as the record of what was wrong. All three breaks below are closed;
+> the line references describe the pre-fix code and no longer match `main`.
 
 The single most serious functional defect. Three independent breaks in one flow:
 
@@ -359,14 +362,33 @@ The single most serious functional defect. Three independent breaks in one flow:
 Net effect: a user is charged, a `Payment` row is written, and they get no course access and no
 error. Free enrollment works fine; paid does not.
 
-### 2. `enrollmentCount` is double-incremented on every paid enrollment
+**How it was fixed.** A fourth break turned up that is not listed above: the custom `successUrl`
+*overrode* the backend default and dropped Stripe's `{CHECKOUT_SESSION_ID}` placeholder, so no
+session id ever came back and correcting the param name alone would not have worked.
+`stripeService.createCheckoutSession` now guarantees the placeholder on any success URL; the
+webhook creates the `Enrollment` on `checkout.session.completed` so access does not depend on the
+buyer's browser surviving the redirect; and `CheckoutPage` gained confirm / already-enrolled /
+cancelled states so the pay button no longer re-renders after a successful charge.
+
+### 2. `enrollmentCount` is double-incremented on every paid enrollment — FIXED in `f454557`
+
+> **Resolved** in the same commit as #1, necessarily: once the webhook creates the enrollment,
+> `enrollInCourse` owns the increment, so leaving the webhook's own `$inc` would have double-counted
+> every paid enrollment.
 
 `webhookController.js:140-142` does `$inc: { enrollmentCount: 1 }` on `checkout.session.completed`,
 and `courseService.js:511` does the same `$inc` inside the enrollment transaction. Any paid course
 that ever completes both halves counts each student twice — which also corrupts the popularity
 ranking that sorts course discovery (`courseService.js:178-190`).
 
-### 3. The refresh token is accepted as full authorization on every endpoint (CSRF)
+**Note:** rows written before the fix still carry the doubled count. Nothing backfills them; a
+one-off reconciliation against the `Enrollment` collection is still outstanding.
+
+### 3. The refresh token is accepted as full authorization on every endpoint (CSRF) — FIXED in `b343337`
+
+> **Resolved.** The refresh cookie now authenticates exactly one endpoint, `POST /user/refresh`.
+> A grep for cookie reads across `backend/{config,socket,controller,middlewares,routes,services}`
+> returns exactly that one handler.
 
 `config/auth.js:49` — `extractToken` falls back to `req.cookies.token || req.cookies.refreshToken`,
 and `:89-91` verifies cookie-sourced tokens with the refresh secret and admits them. Consequences:
@@ -379,6 +401,12 @@ and `:89-91` verifies cookie-sourced tokens with the refresh secret and admits t
 
 Fix is narrow: accept the cookie only on `POST /user/refresh`.
 
+**What the narrow fix missed.** Two call sites were living off the fallback and had to change with
+it. The Socket.IO handshake (`socket/index.js`) accepted the refresh cookie directly — and because
+`accessToken` is not persisted while `isAuthenticated` is, *every page reload* connected the socket
+on the cookie alone. And `ScholarEarningsPage` reached the Stripe dashboard through a plain
+`<a href>`, a browser navigation that cannot carry an `Authorization` header.
+
 ### 4. Horizontal scaling is blocked
 
 `socket/index.js:10,16,22` keeps `onlineUsers`, `handQueues` and `whiteboardSaveTimestamps` in
@@ -387,12 +415,20 @@ backend instances would show different online lists, split hand-raise queues, an
 whiteboards. `middlewares/rateLimiter.js:15-24` correctly prefers Redis but silently falls back to
 `RateLimiterMemory`, so limits become per-instance too.
 
-### 5. NoSQL operator injection is still reachable
+### 5. NoSQL operator injection is still reachable — FIXED in `7705fb0`
+
+> **Resolved.** `sanitizeInput` now rejects any key starting with `$` or containing `.`, recursively
+> across body, query and params including inside arrays, returning 400. Values are untouched, so an
+> address like `first.last@example.com` still passes — only keys are constrained.
 
 `middlewares/security.js:93-103` — `deepSanitize` sanitises object **values** but copies **keys**
 verbatim (`:98-100`), so a payload like `{"email": {"$gt": ""}}` passes through untouched. No
 `express-mongo-sanitize` is installed (verified absent). Routes with `express-validator` rules are
 safe; routes without them (posts, chat, collections, streams, share, signs) are not.
+
+The query-string route to the same hole was not noted above: `?email[$ne]=` is expanded by `qs`
+into the identical nested operator object, so `express-validator` coverage on the body alone would
+not have closed it.
 
 ### 6. Mongoose validation errors surface as HTTP 500
 
@@ -515,7 +551,12 @@ parsed"* — containing no useful information. `.gitignore` does not cover them.
 
 Ordered by what actually blocks an MVP.
 
-**1. Fix the paid-course purchase flow — nothing else matters if payments don't work.**
+**1. ~~Fix the paid-course purchase flow~~ — DONE (`f454557`).** Closed along the exact line this
+step recommended: the `Enrollment` is created in `handleCheckoutCompleted`, and the duplicate `$inc`
+is gone. The suggested smoke test for the paid path was *not* added — the smoke suites cannot run in
+this environment (see the `mongodb-memory-server` entry in `docs/09_Technical_Debt.md`), so coverage
+went into `stripeService.test.js` and `webhookController.test.js` instead. Original text follows.
+
 Rewrite `CheckoutPage.tsx` to read `session_id` from the Stripe success URL and call
 `POST /courses/:slug/enroll` with `{ paymentSessionId }`; align the param name with
 `CourseDetailPage.tsx:106`; thread `paymentSessionId` through `useEnrollInCourse`
@@ -524,7 +565,12 @@ Rewrite `CheckoutPage.tsx` to read `session_id` from the Stripe success URL and 
 browser surviving the redirect — and remove the duplicate `$inc` at `webhookController.js:140` while
 you are in there (Issue #2). Add a smoke test for the full free *and* paid paths.
 
-**2. Close the CSRF hole and the injection surface.**
+**2. Close the CSRF hole and the injection surface — MOSTLY DONE (`b343337`, `7705fb0`).**
+The cookie restriction and the `$`/`.`-key rejection are both in. **Still outstanding:** the
+`ValidationError` branch in `errorHandler.js:31-37` is still commented out, so Mongoose validation
+and cast errors still surface as HTTP 500 (Known Issue #6). That was left alone deliberately — it is
+not a security fix and was out of scope for the M0 batch. Original text follows.
+
 Restrict cookie-based auth to `POST /user/refresh` only (`config/auth.js:49,89`); everything else
 requires the Bearer access token. Add `express-mongo-sanitize` (or reject `$`/`.`-prefixed keys in
 `deepSanitize`, `security.js:98`). Uncomment and finish the `ValidationError` branch in
