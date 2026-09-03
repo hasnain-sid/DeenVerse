@@ -103,8 +103,10 @@ export function CourseDetailPage() {
     } else {
       createCheckout.mutate({
         courseSlug: slug,
-        successUrl: `${window.location.origin}/checkout?success=true&course=${slug}`,
-        cancelUrl: window.location.href,
+        // `courseSlug` and `session_id` are the two params CheckoutPage reads on the way
+        // back from Stripe; Stripe substitutes the {CHECKOUT_SESSION_ID} placeholder.
+        successUrl: `${window.location.origin}/checkout?success=true&courseSlug=${slug}&session_id={CHECKOUT_SESSION_ID}`,
+        cancelUrl: `${window.location.origin}/checkout?canceled=true&courseSlug=${slug}`,
       });
     }
   };

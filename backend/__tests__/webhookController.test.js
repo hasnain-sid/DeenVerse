@@ -1,6 +1,7 @@
 import { handleStripeWebhook } from "../controller/webhookController.js";
 import { Payment } from "../models/paymentSchema.js";
 import { User } from "../models/userSchema.js";
+import { enrollInCourse } from "../services/courseService.js";
 
 // ── Mock dependencies ───────────────────────────────────
 
@@ -11,6 +12,18 @@ jest.mock("stripe", () => {
     webhooks: { constructEvent: mockConstructEvent },
   }));
 });
+
+jest.mock("../services/courseService.js", () => ({
+  enrollInCourse: jest.fn(),
+}));
+
+// Guards the enrollmentCount double-count: the webhook must not reach for the Course
+// model directly to $inc, because enrollInCourse already does it in its transaction.
+const mockMongooseModel = jest.fn();
+jest.mock("mongoose", () => ({
+  __esModule: true,
+  default: { model: mockMongooseModel },
+}));
 
 jest.mock("../models/paymentSchema.js", () => ({
   Payment: { create: jest.fn() },
@@ -148,6 +161,46 @@ describe("checkout.session.completed", () => {
     await handleStripeWebhook(req, res);
 
     // Should still return 200 (not crash)
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.json).toHaveBeenCalledWith({ received: true });
+  });
+
+  it("enrolls the buyer, so access does not depend on the browser returning from Stripe", async () => {
+    mockConstructEvent.mockReturnValue(
+      stripeEvent("checkout.session.completed", session)
+    );
+    Payment.create.mockResolvedValue({});
+    enrollInCourse.mockResolvedValue({ enrollment: { _id: "enr1" } });
+
+    const res = makeRes();
+    await handleStripeWebhook(makeReq(), res);
+
+    expect(enrollInCourse).toHaveBeenCalledWith("user1", "arabic", "cs_abc");
+    expect(res.status).toHaveBeenCalledWith(200);
+  });
+
+  it("does not increment enrollmentCount itself — enrollInCourse owns that", async () => {
+    mockConstructEvent.mockReturnValue(
+      stripeEvent("checkout.session.completed", session)
+    );
+    Payment.create.mockResolvedValue({});
+    enrollInCourse.mockResolvedValue({ enrollment: { _id: "enr1" } });
+
+    await handleStripeWebhook(makeReq(), makeRes());
+
+    expect(mockMongooseModel).not.toHaveBeenCalledWith("Course");
+  });
+
+  it("stays 200 when the buyer is already enrolled (replayed webhook)", async () => {
+    mockConstructEvent.mockReturnValue(
+      stripeEvent("checkout.session.completed", session)
+    );
+    Payment.create.mockResolvedValue({});
+    enrollInCourse.mockRejectedValue(new Error("Already enrolled in this course"));
+
+    const res = makeRes();
+    await handleStripeWebhook(makeReq(), res);
+
     expect(res.status).toHaveBeenCalledWith(200);
     expect(res.json).toHaveBeenCalledWith({ received: true });
   });

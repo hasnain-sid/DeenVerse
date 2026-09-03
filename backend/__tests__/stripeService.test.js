@@ -239,6 +239,44 @@ describe("createCheckoutSession", () => {
     });
   });
 
+  it("appends the session-id placeholder when the caller's success URL omits it", async () => {
+    mockMongooseModel.mockReturnValue({
+      findOne: jest.fn().mockReturnValue(chainQuery(fakeCourse)),
+    });
+    mockStripe.checkout.sessions.create.mockResolvedValue({
+      id: "cs_123",
+      url: "https://checkout.stripe.com/c/pay/cs_123",
+    });
+
+    // The URL the course page used to send: no {CHECKOUT_SESSION_ID}, so a buyer
+    // returning from Stripe had no way to identify the session they had just paid for.
+    await createCheckoutSession(
+      "user123",
+      "learn-arabic",
+      "https://deenverse.com/checkout?success=true&courseSlug=learn-arabic"
+    );
+
+    const { success_url } = mockStripe.checkout.sessions.create.mock.calls[0][0];
+    expect(success_url).toContain("session_id={CHECKOUT_SESSION_ID}");
+    expect(success_url).toContain("courseSlug=learn-arabic");
+  });
+
+  it("defaults the success URL to one carrying both course slug and session id", async () => {
+    mockMongooseModel.mockReturnValue({
+      findOne: jest.fn().mockReturnValue(chainQuery(fakeCourse)),
+    });
+    mockStripe.checkout.sessions.create.mockResolvedValue({
+      id: "cs_123",
+      url: "https://checkout.stripe.com/c/pay/cs_123",
+    });
+
+    await createCheckoutSession("user123", "learn-arabic");
+
+    const { success_url } = mockStripe.checkout.sessions.create.mock.calls[0][0];
+    expect(success_url).toContain("courseSlug=learn-arabic");
+    expect(success_url).toContain("session_id={CHECKOUT_SESSION_ID}");
+  });
+
   it("throws AppError 400 when instructor has no Stripe Connect", async () => {
     const courseNoStripe = {
       ...fakeCourse,

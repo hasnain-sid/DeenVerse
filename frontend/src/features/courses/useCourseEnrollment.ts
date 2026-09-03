@@ -13,9 +13,18 @@ type ApiError = AxiosError<{ message?: string }>;
 export function useEnrollInCourse() {
   const queryClient = useQueryClient();
 
-  return useMutation<{ enrollment: { _id: string } }, ApiError, { slug: string }>({
-    mutationFn: async ({ slug }) => {
-      const { data } = await api.post<{ enrollment: { _id: string } }>(`/courses/${slug}/enroll`);
+  return useMutation<
+    { enrollment: { _id: string } },
+    ApiError,
+    { slug: string; paymentSessionId?: string }
+  >({
+    // Paid courses require the Stripe Checkout session id — the backend looks up the
+    // matching completed Payment before it will create the enrollment.
+    mutationFn: async ({ slug, paymentSessionId }) => {
+      const { data } = await api.post<{ enrollment: { _id: string } }>(
+        `/courses/${slug}/enroll`,
+        paymentSessionId ? { paymentSessionId } : {},
+      );
       return data;
     },
     onSuccess: (_data, { slug }) => {

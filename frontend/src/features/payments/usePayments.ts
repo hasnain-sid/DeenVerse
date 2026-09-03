@@ -58,6 +58,35 @@ export function useCreateCheckout() {
   });
 }
 
+/**
+ * Confirms a completed Stripe Checkout session by enrolling the buyer in the course.
+ *
+ * The Stripe webhook is the authoritative path — it creates the Enrollment as soon as
+ * `checkout.session.completed` arrives, without depending on the buyer's browser
+ * surviving the redirect. This call is the belt-and-braces path for the returning tab,
+ * so "Already enrolled" means the webhook won already and counts as success.
+ */
+export function useConfirmCoursePurchase() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ slug, paymentSessionId }: { slug: string; paymentSessionId: string }) => {
+      try {
+        await api.post(`/courses/${slug}/enroll`, { paymentSessionId });
+      } catch (err) {
+        const status = (err as ApiError).response?.status;
+        const message = (err as ApiError).response?.data?.message ?? '';
+        if (!(status === 400 && /already enrolled/i.test(message))) throw err;
+      }
+      return { slug };
+    },
+    onSuccess: ({ slug }) => {
+      queryClient.invalidateQueries({ queryKey: ['courses', 'detail', slug] });
+      queryClient.invalidateQueries({ queryKey: ['courses'] });
+    },
+  });
+}
+
 export function useCreateSubscription() {
   return useMutation({
     mutationFn: async ({ planId }: { planId: 'student' | 'premium' }) => {

@@ -172,6 +172,20 @@ async function getOrCreateStripeCustomer(userId) {
 // ─────────────────────────────────────────────────────────
 
 /**
+ * Ensure a success URL carries Stripe's session-id placeholder.
+ *
+ * Stripe substitutes {CHECKOUT_SESSION_ID} on redirect. Without it the buyer returns
+ * from Stripe with no way to identify the session they just paid for, so the client
+ * cannot confirm the enrollment. Callers get it appended rather than silently dropped.
+ * @param {string} url
+ * @returns {string}
+ */
+function withSessionIdPlaceholder(url) {
+  if (url.includes("{CHECKOUT_SESSION_ID}")) return url;
+  return `${url}${url.includes("?") ? "&" : "?"}session_id={CHECKOUT_SESSION_ID}`;
+}
+
+/**
  * Create a Stripe Checkout Session for a course purchase.
  * Requires the Course model to be registered (Phase 2).
  * @param {string} userId
@@ -231,9 +245,10 @@ export async function createCheckoutSession(userId, courseSlug, successUrl, canc
       ],
       application_fee_amount: applicationFee,
       transfer_data: { destination: scholarConnectId },
-      success_url:
+      success_url: withSessionIdPlaceholder(
         successUrl ||
-        `${frontendUrl}/checkout?success=true&session_id={CHECKOUT_SESSION_ID}`,
+          `${frontendUrl}/checkout?success=true&courseSlug=${encodeURIComponent(courseSlug)}`
+      ),
       cancel_url: cancelUrl || `${frontendUrl}/checkout?canceled=true`,
       client_reference_id: userId.toString(),
       metadata: {

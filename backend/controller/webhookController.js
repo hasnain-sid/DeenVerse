@@ -72,8 +72,8 @@ export const handleStripeWebhook = async (req, res) => {
 
 /**
  * checkout.session.completed
- * Creates a Payment record (idempotent — skips if stripeSessionId already exists).
- * Updates course enrollment count for course purchases.
+ * Creates a Payment record (idempotent — skips if stripeSessionId already exists),
+ * then enrolls the buyer for course purchases.
  */
 async function handleCheckoutCompleted(session) {
   const userId = session.metadata?.userId || session.client_reference_id;
@@ -132,16 +132,36 @@ async function handleCheckoutCompleted(session) {
     throw err;
   }
 
-  // Post-insert side effects
-  if (session.mode === "payment" && session.metadata?.courseId) {
+  // Post-insert side effects.
+  //
+  // Enrollment is created HERE, not when the buyer's browser returns from Stripe: the
+  // redirect can be closed, blocked or lost, and access must not depend on it. This is
+  // also the only increment of Course.enrollmentCount for a paid purchase —
+  // enrollInCourse does it inside its transaction, so the webhook must not $inc again.
+  if (session.mode === "payment" && session.metadata?.courseSlug) {
     try {
-      const mongoose = (await import("mongoose")).default;
-      const CourseModel = mongoose.model("Course");
-      await CourseModel.findByIdAndUpdate(session.metadata.courseId, {
-        $inc: { enrollmentCount: 1 },
+      const { enrollInCourse } = await import("../services/courseService.js");
+      await enrollInCourse(userId, session.metadata.courseSlug, session.id);
+      logger.info("Enrollment created from checkout webhook", {
+        userId,
+        courseSlug: session.metadata.courseSlug,
+        sessionId: session.id,
       });
-    } catch {
-      // Course model not yet registered (Phase 2) — skip silently
+    } catch (err) {
+      // A replayed webhook, or a buyer whose returning tab confirmed first, is expected.
+      if (/already enrolled/i.test(err?.message ?? "")) {
+        logger.info("Buyer already enrolled — skipping webhook enrollment", {
+          userId,
+          sessionId: session.id,
+        });
+      } else {
+        logger.error("Failed to enroll buyer from checkout webhook", {
+          userId,
+          courseSlug: session.metadata.courseSlug,
+          sessionId: session.id,
+          error: err?.message,
+        });
+      }
     }
   }
 
