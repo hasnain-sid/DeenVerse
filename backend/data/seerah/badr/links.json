@@ -1,125 +1,116 @@
 [
   {
-    "from": { "type": "ayah", "ref": "8:9" },
-    "to": { "type": "seerahEvent", "ref": "test-event-one" },
+    "from": { "type": "ayah", "ref": "8:1" },
+    "to": { "type": "seerahEvent", "ref": "spoils-dispute" },
     "relation": "revealed_concerning",
     "source": {
-      "work": "Placeholder Asbab Work",
-      "locator": "PLACEHOLDER, on 8:9",
-      "url": null
-    },
-    "grading": {
-      "label": "mursal",
-      "basis": "PLACEHOLDER BASIS. Invented justification; cites no real chain."
-    },
-    "confidence": "reported",
-    "disagreement": { "flag": false, "summary": "" },
-    "snapshotNote": "PLACEHOLDER fixture link"
-  },
-  {
-    "from": { "type": "ayah", "ref": "8:17" },
-    "to": { "type": "seerahEvent", "ref": "test-event-one" },
-    "relation": "references",
-    "source": {
-      "work": "Placeholder Asbab Work",
-      "locator": "PLACEHOLDER, on 8:17",
-      "url": null
-    },
-    "grading": {
-      "label": "textual",
-      "basis": "PLACEHOLDER BASIS."
-    },
-    "confidence": "established",
-    "disagreement": { "flag": false, "summary": "" },
-    "snapshotNote": "PLACEHOLDER fixture link"
-  },
-  {
-    "from": { "type": "ayah", "ref": "3:123" },
-    "to": { "type": "seerahEvent", "ref": "test-event-two" },
-    "relation": "thematically_related",
-    "source": {
-      "work": "Placeholder Curatorial Note",
-      "locator": "PLACEHOLDER",
-      "url": null
-    },
-    "grading": {
-      "label": "curatorial",
-      "basis": "PLACEHOLDER BASIS. Curatorial link, no transmitted claim."
-    },
-    "confidence": "weak",
-    "disagreement": {
-      "flag": true,
-      "summary": "PLACEHOLDER. Exercises the disagreement flag and its summary field."
-    },
-    "snapshotNote": "PLACEHOLDER fixture link"
-  },
-  {
-    "from": { "type": "seerahEvent", "ref": "test-event-one" },
-    "to": { "type": "hadithRef", "ref": "bukhari:PLACEHOLDER-0001" },
-    "relation": "attested_by",
-    "source": {
-      "work": "Placeholder Collection",
-      "locator": "PLACEHOLDER-0001",
+      "work": "Sahih Muslim (Sa'd ibn Abi Waqqas's report)",
+      "locator": "on 8:1",
       "url": null
     },
     "grading": {
       "label": "sahih",
-      "basis": "PLACEHOLDER BASIS."
+      "basis": "Reported in Sahih Muslim; sahih by inclusion."
     },
     "confidence": "established",
-    "disagreement": { "flag": false, "summary": "" },
-    "snapshotNote": "PLACEHOLDER fixture link"
+    "disagreement": { "flag": false, "summary": "" }
   },
   {
-    "from": { "type": "seerahEvent", "ref": "test-event-two" },
-    "to": { "type": "hadithRef", "ref": "muslim:PLACEHOLDER-0002" },
-    "relation": "dated_by",
+    "from": { "type": "ayah", "ref": "8:5" },
+    "to": { "type": "seerahEvent", "ref": "reluctant-departure" },
+    "relation": "references",
     "source": {
-      "work": "Placeholder Collection",
-      "locator": "PLACEHOLDER-0002",
+      "work": "tafsir consensus (Ibn Kathir, Jalalayn)",
+      "locator": "on 8:5",
       "url": null
     },
     "grading": {
-      "label": "hasan",
-      "basis": "PLACEHOLDER BASIS."
+      "label": "textual",
+      "basis": "Textual identification, per the cited tafsir consensus."
     },
     "confidence": "reported",
-    "disagreement": { "flag": false, "summary": "" },
-    "snapshotNote": "PLACEHOLDER fixture link"
+    "disagreement": { "flag": false, "summary": "" }
   },
   {
     "from": { "type": "ayah", "ref": "8:9" },
-    "to": { "type": "tafsirPassage", "ref": "wahidi-asbab:8:9" },
-    "relation": "explained_by",
+    "to": { "type": "seerahEvent", "ref": "dua-for-reinforcement" },
+    "relation": "references",
     "source": {
-      "work": "Placeholder Tafsir Work",
-      "locator": "PLACEHOLDER, on 8:9",
+      "work": "Sahih Muslim 1763",
+      "locator": "on 8:9",
       "url": null
     },
     "grading": {
-      "label": "no-isnad",
-      "basis": "PLACEHOLDER BASIS."
+      "label": "sahih",
+      "basis": "Reported in Sahih Muslim 1763; sahih by inclusion."
     },
-    "confidence": "reported",
-    "disagreement": { "flag": false, "summary": "" },
-    "snapshotNote": "PLACEHOLDER fixture link"
+    "confidence": "established",
+    "disagreement": { "flag": false, "summary": "" }
   },
   {
-    "_expectedFailure": "revealed_concerning + curatorial grading — MUST be rejected by the pre-validate hook",
-    "from": { "type": "ayah", "ref": "9:40" },
-    "to": { "type": "seerahEvent", "ref": "test-event-three" },
+    "from": { "type": "ayah", "ref": "8:67" },
+    "to": { "type": "seerahEvent", "ref": "captives-deliberation" },
     "relation": "revealed_concerning",
     "source": {
-      "work": "Placeholder Work",
-      "locator": "PLACEHOLDER",
+      "work": "Sahih Muslim 1763",
+      "locator": "on 8:67",
+      "url": null
+    },
+    "grading": {
+      "label": "sahih",
+      "basis": "Reported in Sahih Muslim 1763; sahih by inclusion."
+    },
+    "confidence": "established",
+    "disagreement": { "flag": false, "summary": "" }
+  },
+  {
+    "from": { "type": "seerahEvent", "ref": "dua-for-reinforcement" },
+    "to": { "type": "hadithRef", "ref": "muslim:1763" },
+    "relation": "attested_by",
+    "source": {
+      "work": "Sahih Muslim, Kitab al-Jihad wa's-Siyar",
+      "locator": "hadith 1763",
+      "url": null
+    },
+    "grading": {
+      "label": "sahih",
+      "basis": "Reported in Sahih Muslim 1763; sahih by inclusion."
+    },
+    "confidence": "established",
+    "disagreement": { "flag": false, "summary": "" }
+  },
+  {
+    "from": { "type": "seerahEvent", "ref": "captives-deliberation" },
+    "to": { "type": "hadithRef", "ref": "muslim:1763" },
+    "relation": "attested_by",
+    "source": {
+      "work": "Sahih Muslim, Kitab al-Jihad wa's-Siyar",
+      "locator": "hadith 1763",
+      "url": null
+    },
+    "grading": {
+      "label": "sahih",
+      "basis": "Reported in Sahih Muslim 1763; sahih by inclusion."
+    },
+    "confidence": "established",
+    "disagreement": { "flag": false, "summary": "" }
+  },
+  {
+    "_seedFixture": true,
+    "_expectedFailure": "SEED MECHANISM FIXTURE — NOT CONTENT. Deliberately invalid: revealed_concerning with a curatorial grading, which knowledgeLinkSchema's pre(\"validate\") hook must reject. Exists only so a seed run proves it REPORTS failures instead of silently dropping records. The ayah/event pairing below is deliberate nonsense and asserts nothing.",
+    "from": { "type": "ayah", "ref": "1:1" },
+    "to": { "type": "seerahEvent", "ref": "captives-deliberation" },
+    "relation": "revealed_concerning",
+    "source": {
+      "work": "NOT A SOURCE — seed mechanism fixture",
+      "locator": "n/a",
       "url": null
     },
     "grading": {
       "label": "curatorial",
-      "basis": "PLACEHOLDER BASIS. This combination is structurally invalid on purpose."
+      "basis": "NOT A GRADING — this combination is structurally invalid on purpose."
     },
     "confidence": "weak",
-    "disagreement": { "flag": false, "summary": "" },
-    "snapshotNote": "PLACEHOLDER fixture link — expected to fail"
+    "disagreement": { "flag": false, "summary": "" }
   }
 ]

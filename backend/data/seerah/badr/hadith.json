@@ -1,47 +1,17 @@
 [
   {
-    "collection": "bukhari",
-    "number": "PLACEHOLDER-0001",
+    "collection": "muslim",
+    "number": "1763",
     "hadeethencId": null,
-    "sunnahComUrl": null,
+    "sunnahComUrl": "https://sunnah.com/muslim:1763",
     "gradings": [
       {
         "grade": "sahih",
-        "grader": "Placeholder Grader One",
-        "source": "PLACEHOLDER — invented grading, cites nothing real."
-      },
-      {
-        "grade": "hasan",
-        "grader": "Placeholder Grader Two",
-        "source": "PLACEHOLDER — second grading exists only to exercise the plural-gradings array."
+        "grader": "Muslim (by inclusion)",
+        "source": "Sahih Muslim, Kitab al-Jihad wa's-Siyar"
       }
     ],
-    "gloss": "PLACEHOLDER GLOSS. Fixture text standing in for an original-prose summary of a matn. Not a translation and not a real report.",
-    "matnArabicExcerpt": null
-  },
-  {
-    "collection": "muslim",
-    "number": "PLACEHOLDER-0002",
-    "hadeethencId": null,
-    "sunnahComUrl": null,
-    "gradings": [
-      {
-        "grade": "ungraded",
-        "grader": "Placeholder Grader One",
-        "source": "PLACEHOLDER — invented."
-      }
-    ],
-    "gloss": "PLACEHOLDER GLOSS. Fixture text only.",
-    "matnArabicExcerpt": null
-  },
-  {
-    "_expectedFailure": "collection is not in the schema enum — this record MUST be reported as failed",
-    "collection": "not-a-real-collection",
-    "number": "PLACEHOLDER-0003",
-    "hadeethencId": null,
-    "sunnahComUrl": null,
-    "gradings": [],
-    "gloss": "PLACEHOLDER GLOSS. This record fails validation on purpose.",
+    "gloss": "Carries two accounts of Badr: Umar's, of the Prophet's supplication for help before the angels arrived, and Ibn Abbas's, of the deliberation afterwards over what should be done with the captives.",
     "matnArabicExcerpt": null
   }
 ]

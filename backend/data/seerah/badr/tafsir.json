@@ -1,18 +1,1 @@
-[
-  {
-    "work": "wahidi-asbab",
-    "verseKey": "8:9",
-    "locator": "PLACEHOLDER locator, page 0",
-    "summary": "PLACEHOLDER SUMMARY. Fixture text standing in for an original-prose summary of what a tafsir passage says. Makes no attribution claim about any real work.",
-    "externalUrl": null,
-    "arabicExcerpt": null
-  },
-  {
-    "work": "ibn-kathir",
-    "verseKey": "8:17",
-    "locator": "PLACEHOLDER locator, page 0",
-    "summary": "PLACEHOLDER SUMMARY. Fixture text only.",
-    "externalUrl": null,
-    "arabicExcerpt": null
-  }
-]
+[]
