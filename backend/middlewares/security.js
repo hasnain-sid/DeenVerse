@@ -81,12 +81,49 @@ export function sanitize(input) {
 }
 
 /**
- * Express middleware: recursively sanitise all string values in req.body, req.query, req.params.
+ * Error thrown when a request key looks like a MongoDB operator or a path traversal.
+ * Carries a 400 so the central error handler reports it as a bad request.
+ */
+class InvalidKeyError extends Error {
+  constructor(key) {
+    super(`Invalid characters in request key: ${key}`);
+    this.statusCode = 400;
+  }
+}
+
+/**
+ * Reject keys that MongoDB would interpret rather than match literally.
+ *
+ * `$`-prefixed keys become query operators: `{"email": {"$ne": null}}` in a JSON body,
+ * or `?email[$ne]=` in a query string (qs expands the bracket form into a nested
+ * object), turns an equality lookup into "any document". Dotted keys reach into
+ * subdocuments — `{"user.role": "admin"}` — which lets a caller address fields the
+ * route never meant to expose.
+ *
+ * @param {string} key
+ * @returns {boolean}
+ */
+function isUnsafeKey(key) {
+  return key.startsWith("$") || key.includes(".");
+}
+
+/**
+ * Express middleware: reject MongoDB operator keys, then recursively sanitise all
+ * string values in req.body, req.query and req.params.
+ *
+ * Mounted globally in index.js BEFORE any route is registered, so no handler ever sees
+ * an unsanitised request. Keep it there — moving it after the route mounts silently
+ * disables it for everything above.
  */
 export function sanitizeInput(req, _res, next) {
-  if (req.body) req.body = deepSanitize(req.body);
-  if (req.query) req.query = deepSanitize(req.query);
-  if (req.params) req.params = deepSanitize(req.params);
+  try {
+    if (req.body) req.body = deepSanitize(req.body);
+    if (req.query) req.query = deepSanitize(req.query);
+    if (req.params) req.params = deepSanitize(req.params);
+  } catch (err) {
+    if (err instanceof InvalidKeyError) return next(err);
+    throw err;
+  }
   next();
 }
 
@@ -96,6 +133,7 @@ function deepSanitize(obj) {
   if (obj && typeof obj === "object") {
     const cleaned = {};
     for (const [key, value] of Object.entries(obj)) {
+      if (isUnsafeKey(key)) throw new InvalidKeyError(key);
       cleaned[key] = deepSanitize(value);
     }
     return cleaned;
