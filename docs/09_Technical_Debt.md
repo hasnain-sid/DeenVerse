@@ -37,10 +37,20 @@ These overlap with the Critical review findings and are treated as a single "sec
   `Instance failed to start within 10000ms` — 135 occurrences in one run. It is not worker
   contention: running `--runInBand` rescued only `phase2.smoke`. It is the library's 10s default
   being too tight when the mongod binary starts cold from a synced/scanned directory.
-  `MONGOMS_INSTANCE_STARTUP_TIMEOUT=60000` turns them green with no code change. **Fix:** set
-  `instanceStartupTimeout` (or that env var) in `backend/jest.config.cjs` so the suite is
-  reproducible off CI. Until then a local "full green" run needs that variable exported, which
-  makes it easy to mistake an environmental failure for a regression.
+
+  **There is no env-var fix.** An earlier revision of this entry claimed
+  `MONGOMS_INSTANCE_STARTUP_TIMEOUT=60000` turned the suites green; that is wrong. The variable
+  does not exist — `ResolveConfigVariables` in `mongodb-memory-server-core` has no such key, so
+  exporting it does nothing, and the one run that appeared to prove it was chance. The real knob
+  is a **per-instance option**, verified working: `launchTimeout`, read at
+  `MongoInstance.js:170` and defaulting to `1000 * 10`.
+
+  **Fix:** pass it where each suite constructs its server —
+  `MongoMemoryReplSet.create({ replSet: {...}, instanceOpts: [{ launchTimeout: 60000 }] })`, or
+  `MongoMemoryServer.create({ instance: { launchTimeout: 60000 } })` — ideally via one shared
+  test helper rather than editing six files. Until then there is no way to get a locally green
+  run, so an environmental failure is easy to mistake for a regression: compare the *set* of
+  failing suites against the six named above rather than expecting zero.
 
 ## Theme 3: Scale debt
 
