@@ -29,6 +29,7 @@ import {
   useScholarEarningsDetails,
   useStripeConnect,
   useStripeConnectOnboard,
+  useStripeDashboard,
 } from './usePayments';
 
 const PERIOD_LABELS: Record<string, string> = {
@@ -76,6 +77,7 @@ export function ScholarEarningsPage() {
   const { data: txData, isLoading: txLoading } = useScholarEarningsDetails(txPage);
   const { data: stripeStatus, isLoading: stripeLoading } = useStripeConnect();
   const { mutate: onboard, isPending: onboarding } = useStripeConnectOnboard();
+  const { mutate: openDashboard, isPending: openingDashboard } = useStripeDashboard();
 
   // Scholar-only guard (show message for non-scholars)
   if (user && user.role !== 'scholar' && user.role !== 'admin') {
@@ -266,10 +268,14 @@ export function ScholarEarningsPage() {
                   </div>
                 </div>
                 {stripeStatus?.connected ? (
-                  <Button variant="outline" className="shrink-0 gap-2 w-full sm:w-auto" asChild>
-                    <a href="/api/v1/scholars/stripe/dashboard" target="_blank" rel="noreferrer">
-                      Stripe Dashboard <ExternalLink className="h-4 w-4" />
-                    </a>
+                  <Button
+                    variant="outline"
+                    className="shrink-0 gap-2 w-full sm:w-auto"
+                    onClick={() => openDashboard()}
+                    disabled={openingDashboard}
+                  >
+                    {openingDashboard && <Loader2 className="h-4 w-4 animate-spin" />}
+                    Stripe Dashboard <ExternalLink className="h-4 w-4" />
                   </Button>
                 ) : (
                   <Button

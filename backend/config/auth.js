@@ -4,21 +4,16 @@ import { User } from '../models/userSchema.js';
 import { cacheGet, cacheSet } from '../services/cacheService.js';
 
 /**
- * Resolve the JWT secrets from environment variables.
- * Falls back gracefully if only one secret is configured.
- */
-function getSecrets() {
-  const accessSecret = process.env.TOKEN_SECRET;
-  const refreshSecret = process.env.REFRESH_TOKEN_SECRET || accessSecret;
-  return { accessSecret, refreshSecret };
-}
-
-/**
  * Verify an access token (uses TOKEN_SECRET only).
+ *
+ * There is no refresh-token verifier here on purpose: this module authenticates
+ * requests, and refresh tokens are not request credentials. POST /user/refresh
+ * verifies its own via utils/tokenUtils.js.
+ *
  * Returns decoded payload or throws.
  */
 function verifyToken(token) {
-  const { accessSecret } = getSecrets();
+  const accessSecret = process.env.TOKEN_SECRET;
   if (!accessSecret) {
     throw new Error("JWT secret is not configured");
   }
@@ -26,31 +21,26 @@ function verifyToken(token) {
 }
 
 /**
- * Verify a refresh token (uses REFRESH_TOKEN_SECRET).
- * Returns decoded payload or throws.
- */
-function verifyRefreshToken(token) {
-  const { refreshSecret } = getSecrets();
-  if (!refreshSecret) {
-    throw new Error("JWT secret is not configured");
-  }
-  return jwt.verify(token, refreshSecret);
-}
-
-/**
- * Extract token from the request.
- * Returns { token, source } where source is 'header' or 'cookie'.
+ * Extract the access token from the Authorization header.
+ *
+ * Deliberately does NOT fall back to the refresh cookie. That cookie is sent
+ * automatically by the browser on cross-site requests (`sameSite: 'None'` in
+ * production — see utils/tokenUtils.js), so accepting it as proof of intent made
+ * every state-changing endpoint forgeable from any origin the user visited while
+ * logged in. An attacker's page could not read the response, but the write had
+ * already happened.
+ *
+ * The refresh cookie now authenticates exactly one thing: POST /user/refresh,
+ * which reads it directly in the controller and trades it for an access token.
+ *
+ * Returns { token } — null when no bearer token is present.
  */
 function extractToken(req) {
   const authHeader = req.headers.authorization;
   if (authHeader && authHeader.startsWith('Bearer ')) {
-    return { token: authHeader.split(' ')[1], source: 'header' };
+    return { token: authHeader.split(' ')[1] };
   }
-  const cookieToken = req.cookies?.token || req.cookies?.refreshToken;
-  if (cookieToken) {
-    return { token: cookieToken, source: 'cookie' };
-  }
-  return { token: null, source: null };
+  return { token: null };
 }
 
 const BAN_CHECK_TTL = 60; // seconds
@@ -73,22 +63,18 @@ async function assertNotBanned(userId) {
 }
 
 /**
- * Required auth — rejects with 401 if no valid token.
- * Uses access secret for header tokens, refresh secret for cookie tokens.
+ * Required auth — rejects with 401 if no valid bearer token.
+ * Access tokens only; a refresh cookie alone is not authentication.
  */
 const isAuthenticated = async (req, res, next) => {
   try {
-    const { token, source } = extractToken(req);
+    const { token } = extractToken(req);
 
     if (!token) {
       return next(new AppError("User not authenticated. Please login.", 401));
     }
 
-    // Cookie tokens are refresh tokens — verify with refresh secret
-    // Header Bearer tokens are access tokens — verify with access secret
-    const decoded = source === 'cookie'
-      ? verifyRefreshToken(token)
-      : verifyToken(token);
+    const decoded = verifyToken(token);
     await assertNotBanned(decoded.userId);
     req.user = decoded.userId;
     next();
@@ -114,15 +100,8 @@ const isAuthenticated = async (req, res, next) => {
  */
 export const optionalAuth = async (req, _res, next) => {
   try {
-    const { token, source } = extractToken(req);
-    if (token) {
-      const decoded = source === 'cookie'
-        ? verifyRefreshToken(token)
-        : verifyToken(token);
-      req.user = decoded.userId;
-    } else {
-      req.user = null;
-    }
+    const { token } = extractToken(req);
+    req.user = token ? verifyToken(token).userId : null;
   } catch {
     req.user = null;
   }

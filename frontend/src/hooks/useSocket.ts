@@ -10,18 +10,27 @@ import type { Notification } from '@/types/post';
  * Master hook that manages the Socket.IO lifecycle.
  * Mount this once near the root of the app (e.g. in SessionRestorer or App).
  *
- * - Connects when the user is authenticated.
+ * - Connects once the user is authenticated AND an access token is in memory.
  * - Disconnects on logout.
  * - Sets up listeners for notifications, chat, feed, and online status.
  */
 export function useSocket() {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const accessToken = useAuthStore((s) => s.accessToken);
   const { setConnected, setUserOnline, setUserOffline } = useSocketStore();
   const queryClient = useQueryClient();
 
   useEffect(() => {
     if (!isAuthenticated) {
       disconnectSocket();
+      setConnected(false);
+      return;
+    }
+
+    // isAuthenticated is restored from localStorage but the access token is not, so on
+    // a reload this runs before useSession() has refreshed. Waiting for the token keeps
+    // the handshake on the bearer path instead of the refresh cookie.
+    if (!accessToken) {
       setConnected(false);
       return;
     }
@@ -107,5 +116,5 @@ export function useSocket() {
       socket.off('chat:new-message');
       socket.off('stream:live');
     };
-  }, [isAuthenticated, setConnected, setUserOnline, setUserOffline, queryClient]);
+  }, [isAuthenticated, accessToken, setConnected, setUserOnline, setUserOffline, queryClient]);
 }

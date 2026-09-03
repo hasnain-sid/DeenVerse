@@ -206,6 +206,28 @@ export function useStripeConnect() {
   });
 }
 
+/**
+ * Opens the scholar's Stripe Express dashboard.
+ *
+ * Fetched through the API client rather than linked to directly: a plain <a href> is a
+ * browser navigation, which cannot carry the Authorization header, so the old link only
+ * ever authenticated via the refresh cookie.
+ */
+export function useStripeDashboard() {
+  return useMutation({
+    mutationFn: async () => {
+      const { data } = await api.get<{ url: string }>('/scholars/stripe/dashboard');
+      return data;
+    },
+    onSuccess: (data) => {
+      window.location.href = data.url;
+    },
+    onError: (err: ApiError) => {
+      toast.error(err.response?.data?.message ?? 'Failed to open Stripe dashboard');
+    },
+  });
+}
+
 export function useStripeConnectOnboard() {
   return useMutation({
     mutationFn: async () => {

@@ -28,6 +28,46 @@ const whiteboardSaveTimestamps = new Map();
 let io = null;
 
 /**
+ * Socket.IO handshake auth — verify the JWT before allowing the connection.
+ *
+ * Access tokens only, from `handshake.auth.token` or an Authorization header. The
+ * refresh cookie used to be accepted here, which made the handshake forgeable: a
+ * browser attaches that cookie to a cross-site connection automatically, so any page
+ * the user visited while logged in could open a socket as them. The client now waits
+ * for an access token before connecting (frontend/src/lib/socket.ts).
+ *
+ * Exported for tests; wired up via io.use() in initSocket.
+ * @param {import("socket.io").Socket} socket
+ * @param {(err?: Error) => void} next
+ */
+export async function authenticateSocket(socket, next) {
+  try {
+    const token =
+      socket.handshake.auth?.token ||
+      socket.handshake.headers?.authorization?.split(" ")[1];
+
+    if (!token) {
+      return next(new Error("Authentication required"));
+    }
+
+    if (!process.env.TOKEN_SECRET) return next(new Error("Server configuration error"));
+
+    let decoded;
+    try {
+      decoded = jwt.verify(token, process.env.TOKEN_SECRET);
+    } catch {
+      return next(new Error("Invalid or expired token"));
+    }
+
+    // Attach userId to the socket for later use
+    socket.userId = decoded.userId;
+    next();
+  } catch {
+    next(new Error("Invalid or expired token"));
+  }
+}
+
+/**
  * Initialise Socket.IO on an existing HTTP server.
  *
  * @param {import("http").Server} httpServer
@@ -42,40 +82,7 @@ export function initSocket(httpServer, corsOptions) {
     transports: ["websocket", "polling"],
   });
 
-  // ── Auth middleware — verify JWT before allowing connection ──
-  io.use(async (socket, next) => {
-    try {
-      const token =
-        socket.handshake.auth?.token ||
-        socket.handshake.headers?.authorization?.split(" ")[1] ||
-        parseCookie(socket.handshake.headers?.cookie, "refreshToken");
-
-      if (!token) {
-        return next(new Error("Authentication required"));
-      }
-
-      if (!process.env.TOKEN_SECRET) return next(new Error("Server configuration error"));
-
-      let decoded;
-      const isFromCookie = !socket.handshake.auth?.token && !socket.handshake.headers?.authorization;
-      try {
-        // Cookie tokens are refresh tokens — use refresh secret
-        // Auth header/handshake tokens are access tokens — use access secret
-        const secret = isFromCookie
-          ? (process.env.REFRESH_TOKEN_SECRET || process.env.TOKEN_SECRET)
-          : process.env.TOKEN_SECRET;
-        decoded = jwt.verify(token, secret);
-      } catch {
-        return next(new Error("Invalid or expired token"));
-      }
-
-      // Attach userId to the socket for later use
-      socket.userId = decoded.userId;
-      next();
-    } catch (err) {
-      next(new Error("Invalid or expired token"));
-    }
-  });
+  io.use(authenticateSocket);
 
   // ── Connection handler ─────────────────────────────────────
   io.on("connection", (socket) => {
@@ -491,11 +498,4 @@ export function clearHandQueue(classroomId) {
  */
 export function getHandQueue(classroomId) {
   return handQueues.get(String(classroomId)) || [];
-}
-
-// ── Helper: parse a specific cookie from the raw cookie header ──
-function parseCookie(cookieHeader, name) {
-  if (!cookieHeader) return null;
-  const match = cookieHeader.match(new RegExp(`(?:^|;\\s*)${name}=([^;]*)`));
-  return match ? decodeURIComponent(match[1]) : null;
 }
