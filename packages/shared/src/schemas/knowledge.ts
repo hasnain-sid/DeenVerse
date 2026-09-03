@@ -41,11 +41,34 @@ export const confidenceEnum = z.enum([
   'weak',
 ]);
 
+/**
+ * Domains a reviewer can actually be granted.
+ *
+ * `curatorial` is deliberately absent. It is a routing destination for edges that
+ * make no transmitted claim, never an authority anyone holds — see reviewDomainEnum.
+ */
+export const grantableReviewDomainEnum = z.enum([
+  'hadith-grading',
+  'asbab-al-nuzul',
+  'seerah-chronology',
+  'tafsir-attribution',
+]);
+
+/**
+ * Domains an edge can be routed to — the grantable ones plus `curatorial`.
+ *
+ * `curatorial` has no grantable counterpart on purpose. An edge routed there can
+ * never accumulate an accept, so it stays `unreviewed` permanently. That is the
+ * intended terminal state, not a gap: `unreviewed` is publishable (§1.6), and the
+ * badge tells the reader exactly what it is rather than implying a review that the
+ * claim does not admit of.
+ */
 export const reviewDomainEnum = z.enum([
   'hadith-grading',
   'asbab-al-nuzul',
   'seerah-chronology',
   'tafsir-attribution',
+  'curatorial',
 ]);
 
 export const reviewPositionEnum = z.enum([
@@ -164,8 +187,9 @@ export const recordDecisionSchema = z.object({
 });
 
 export const grantReviewerSchema = z.object({
+  // grantable, not reviewDomainEnum: `curatorial` must never be granted to anyone.
   domains: z
-    .array(reviewDomainEnum)
+    .array(grantableReviewDomainEnum)
     .min(1, 'At least one domain is required'),
   basis: z
     .string()
@@ -236,6 +260,7 @@ export type KnowledgeRelation = z.infer<typeof knowledgeRelationEnum>;
 export type GradingLabel = z.infer<typeof gradingLabelEnum>;
 export type Confidence = z.infer<typeof confidenceEnum>;
 export type ReviewDomain = z.infer<typeof reviewDomainEnum>;
+export type GrantableReviewDomain = z.infer<typeof grantableReviewDomainEnum>;
 export type ReviewPosition = z.infer<typeof reviewPositionEnum>;
 export type LinkReviewState = z.infer<typeof linkReviewStateEnum>;
 export type CreateKnowledgeLinkInput = z.infer<typeof createKnowledgeLinkSchema>;

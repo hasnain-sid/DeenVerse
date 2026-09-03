@@ -98,7 +98,17 @@ const knowledgeLinkSchema = new mongoose.Schema(
         default: "draft",
         index: true,
       },
-      /** which reviewer domain governs this edge — derived from relation */
+      /**
+       * Which reviewer domain governs this edge — derived from relation by
+       * utils/knowledgeDomain.js.
+       *
+       * `curatorial` is a routing destination with no grantable counterpart:
+       * User.reviewerProfile.domains deliberately omits it, so no reviewer can ever
+       * hold it and an edge routed here can never accumulate an accept. It therefore
+       * stays `unreviewed` permanently — the intended terminal state, not a gap.
+       * `unreviewed` is publishable (§1.6) and the badge says exactly what it is,
+       * rather than implying a review the claim does not admit of.
+       */
       domain: {
         type: String,
         enum: [
@@ -106,6 +116,7 @@ const knowledgeLinkSchema = new mongoose.Schema(
           "asbab-al-nuzul",
           "seerah-chronology",
           "tafsir-attribution",
+          "curatorial",
         ],
         required: true,
       },

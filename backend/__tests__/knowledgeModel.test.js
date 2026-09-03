@@ -7,6 +7,11 @@ import { ReviewDecision } from "../models/reviewDecisionSchema.js";
 import { KnowledgeAuditEvent } from "../models/knowledgeAuditEventSchema.js";
 import { User } from "../models/userSchema.js";
 import { domainForRelation } from "../utils/knowledgeDomain.js";
+import {
+  grantReviewerSchema,
+  reviewDomainEnum,
+  grantableReviewDomainEnum,
+} from "@deenverse/shared";
 
 // ── Helpers ──────────────────────────────────────────────
 
@@ -438,13 +443,19 @@ describe("KnowledgeLink model — revealed_concerning pre-validate hook", () => 
 describe("domainForRelation", () => {
   it.each([
     ["revealed_concerning", "asbab-al-nuzul"],
-    ["references", "asbab-al-nuzul"],
-    ["thematically_related", "asbab-al-nuzul"],
+    ["references", "tafsir-attribution"],
+    ["thematically_related", "curatorial"],
     ["attested_by", "hadith-grading"],
-    ["dated_by", "seerah-chronology"],
+    ["dated_by", "hadith-grading"],
     ["explained_by", "tafsir-attribution"],
   ])("maps %s to %s", (relation, domain) => {
     expect(domainForRelation(relation)).toBe(domain);
+  });
+
+  // dated_by is event → hadithRef, the same shape as attested_by. It routes by
+  // evidence type rather than claim type because soundness has no other review gate.
+  it("routes dated_by by its evidence, alongside attested_by", () => {
+    expect(domainForRelation("dated_by")).toBe(domainForRelation("attested_by"));
   });
 
   it("throws for an unknown relation rather than guessing", () => {
@@ -459,6 +470,60 @@ describe("domainForRelation", () => {
       data.review.domain = domainForRelation(relation);
       expect(new KnowledgeLink(data).validateSync()?.errors["review.domain"]).toBeUndefined();
     }
+  });
+});
+
+// ─────────────────────────────────────────────────────────
+// curatorial: routable but never grantable
+// ─────────────────────────────────────────────────────────
+//
+// This asymmetry is the whole mechanism behind "curatorial edges stay unreviewed
+// forever". If a later change makes curatorial grantable, these fail — which is the
+// point, because the edges would silently become eligible for an authority badge.
+
+describe("curatorial domain — routable, never grantable", () => {
+  it("is accepted as a link's review.domain", () => {
+    const data = validLink();
+    data.relation = "thematically_related";
+    data.grading.label = "curatorial";
+    data.review.domain = "curatorial";
+    expect(new KnowledgeLink(data).validateSync()).toBeUndefined();
+  });
+
+  it("is rejected as a reviewer grant on User.reviewerProfile.domains", () => {
+    const err = new User({
+      name: "Test User",
+      username: "test_user",
+      email: "test@example.com",
+      password: "hashed",
+      reviewerProfile: { domains: ["curatorial"] },
+    }).validateSync();
+
+    expect(err).toBeDefined();
+    expect(Object.keys(err.errors).join(" ")).toMatch(/reviewerProfile\.domains/);
+  });
+
+  it("is absent from every domain a reviewer can hold", () => {
+    const grantable = User.schema.path("reviewerProfile.domains").caster.enumValues;
+    expect(grantable).not.toContain("curatorial");
+    expect(KnowledgeLink.schema.path("review.domain").enumValues).toContain("curatorial");
+  });
+
+  it("is rejected by the shared grantReviewerSchema but allowed by reviewDomainEnum", () => {
+    expect(
+      grantReviewerSchema.safeParse({ domains: ["curatorial"], basis: "x" }).success
+    ).toBe(false);
+    expect(
+      grantReviewerSchema.safeParse({ domains: ["hadith-grading"], basis: "x" }).success
+    ).toBe(true);
+    expect(reviewDomainEnum.safeParse("curatorial").success).toBe(true);
+    expect(grantableReviewDomainEnum.safeParse("curatorial").success).toBe(false);
+  });
+
+  it("is where thematically_related lands, so those edges cannot be accepted", () => {
+    expect(domainForRelation("thematically_related")).toBe("curatorial");
+    const grantable = User.schema.path("reviewerProfile.domains").caster.enumValues;
+    expect(grantable).not.toContain(domainForRelation("thematically_related"));
   });
 });
 
