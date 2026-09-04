@@ -9,27 +9,79 @@ specification. See "Outstanding" below.
 ## Provenance and what is still missing
 
 Event summaries are original prose written to a supplied description, not copied from any
-source. Datings carry year only (`Ibn Hisham, Sira`, 2 AH) — month and day were not
-sourced and are deliberately absent rather than guessed.
+source. Most datings carry year only (`Ibn Hisham, Sira`, 2 AH) — month and day were not
+sourced for them and are deliberately absent rather than guessed. Two events now carry a
+supplied day: `reluctant-departure` (12 Ramadan 2 AH) and `battle-of-badr`
+(17 Ramadan 2 AH).
+
+### `narrativeOrder` is chronological, and is a curatorial call
+
+`narrativeOrder` runs 1-5 in the order the events happened, so the segment reads straight
+through: `reluctant-departure` (1), `dua-for-reinforcement` (2), `battle-of-badr` (3),
+`spoils-dispute` (4), `captives-deliberation` (5). The array in `events.json` is kept in the
+same order so the file cannot drift from the field. The schema comment is worth keeping in
+view - this is "curatorial, not a historical claim".
+
+Only one placement needed a judgement. `dua-for-reinforcement` sits **before**
+`battle-of-badr`, not after: the supplication and the answer of Q 8:9 come while the outcome
+is still open, and `battle-of-badr` is the entry that carries the outcome ("The day ended in
+victory"). Placing the supplication after it would put an event after its own resolution.
+Its own `dating` carries year only, so the field is doing the ordering here, not the date.
 
 Two schema-required fields were not in the supplied specification and hold minimal
 restatements of the fields that were, pending author sign-off:
 
 | Field | What is there now |
 |---|---|
-| `links[].source.locator` | `"on <verseKey>"` — positional only, adds no citation |
+| `links[].source.locator` | `"on <verseKey>"` — positional only, adds no citation (the `8:17` link is the exception: its locator carries the volume/page citation) |
 | `links[].grading.basis` | a one-line restatement of `source.work` + `grading.label` |
 
-`8:17` (the dust-throwing incident) is **deliberately excluded**: no specific sahih hadith
-was confirmed for it. Do not add it or infer a citation for it.
+### `8:17` — entered, ungraded, and blocked
+
+`8:17` (the dust-throwing incident) was previously excluded outright because no specific
+sahih hadith was confirmed for it. It is now **entered, but deliberately not published**:
+
+- `hadith.json` carries the Musnad Ahmad report as **`ungraded`**, grader
+  `"unverified — pending scholar review"`. It is **not** graded sahih, and must not be
+  regraded without a scholar examining the chain.
+- `links.json` carries `8:17 -[references]-> battle-of-badr` with `grading.label`
+  **`no-isnad`** — the weakest label the enum offers. `sahih`/`hasan` would assert a grade
+  nobody has given, and `textual`/`curatorial` would misdescribe what the edge rests on.
+- Both records are marked **`_needsScholarReview: true`**, and the link is **held at
+  `draft`** by the seed script (see below). `draft` is the one link state that is neither
+  publishable nor queued to a reviewer, so the edge is invisible until the flag is cleared.
+
+**Do not remove `_needsScholarReview` until a human has verified the isnad.** Clearing it
+is what submits the edge — that is the whole point of the flag.
 
 ## Outstanding
 
 - **`tafsir.json` is empty (`[]`).** No verified tafsir content has been supplied, and the
   fictional placeholders that used to sit here are gone. Nothing in `links.json` references
-  a `tafsirPassage`, so there is nothing dangling.
+  a `tafsirPassage`.
+- **`ahmad:1/368` is a dangling node.** The Musnad Ahmad ref is cited in the `8:17` link's
+  `source.work`, but `source.work` is a string, not an edge — nothing points *at* the node,
+  so a dangling-node check reports it. The fix is an `attested_by` edge from
+  `battle-of-badr` to it, which was not authored because the edge would carry the same
+  unverified isnad and would need holding at `draft` too. Until then the node is
+  unreachable from the graph, which is also what keeps it out of the UI: `HadithRef` has
+  no `review.state` of its own, so unreachability is its only visibility gate.
 - **Volume.** M1's targets are ≥10 events, ≥25 hadith refs, ≥10 tafsir passages and ≥60
-  links. Current: 4 / 1 / 0 / 6.
+  links. Current: 5 / 2 / 0 / 7 (6 published, 1 held at `draft`).
+
+## Holding an edge at `draft`: `_needsScholarReview`
+
+A link record marked `"_needsScholarReview": true` is created and validated as normal, but
+the seed script **skips the submit step** and leaves `review.state` at `draft` instead of
+`unreviewed`. A run announces every held edge under a `🔒` heading.
+
+Like every `_`-prefixed key here it is a seed-data annotation, stripped by `stripMeta`
+before the record reaches Mongoose — it never becomes a document field, so no schema
+change or migration is involved. The flag governs *whether the edge is submitted*, and
+removing it is the deliberate act of submitting.
+
+`hadith.json` records may carry the same flag, but there it is **documentation only**:
+`HadithRef` has no review state to hold, and the node is inserted normally.
 
 ## The one deliberate failure
 

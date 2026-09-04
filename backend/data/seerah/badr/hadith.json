@@ -13,5 +13,23 @@
     ],
     "gloss": "Carries two accounts of Badr: Umar's, of the Prophet's supplication for help before the angels arrived, and Ibn Abbas's, of the deliberation afterwards over what should be done with the captives.",
     "matnArabicExcerpt": null
+  },
+  {
+    "_needsScholarReview": true,
+    "_note": "NEEDS_SCHOLAR_REVIEW — the isnad of this report has NOT been examined. It is entered as `ungraded` on purpose and must not be regraded without a scholar's verification. The edge that cites it (8:17 -> battle-of-badr in links.json) is held at `draft` and is not published; see that record and the README.",
+    "_collectionNote": "collection is `ahmad`, not `other`. The enum does carry a Musnad Ahmad value — see hadithRefSchema.js. `number` is the volume/page locator of the cited edition rather than a hadith number, because no edition-stable number was supplied and Musnad Ahmad's numbering differs between editions.",
+    "collection": "ahmad",
+    "number": "1/368",
+    "hadeethencId": null,
+    "sunnahComUrl": null,
+    "gradings": [
+      {
+        "grade": "ungraded",
+        "grader": "unverified — pending scholar review",
+        "source": "Musnad Ahmad, vol. 1, p. 368; also in Ibn Hisham's Sira, vol. 1, p. 668"
+      }
+    ],
+    "gloss": "Reports that during the fighting the Prophet took up a handful of dust and flung it toward the ranks of the Quraysh, with the words that their faces be scorched.",
+    "matnArabicExcerpt": null
   }
 ]

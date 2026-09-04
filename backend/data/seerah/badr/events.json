@@ -1,22 +1,5 @@
 [
   {
-    "slug": "spoils-dispute",
-    "title": "Dispute over the Badr spoils",
-    "titleArabic": "",
-    "segment": "badr",
-    "dating": [
-      {
-        "source": "Ibn Hisham, Sira",
-        "hijriYear": 2
-      }
-    ],
-    "narrativeOrder": 1,
-    "summary": "Once the fighting at Badr was over, those who had taken part disagreed about how the captured goods should be shared out among them. The disagreement stood unsettled until a ruling was given on the matter.",
-    "participants": [],
-    "places": [],
-    "review": { "state": "draft" }
-  },
-  {
     "slug": "reluctant-departure",
     "title": "Departure from Madinah toward Badr",
     "titleArabic": "",
@@ -24,10 +7,12 @@
     "dating": [
       {
         "source": "Ibn Hisham, Sira",
-        "hijriYear": 2
+        "hijriYear": 2,
+        "hijriMonth": 9,
+        "hijriDay": 12
       }
     ],
-    "narrativeOrder": 2,
+    "narrativeOrder": 1,
     "summary": "The Muslims marched out from Madinah expecting to intercept a trade caravan. When it became clear that they would instead be facing the Quraysh army, some among them were uneasy about the encounter ahead.",
     "participants": [],
     "places": [],
@@ -44,8 +29,44 @@
         "hijriYear": 2
       }
     ],
-    "narrativeOrder": 3,
+    "narrativeOrder": 2,
     "summary": "Facing a force considerably larger than his own, the Prophet prayed for help. A promise of reinforcement by angels followed his supplication.",
+    "participants": [],
+    "places": [],
+    "review": { "state": "draft" }
+  },
+  {
+    "slug": "battle-of-badr",
+    "title": "The Battle of Badr",
+    "titleArabic": "",
+    "segment": "badr",
+    "dating": [
+      {
+        "source": "Ibn Hisham, Sira",
+        "hijriYear": 2,
+        "hijriMonth": 9,
+        "hijriDay": 17
+      }
+    ],
+    "narrativeOrder": 3,
+    "summary": "The Muslim and Quraysh forces met in battle at Badr and fought there. The day ended in victory for the Muslims.",
+    "participants": [],
+    "places": [],
+    "review": { "state": "draft" }
+  },
+  {
+    "slug": "spoils-dispute",
+    "title": "Dispute over the Badr spoils",
+    "titleArabic": "",
+    "segment": "badr",
+    "dating": [
+      {
+        "source": "Ibn Hisham, Sira",
+        "hijriYear": 2
+      }
+    ],
+    "narrativeOrder": 4,
+    "summary": "Once the fighting at Badr was over, those who had taken part disagreed about how the captured goods should be shared out among them. The disagreement stood unsettled until a ruling was given on the matter.",
     "participants": [],
     "places": [],
     "review": { "state": "draft" }
@@ -61,7 +82,7 @@
         "hijriYear": 2
       }
     ],
-    "narrativeOrder": 4,
+    "narrativeOrder": 5,
     "summary": "Abu Bakr and Umar differed over what should be done with the prisoners taken at Badr, one holding that they should be ransomed and the other that they should be put to death. The Prophet decided the matter.",
     "participants": [],
     "places": [],

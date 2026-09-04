@@ -96,6 +96,24 @@
     "disagreement": { "flag": false, "summary": "" }
   },
   {
+    "_needsScholarReview": true,
+    "_note": "NEEDS_SCHOLAR_REVIEW — BLOCKED, DO NOT SUBMIT. The isnad behind this edge has not been verified by a human scholar. `_needsScholarReview` is honoured by seedSeerah.js, which holds the edge at review.state `draft` instead of submitting it to `unreviewed`, so it is not published and not queued to any reviewer. Remove the flag only after a scholar has verified the chain of the Musnad Ahmad report (hadith.json, ahmad:1/368) — and regrade `grading.label` at the same time if the verification warrants it.",
+    "from": { "type": "ayah", "ref": "8:17" },
+    "to": { "type": "seerahEvent", "ref": "battle-of-badr" },
+    "relation": "references",
+    "source": {
+      "work": "Musnad Ahmad / Ibn Hisham, Sira",
+      "locator": "on 8:17; Musnad Ahmad vol. 1 p. 368, Ibn Hisham vol. 1 p. 668",
+      "url": null
+    },
+    "grading": {
+      "label": "no-isnad",
+      "basis": "Isnad not verified. The report is cited from Musnad Ahmad and Ibn Hisham without an examined chain, so \"no-isnad\" is used deliberately: it is the weakest label the enum offers, and \"sahih\" or \"hasan\" would assert a grade nobody has given."
+    },
+    "confidence": "reported",
+    "disagreement": { "flag": false, "summary": "" }
+  },
+  {
     "_seedFixture": true,
     "_expectedFailure": "SEED MECHANISM FIXTURE — NOT CONTENT. Deliberately invalid: revealed_concerning with a curatorial grading, which knowledgeLinkSchema's pre(\"validate\") hook must reject. Exists only so a seed run proves it REPORTS failures instead of silently dropping records. The ayah/event pairing below is deliberate nonsense and asserts nothing.",
     "from": { "type": "ayah", "ref": "1:1" },
