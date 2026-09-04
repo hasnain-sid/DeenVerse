@@ -373,6 +373,14 @@ if (heldLinks.length) {
   for (const label of heldLinks) console.log(`   • ${label}`);
 }
 
+/**
+ * The failure report runs unconditionally, because silence is not a pass.
+ *
+ * `_seedFixture` records are *meant* to fail validation. If none did, the fixture was
+ * seeded as though it were real data, which means either the reporting path swallowed it
+ * or a validator stopped rejecting what it should. That case used to print nothing at all
+ * — the one outcome that most needed saying. See backend/data/seerah/badr/README.md.
+ */
 if (failures.length) {
   console.log("");
   console.log(`⚠️   ${failures.length} record(s) failed validation and were NOT seeded:`);
@@ -380,14 +388,31 @@ if (failures.length) {
     console.log(`   • [${f.kind}] ${f.key}`);
     console.log(`     ${f.reason}`);
   }
+  if (expectedFailures > 0) {
+    console.log("");
+    console.log(
+      `   Failures are reported, never silently dropped. The data ships with ${expectedFailures}`
+    );
+    console.log(
+      `   deliberate ${expectedFailures === 1 ? "failure" : "failures"}` +
+        " (`_seedFixture`) — see backend/data/seerah/badr/README.md."
+    );
+  }
+} else if (expectedFailures > 0) {
   console.log("");
   console.log(
-    `   Failures are reported, never silently dropped. The data ships with ${expectedFailures}`
+    `❌  BROKEN — ${expectedFailures} record(s) marked ` +
+      "`_seedFixture` are meant to FAIL validation,"
+  );
+  console.log("   but this run reported no failures at all.");
+  console.log("");
+  console.log(
+    "   Either the failure-reporting path is swallowing them, or a validator has stopped"
   );
   console.log(
-    `   deliberate ${expectedFailures === 1 ? "failure" : "failures"}` +
-      " (`_seedFixture`) — see backend/data/seerah/badr/README.md."
+    "   rejecting what it should and the fixture was seeded as if it were real content."
   );
+  console.log("   Do not trust this run. See backend/data/seerah/badr/README.md.");
 }
 
 await mongoose.disconnect();
