@@ -11,6 +11,11 @@
  *   --offline          Skip the ayah text fetch and hash a deterministic marker instead.
  *   --author=<id>      ObjectId to record as the author. Defaults to ADMIN_IDS[0].
  *
+ * Exit code:
+ *   0 when the records that failed validation are exactly the deliberate `_seedFixture`
+ *   ones the data ships. 1 otherwise — including a run where a fixture that should have
+ *   failed did not, which means a validator or the reporting path has broken.
+ *
  * Requires:
  *   MONGO_URI in .env.
  *   Network access to api.alquran.cloud, unless --offline is passed: snapshotHash is
@@ -418,4 +423,7 @@ if (failures.length) {
 await mongoose.disconnect();
 console.log("");
 console.log("🔌  Disconnected from MongoDB.");
-process.exit(0);
+
+// Non-zero unless the run failed in exactly the way the data says it should. A validator
+// or reporting path that has broken needs to fail a pipeline, not only print above.
+process.exit(failures.length !== expectedFailures ? 1 : 0);
