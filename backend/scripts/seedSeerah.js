@@ -29,8 +29,10 @@
  * `unreviewed` — except one marked `_needsScholarReview`, which is held at `draft`
  * (see the links loop). Records that fail validation are PRINTED, never silently dropped.
  *
- * NOTE: the data in backend/data/seerah/badr/ is placeholder fixture content and includes
- * records that fail validation on purpose. See the README in that directory.
+ * NOTE: the data in backend/data/seerah/badr/ is human-verified sourced content, not
+ * placeholders. Alongside it sit records labelled `_seedFixture`, which fail validation on
+ * purpose so that a run demonstrates the failure path reports rather than silently drops.
+ * See the README in that directory.
  */
 
 import { fileURLToPath } from "url";
@@ -91,6 +93,15 @@ console.log(
     `${tafsir.length} tafsir passages, ${links.length} links.`
 );
 if (offline) console.log("📴  --offline: ayah text will not be fetched.");
+
+/**
+ * How many records are *meant* to fail validation: the ones labelled `_seedFixture`.
+ * Derived from the data rather than written in here, so the report cannot drift from the
+ * files the way a hard-coded count already did once.
+ */
+const expectedFailures = [events, hadith, tafsir, links]
+  .flat()
+  .filter((r) => r._seedFixture === true).length;
 
 // ── Connect to MongoDB ────────────────────────────────
 await mongoose.connect(MONGO_URI);
@@ -371,10 +382,11 @@ if (failures.length) {
   }
   console.log("");
   console.log(
-    "   Failures are reported, never silently dropped. The placeholder data ships with"
+    `   Failures are reported, never silently dropped. The data ships with ${expectedFailures}`
   );
   console.log(
-    "   2 deliberate failures — see backend/data/seerah/badr/README.md."
+    `   deliberate ${expectedFailures === 1 ? "failure" : "failures"}` +
+      " (`_seedFixture`) — see backend/data/seerah/badr/README.md."
   );
 }
 
