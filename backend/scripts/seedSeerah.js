@@ -26,7 +26,8 @@
  *
  * Seed order is events → hadith → tafsir → links, because links resolve the other three
  * by natural key. Every link is created as `draft`, validated, and only then submitted to
- * `unreviewed`. Records that fail validation are PRINTED, never silently dropped.
+ * `unreviewed` — except one marked `_needsScholarReview`, which is held at `draft`
+ * (see the links loop). Records that fail validation are PRINTED, never silently dropped.
  *
  * NOTE: the data in backend/data/seerah/badr/ is placeholder fixture content and includes
  * records that fail validation on purpose. See the README in that directory.
@@ -116,8 +117,11 @@ const counts = {
   events: { inserted: 0, skipped: 0 },
   hadith: { inserted: 0, skipped: 0 },
   tafsir: { inserted: 0, skipped: 0 },
-  links: { inserted: 0, skipped: 0 },
+  links: { inserted: 0, skipped: 0, held: 0 },
 };
+
+/** Labels of edges held at `draft` by `_needsScholarReview`, for the report. */
+const heldLinks = [];
 
 /**
  * Strip `_`-prefixed documentation keys (`_expectedFailure`, `_seedFixture`) before a
@@ -271,6 +275,17 @@ for (const raw of links) {
   const seed = stripMeta(raw);
   const label = `${seed.from?.ref} -[${seed.relation}]-> ${seed.to?.ref}`;
 
+  /**
+   * An edge whose evidence has not been verified by a human is held at `draft`.
+   *
+   * Read from `raw`, before stripMeta removes the `_`-prefixed annotations. `draft` is
+   * the one link state that is not publishable and does not enter a reviewer queue, so
+   * holding here keeps the edge invisible without inventing a state or a schema field:
+   * the flag lives in the seed data, never on the document. Clearing the flag is
+   * therefore the deliberate act that submits the edge — see the record's `_note`.
+   */
+  const holdAtDraft = raw._needsScholarReview === true;
+
   try {
     const fromRef = await resolveEndpoint(seed.from);
     const toRef = await resolveEndpoint(seed.to);
@@ -309,9 +324,13 @@ for (const raw of links) {
     // hook is what enforces the revealed_concerning rule.
     await doc.validate();
 
-    doc.review.state = "unreviewed";
+    if (!holdAtDraft) doc.review.state = "unreviewed";
     await doc.save();
     counts.links.inserted++;
+    if (holdAtDraft) {
+      counts.links.held++;
+      heldLinks.push(label);
+    }
   } catch (err) {
     fail("link", label, err.message);
   }
@@ -329,8 +348,19 @@ console.log(
   `✅  Tafsir passages  — ${counts.tafsir.inserted} inserted, ${counts.tafsir.skipped} skipped.`
 );
 console.log(
-  `✅  Links            — ${counts.links.inserted} inserted, ${counts.links.skipped} skipped (all submitted to "unreviewed").`
+  `✅  Links            — ${counts.links.inserted} inserted, ${counts.links.skipped} skipped ` +
+    `(${counts.links.inserted - counts.links.held} submitted to "unreviewed", ` +
+    `${counts.links.held} held at "draft").`
 );
+
+if (heldLinks.length) {
+  console.log("");
+  console.log(
+    `🔒  ${heldLinks.length} edge(s) held at "draft" by \`_needsScholarReview\` — NOT published,`
+  );
+  console.log("   not queued for review, and blocked until a scholar verifies the isnad:");
+  for (const label of heldLinks) console.log(`   • ${label}`);
+}
 
 if (failures.length) {
   console.log("");
