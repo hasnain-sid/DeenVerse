@@ -26,6 +26,14 @@ plausible-looking one is not something to infer.
 8:1 carries only Ibn Kathir. That asymmetry is the record of a research result — no distinct
 Jalalayn passage on 8:1 was confirmed — not an oversight to be tidied up by writing one.
 
+### Ayat outside Surah al-Anfal
+
+Two linked ayat sit outside al-Anfal: `22:19` (the disputants, tied to the opening single
+combat) and `2:249` (Talut's river crossing, tied to the size of the Muslim force). That is
+expected rather than a data error — Badr-related reports legitimately cite verses from
+elsewhere in the Qur'an, and the graph keys ayah endpoints by verse key alone, so nothing
+constrains an edge to one surah.
+
 ### `narrativeOrder` is chronological, and is a curatorial call
 
 `narrativeOrder` runs 1-5 in the order the events happened, so the segment reads straight
@@ -68,17 +76,24 @@ is what submits the edge — that is the whole point of the flag.
 
 ## Outstanding
 
-- **`ahmad:1/368` is a dangling node.** The Musnad Ahmad ref is cited in the `8:17` link's
-  `source.work`, but `source.work` is a string, not an edge — nothing points *at* the node,
-  so a dangling-node check reports it. The fix is an `attested_by` edge from
+- **`ahmad:1/368` is a dangling node — the only one.** The Musnad Ahmad ref is cited in the
+  `8:17` link's `source.work`, but `source.work` is a string, not an edge — nothing points
+  *at* the node, so a dangling-node check reports it. The fix is an `attested_by` edge from
   `battle-of-badr` to it, which was not authored because the edge would carry the same
   unverified isnad and would need holding at `draft` too. Until then the node is
   unreachable from the graph, which is also what keeps it out of the UI: `HadithRef` has
   no `review.state` of its own, so unreachability is its only visibility gate.
+
+  `bukhari:3969` and `bukhari:3957` dangled for a while for the same structural reason —
+  each was cited only in the `source.work` of the `22:19` and `2:249` links. They now carry
+  `attested_by` edges from `battle-of-badr` and are reachable. That was the ordinary fix,
+  available to them because both are sahih by inclusion; `ahmad:1/368` cannot take it while
+  its isnad is unverified. **A citation in `source.work` never makes a node reachable** —
+  if you add a hadith ref and cite it only there, expect it to dangle.
 - **Volume.** M1's targets are ≥10 events, ≥25 hadith refs, ≥10 tafsir passages and ≥60
-  links. Current: 5 / 2 / 9 / 16 (15 submitted to `unreviewed`, 1 held at `draft`). The
-  tafsir axis is now one passage short of its target rather than empty; events, hadith and
-  links are all still well under.
+  links. Current: 5 / 7 / 9 / 23 (22 submitted to `unreviewed`, 1 held at `draft`). The
+  tafsir axis is one passage short of its target; events, hadith and links are all still
+  well under.
 
 ## Holding an edge at `draft`: `_needsScholarReview`
 

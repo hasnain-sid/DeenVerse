@@ -240,6 +240,118 @@
     "disagreement": { "flag": false, "summary": "" }
   },
   {
+    "from": { "type": "seerahEvent", "ref": "battle-of-badr" },
+    "to": { "type": "hadithRef", "ref": "bukhari:3007" },
+    "relation": "attested_by",
+    "source": {
+      "work": "Sahih al-Bukhari, Kitab al-Jihad wa's-Siyar",
+      "locator": "hadith 3007",
+      "url": null
+    },
+    "grading": {
+      "label": "sahih",
+      "basis": "Reported in Sahih al-Bukhari 3007; sahih by inclusion."
+    },
+    "confidence": "established",
+    "disagreement": { "flag": false, "summary": "" }
+  },
+  {
+    "from": { "type": "ayah", "ref": "22:19" },
+    "to": { "type": "seerahEvent", "ref": "battle-of-badr" },
+    "relation": "revealed_concerning",
+    "source": {
+      "work": "Sahih al-Bukhari 3969 and parallel narrations",
+      "locator": "on 22:19",
+      "url": null
+    },
+    "grading": {
+      "label": "sahih",
+      "basis": "Reported in Sahih al-Bukhari 3969; sahih by inclusion."
+    },
+    "confidence": "established",
+    "disagreement": { "flag": false, "summary": "" }
+  },
+  {
+    "from": { "type": "ayah", "ref": "2:249" },
+    "to": { "type": "seerahEvent", "ref": "battle-of-badr" },
+    "relation": "references",
+    "source": {
+      "work": "Sahih al-Bukhari 3957",
+      "locator": "on 2:249",
+      "url": null
+    },
+    "grading": {
+      "label": "sahih",
+      "basis": "Reported in Sahih al-Bukhari 3957; sahih by inclusion."
+    },
+    "confidence": "established",
+    "disagreement": { "flag": false, "summary": "" }
+  },
+  {
+    "from": { "type": "seerahEvent", "ref": "battle-of-badr" },
+    "to": { "type": "hadithRef", "ref": "bukhari:3959" },
+    "relation": "attested_by",
+    "source": {
+      "work": "Sahih al-Bukhari, Kitab al-Maghazi",
+      "locator": "hadith 3959",
+      "url": null
+    },
+    "grading": {
+      "label": "sahih",
+      "basis": "Reported in Sahih al-Bukhari 3959; sahih by inclusion."
+    },
+    "confidence": "established",
+    "disagreement": { "flag": false, "summary": "" }
+  },
+  {
+    "from": { "type": "seerahEvent", "ref": "spoils-dispute" },
+    "to": { "type": "hadithRef", "ref": "muslim:1748c" },
+    "relation": "attested_by",
+    "source": {
+      "work": "Sahih Muslim, Kitab Fada'il al-Sahaba",
+      "locator": "hadith 1748c",
+      "url": null
+    },
+    "grading": {
+      "label": "sahih",
+      "basis": "Reported in Sahih Muslim 1748c; sahih by inclusion."
+    },
+    "confidence": "established",
+    "disagreement": { "flag": false, "summary": "" }
+  },
+  {
+    "from": { "type": "seerahEvent", "ref": "battle-of-badr" },
+    "to": { "type": "hadithRef", "ref": "bukhari:3969" },
+    "relation": "attested_by",
+    "source": {
+      "work": "Sahih al-Bukhari 3969",
+      "locator": "hadith 3969",
+      "url": null
+    },
+    "grading": {
+      "label": "sahih",
+      "basis": "Reported in Sahih al-Bukhari 3969; sahih by inclusion."
+    },
+    "confidence": "established",
+    "disagreement": { "flag": false, "summary": "" }
+  },
+  {
+    "from": { "type": "seerahEvent", "ref": "battle-of-badr" },
+    "to": { "type": "hadithRef", "ref": "bukhari:3957" },
+    "relation": "attested_by",
+    "source": {
+      "work": "Sahih al-Bukhari 3957",
+      "locator": "hadith 3957",
+      "url": null
+    },
+    "grading": {
+      "label": "sahih",
+      "basis": "Reported in Sahih al-Bukhari 3957; sahih by inclusion."
+    },
+    "confidence": "established",
+    "disagreement": { "flag": false, "summary": "" }
+  },
+  {
     "_needsScholarReview": true,
     "_note": "NEEDS_SCHOLAR_REVIEW — BLOCKED, DO NOT SUBMIT. The isnad behind this edge has not been verified by a human scholar. `_needsScholarReview` is honoured by seedSeerah.js, which holds the edge at review.state `draft` instead of submitting it to `unreviewed`, so it is not published and not queued to any reviewer. Remove the flag only after a scholar has verified the chain of the Musnad Ahmad report (hadith.json, ahmad:1/368) — and regrade `grading.label` at the same time if the verification warrants it.",
     "from": { "type": "ayah", "ref": "8:17" },

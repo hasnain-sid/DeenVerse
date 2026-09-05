@@ -31,5 +31,80 @@
     ],
     "gloss": "Reports that during the fighting the Prophet took up a handful of dust and flung it toward the ranks of the Quraysh, with the words that their faces be scorched.",
     "matnArabicExcerpt": null
+  },
+  {
+    "collection": "bukhari",
+    "number": "3007",
+    "hadeethencId": null,
+    "sunnahComUrl": "https://sunnah.com/bukhari:3007",
+    "gradings": [
+      {
+        "grade": "sahih",
+        "grader": "Bukhari (by inclusion)",
+        "source": "Sahih al-Bukhari, Kitab al-Jihad wa's-Siyar"
+      }
+    ],
+    "gloss": "A companion was suspected of sending word to the Quraysh, and permission was sought to strike his neck. The Prophet refused it, on the ground that the man had been present at Badr and that the people of Badr already stood forgiven.",
+    "matnArabicExcerpt": null
+  },
+  {
+    "collection": "bukhari",
+    "number": "3969",
+    "hadeethencId": null,
+    "sunnahComUrl": "https://sunnah.com/bukhari:3969",
+    "gradings": [
+      {
+        "grade": "sahih",
+        "grader": "Bukhari (by inclusion)",
+        "source": "Sahih al-Bukhari, Kitab al-Maghazi"
+      }
+    ],
+    "gloss": "Names the six men who fought the single combat that opened the battle, three from each side, and identifies them as the ones concerning whom 22:19 was revealed.",
+    "matnArabicExcerpt": null
+  },
+  {
+    "collection": "bukhari",
+    "number": "3957",
+    "hadeethencId": null,
+    "sunnahComUrl": "https://sunnah.com/bukhari:3957",
+    "gradings": [
+      {
+        "grade": "sahih",
+        "grader": "Bukhari (by inclusion)",
+        "source": "Sahih al-Bukhari, Kitab al-Maghazi"
+      }
+    ],
+    "gloss": "Puts the Muslim fighters at Badr at a little over three hundred and ten, and sets that number explicitly beside the number of those who crossed the river with Talut in the Qur'anic account.",
+    "matnArabicExcerpt": null
+  },
+  {
+    "collection": "bukhari",
+    "number": "3959",
+    "hadeethencId": null,
+    "sunnahComUrl": "https://sunnah.com/bukhari:3959",
+    "gradings": [
+      {
+        "grade": "sahih",
+        "grader": "Bukhari (by inclusion)",
+        "source": "Sahih al-Bukhari, Kitab al-Maghazi"
+      }
+    ],
+    "gloss": "Reports the Prophet marking out in advance the places where four of the Quraysh leaders would fall, and a companion's confirmation afterwards that each was found dead at the spot named for him.",
+    "matnArabicExcerpt": null
+  },
+  {
+    "collection": "muslim",
+    "number": "1748c",
+    "hadeethencId": null,
+    "sunnahComUrl": "https://sunnah.com/muslim:1748c",
+    "gradings": [
+      {
+        "grade": "sahih",
+        "grader": "Muslim (by inclusion)",
+        "source": "Sahih Muslim, Kitab Fada'il al-Sahaba"
+      }
+    ],
+    "gloss": "Sa'd ibn Abi Waqqas's own account: he took a sword from what was captured at Badr and asked to keep it, was told to put it back, and was granted it only after the ruling on the spoils came down.",
+    "matnArabicExcerpt": null
   }
 ]
