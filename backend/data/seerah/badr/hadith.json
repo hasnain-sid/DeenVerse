@@ -136,5 +136,20 @@
     ],
     "gloss": "Umayr ibn al-Humam, hearing that paradise is as wide as the heavens and the earth, threw away the dates still in his hand as too long a thing to wait for, went forward into the fighting, and was killed.",
     "matnArabicExcerpt": null
+  },
+  {
+    "collection": "bukhari",
+    "number": "3953",
+    "hadeethencId": null,
+    "sunnahComUrl": "https://sunnah.com/bukhari:3953",
+    "gradings": [
+      {
+        "grade": "sahih",
+        "grader": "Bukhari (by inclusion)",
+        "source": "Sahih al-Bukhari, Kitab al-Maghazi"
+      }
+    ],
+    "gloss": "The Prophet, in the shelter on the day of Badr, called on Allah for the help that had been promised him, until Abu Bakr told him that this was enough of his pleading. He then came out saying that the gathered host would be routed and would turn their backs — words later understood to answer to 54:45.",
+    "matnArabicExcerpt": null
   }
 ]

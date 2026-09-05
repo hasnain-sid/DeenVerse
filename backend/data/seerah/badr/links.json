@@ -400,6 +400,54 @@
     "disagreement": { "flag": false, "summary": "" }
   },
   {
+    "from": { "type": "seerahEvent", "ref": "arish-shelter" },
+    "to": { "type": "hadithRef", "ref": "bukhari:3953" },
+    "relation": "attested_by",
+    "source": {
+      "work": "Sahih al-Bukhari 3953",
+      "locator": "hadith 3953",
+      "url": null
+    },
+    "grading": {
+      "label": "sahih",
+      "basis": "Reported in Sahih al-Bukhari 3953; sahih by inclusion."
+    },
+    "confidence": "established",
+    "disagreement": { "flag": false, "summary": "" }
+  },
+  {
+    "from": { "type": "seerahEvent", "ref": "dua-for-reinforcement" },
+    "to": { "type": "hadithRef", "ref": "bukhari:3953" },
+    "relation": "attested_by",
+    "source": {
+      "work": "Sahih al-Bukhari 3953",
+      "locator": "hadith 3953",
+      "url": null
+    },
+    "grading": {
+      "label": "sahih",
+      "basis": "Reported in Sahih al-Bukhari 3953; sahih by inclusion."
+    },
+    "confidence": "established",
+    "disagreement": { "flag": false, "summary": "" }
+  },
+  {
+    "from": { "type": "ayah", "ref": "8:65" },
+    "to": { "type": "tafsirPassage", "ref": "ibn-kathir:8:65" },
+    "relation": "explained_by",
+    "source": {
+      "work": "Tafsir Ibn Kathir on 8:65",
+      "locator": "on 8:65",
+      "url": null
+    },
+    "grading": {
+      "label": "textual",
+      "basis": "Named attribution in a classical tafsir work; not a transmitted chain-based report."
+    },
+    "confidence": "established",
+    "disagreement": { "flag": false, "summary": "" }
+  },
+  {
     "_needsScholarReview": true,
     "_note": "NEEDS_SCHOLAR_REVIEW — BLOCKED, DO NOT SUBMIT. The isnad behind this edge has not been verified by a human scholar. `_needsScholarReview` is honoured by seedSeerah.js, which holds the edge at review.state `draft` instead of submitting it to `unreviewed`, so it is not published and not queued to any reviewer. Remove the flag only after a scholar has verified the chain of the Musnad Ahmad report (hadith.json, ahmad:1/368) — and regrade `grading.label` at the same time if the verification warrants it.",
     "from": { "type": "ayah", "ref": "8:17" },

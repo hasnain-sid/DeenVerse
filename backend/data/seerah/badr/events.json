@@ -16,6 +16,25 @@
     "summary": "The Muslims marched out from Madinah expecting to intercept a trade caravan. When it became clear that they would instead be facing the Quraysh army, some among them were uneasy about the encounter ahead.",
     "participants": [],
     "places": [],
+    "review": { "state": "unreviewed" }
+  },
+  {
+    "slug": "water-carriers-reconnaissance",
+    "title": "Capturing and questioning the Quraysh water-carriers",
+    "titleArabic": "",
+    "segment": "badr",
+    "dating": [
+      {
+        "source": "Ibn Hisham, Sira",
+        "hijriYear": 2,
+        "hijriMonth": 9,
+        "note": "before arrival at Badr; exact day not sourced here"
+      }
+    ],
+    "narrativeOrder": 2,
+    "summary": "Muslim scouts took two men who had come to draw water for the Quraysh army. Asked whose men they were, the two named a tribe other than Quraysh, and the Prophet read the answer as an evasion rather than a lie. From what they reported of the camels slaughtered for the army each day he worked out roughly how large the force ahead of him was.",
+    "participants": [],
+    "places": [],
     "review": { "state": "draft" }
   },
   {
@@ -31,7 +50,7 @@
         "hijriDay": 16
       }
     ],
-    "narrativeOrder": 2,
+    "narrativeOrder": 3,
     "summary": "The Muslims reached Badr and made camp. Hubab ibn al-Mundhir asked the Prophet whether the ground had been fixed for him by revelation or was his own judgement of the position; told that it was a matter of tactics, he proposed moving to take the wells nearest the enemy. The Prophet acted on the counsel over his own initial choice of ground.",
     "participants": [
       "Hubab ibn al-Mundhir"
@@ -52,13 +71,13 @@
         "note": "day uncertain — sources place this the evening before or the morning of the battle itself; do not assert a specific hijriDay"
       }
     ],
-    "narrativeOrder": 3,
+    "narrativeOrder": 4,
     "summary": "Sa'd ibn Mu'adh proposed building a shelter of palm branches to serve as a protected command post for the Prophet, set apart from the fighting. His reasoning was that if the day went against the Muslims, the Prophet would be able to withdraw safely to Madinah. A guard of the Ansar was posted around it.",
     "participants": [
       "Sa'd ibn Mu'adh"
     ],
     "places": [],
-    "review": { "state": "draft" }
+    "review": { "state": "unreviewed" }
   },
   {
     "slug": "dua-for-reinforcement",
@@ -71,11 +90,11 @@
         "hijriYear": 2
       }
     ],
-    "narrativeOrder": 4,
+    "narrativeOrder": 5,
     "summary": "Facing a force considerably larger than his own, the Prophet prayed for help. A promise of reinforcement by angels followed his supplication.",
     "participants": [],
     "places": [],
-    "review": { "state": "draft" }
+    "review": { "state": "unreviewed" }
   },
   {
     "slug": "battle-of-badr",
@@ -90,8 +109,27 @@
         "hijriDay": 17
       }
     ],
-    "narrativeOrder": 5,
+    "narrativeOrder": 6,
     "summary": "The Muslim and Quraysh forces met in battle at Badr and fought there. The day ended in victory for the Muslims.",
+    "participants": [],
+    "places": [],
+    "review": { "state": "unreviewed" }
+  },
+  {
+    "slug": "martyrs-burial",
+    "title": "Burial of the Muslim martyrs at Badr",
+    "titleArabic": "",
+    "segment": "badr",
+    "dating": [
+      {
+        "source": "Ibn Hisham, Sira",
+        "hijriYear": 2,
+        "hijriMonth": 9,
+        "note": "during the three-day stay following the battle; exact day not sourced here"
+      }
+    ],
+    "narrativeOrder": 7,
+    "summary": "Fourteen Muslims were killed in the fighting at Badr, six of them Muhajirun and eight of them Ansar. They were buried at the battlefield itself, during the three days the Prophet remained there after the fighting had ended.",
     "participants": [],
     "places": [],
     "review": { "state": "draft" }
@@ -107,11 +145,11 @@
         "hijriYear": 2
       }
     ],
-    "narrativeOrder": 6,
+    "narrativeOrder": 8,
     "summary": "Once the fighting at Badr was over, those who had taken part disagreed about how the captured goods should be shared out among them. The disagreement stood unsettled until a ruling was given on the matter.",
     "participants": [],
     "places": [],
-    "review": { "state": "draft" }
+    "review": { "state": "unreviewed" }
   },
   {
     "slug": "captives-deliberation",
@@ -124,8 +162,27 @@
         "hijriYear": 2
       }
     ],
-    "narrativeOrder": 7,
+    "narrativeOrder": 9,
     "summary": "Abu Bakr and Umar differed over what should be done with the prisoners taken at Badr, one holding that they should be ransomed and the other that they should be put to death. The Prophet decided the matter.",
+    "participants": [],
+    "places": [],
+    "review": { "state": "unreviewed" }
+  },
+  {
+    "slug": "return-to-madinah",
+    "title": "Return to Madinah with captives and spoils",
+    "titleArabic": "",
+    "segment": "badr",
+    "dating": [
+      {
+        "source": "Ibn Hisham, Sira",
+        "hijriYear": 2,
+        "hijriMonth": 9,
+        "note": "after the three-day stay at Badr; exact day not sourced here"
+      }
+    ],
+    "narrativeOrder": 10,
+    "summary": "After three days at Badr the Muslims set out for Madinah, taking the captives and the spoils with them. Two companions were sent on ahead to carry the news of the victory, and the people of Madinah came out to meet the returning army before it reached the city.",
     "participants": [],
     "places": [],
     "review": { "state": "draft" }
