@@ -207,8 +207,8 @@ have. Neither is a claim about scholarly review — `unreviewed` means exactly w
 
 - `_seedFixture` records fail validation by design and never reach the database at all.
 - `_needsScholarReview` records do reach it, but the seed script holds them at `draft`.
-  `8:17 -[references]-> battle-of-badr` is the live example: thirteen link records name
-  `battle-of-badr` and only twelve of them are backing.
+  `8:17 -[references]-> battle-of-badr` is the live example: fourteen link records name
+  `battle-of-badr` and only thirteen of them are backing.
 
 Applied to the data as it stands, the rule gives seven `unreviewed` — `reluctant-departure`,
 `arish-shelter`, `dua-for-reinforcement`, `battle-of-badr`, `spoils-dispute`,
@@ -344,12 +344,12 @@ nothing here trips it.
   mismatch. That is the honest state: it has no source behind it and never did.
   `arrival-well-shura` has simply never had one.
 - **Volume.** M1's targets are ≥10 events, ≥25 hadith refs, ≥10 tafsir passages and ≥60
-  links. Current: **10 / 16 / 10 / 35** (34 submitted to `unreviewed`, 1 held at `draft`).
-  Events and tafsir passages have reached their targets. Hadith refs are at 16 of 25 and
-  links at 35 of 60 — both still well under.
+  links. Current: **10 / 17 / 10 / 36** (35 submitted to `unreviewed`, 1 held at `draft`).
+  Events and tafsir passages have reached their targets. Hadith refs are at 17 of 25 and
+  links at 36 of 60 — both still well under.
 
-  The link count is the records that reach the database. `links.json` holds 36 objects: the
-  35 above plus the `_seedFixture` record, which fails validation by design and is never
+  The link count is the records that reach the database. `links.json` holds 37 objects: the
+  36 above plus the `_seedFixture` record, which fails validation by design and is never
   seeded.
 
   These counts have gone down as well as up. Three `bukhari:3976` edges were authored and

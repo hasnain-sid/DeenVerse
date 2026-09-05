@@ -241,5 +241,20 @@
     ],
     "gloss": "Al-Bara reports that he was among those held too young to fight at Badr and was turned back, and gives the make-up of the force that did fight: a little over sixty of the Emigrants, and a little over two hundred and forty-nine of the Ansar.",
     "matnArabicExcerpt": null
+  },
+  {
+    "collection": "bukhari",
+    "number": "2301",
+    "hadeethencId": null,
+    "sunnahComUrl": "https://sunnah.com/bukhari:2301",
+    "gradings": [
+      {
+        "grade": "sahih",
+        "grader": "Bukhari (by inclusion)",
+        "source": "Sahih al-Bukhari, Kitab al-Wakala"
+      }
+    ],
+    "gloss": "Abd al-Rahman ibn Awf was bound to Umayya ibn Khalaf by a mutual-protection pact made before Islam, and tried to bring him through the fighting alive. Bilal caught sight of the man who had once tortured him and raised the alarm, and a party of the Ansar cut Umayya and his son down despite Abd al-Rahman's efforts to shield them.",
+    "matnArabicExcerpt": null
   }
 ]
