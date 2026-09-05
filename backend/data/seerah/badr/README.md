@@ -207,8 +207,8 @@ have. Neither is a claim about scholarly review — `unreviewed` means exactly w
 
 - `_seedFixture` records fail validation by design and never reach the database at all.
 - `_needsScholarReview` records do reach it, but the seed script holds them at `draft`.
-  `8:17 -[references]-> battle-of-badr` is the live example: twelve link records name
-  `battle-of-badr` and only eleven of them are backing.
+  `8:17 -[references]-> battle-of-badr` is the live example: thirteen link records name
+  `battle-of-badr` and only twelve of them are backing.
 
 Applied to the data as it stands, the rule gives seven `unreviewed` — `reluctant-departure`,
 `arish-shelter`, `dua-for-reinforcement`, `battle-of-badr`, `spoils-dispute`,
@@ -260,6 +260,54 @@ report is squarely on the event or merely nearby in time. Only the endpoints say
 being claimed, so the endpoints are where a content mismatch has to be caught. "Related to
 the same few days" is not the test; "narrates this event" is.
 
+### `bukhari:3008` is folded into `captives-deliberation` as a deliberate call
+
+The same scope question as `bukhari:3976` above, raised before the edge was written, and
+settled the other way — by the project owner, on the record, rather than by the reasoning
+that produced the `3976` mistake.
+
+`captives-deliberation` is scoped narrowly in its own summary: Abu Bakr and Umar differing
+over ransom or execution, and the Prophet deciding. `bukhari:3008` is about the treatment of
+a captive in custody — al-Abbas having no shirt, one of Abdullah ibn Ubayy's serving, and the
+Prophet later returning a shirt of his own for it. It says nothing about the captives' fate.
+So under the test the `3976` note states, this edge asserts more than the report carries:
+the deliberation does not stand or fall on it.
+
+**It is entered anyway, knowingly.** Two cleaner shapes were on the table and both were
+declined: a separate `captives-treatment` event for the report to narrate, or widening
+`captives-deliberation` to cover the captives generally. The second has a real cost that
+argues against it — `8:67` points at this event with `revealed_concerning`, and a broader
+event makes that occasion-of-revelation claim less precise than it is now.
+
+What that leaves is one event carrying two facets, the debate and the handling, with three
+backing edges that do not all attest the same thing: `8:67` and `muslim:1763` on the
+deliberation, `bukhari:3008` on the treatment. A reviewer working the `hadith-grading` queue
+will see `bukhari:3008` presented as attesting a debate it never mentions. That is the known
+cost of the decision, written here so the reviewer meets it as a documented choice rather
+than as an error to report.
+
+The way out, if it is ever wanted, is the `captives-treatment` event: move this one edge, and
+nothing else in the graph changes.
+
+### `bukhari:3956` and `bukhari:3957` are one narrator, two nodes
+
+Same narrator — al-Bara' — and adjacent content in the same chapter of Bukhari's Kitab
+al-Maghazi, which makes this pair look at a glance like the duplicate a natural-key check
+is supposed to catch. It is not one.
+
+The two carry different content. **3956** gives the army's composition: al-Bara' turned back
+as too young, a little over sixty Emigrants, a little over 249 of the Ansar. **3957** gives
+the total, a little over three hundred and ten, and sets it beside the number who crossed
+the river with Talut in 2:249. Distinct numbers, distinct matn, and the file's natural key
+is `collection` + `number` — so they are two nodes, entered as two, and each carries its own
+`attested_by` edge to `battle-of-badr`.
+
+The general point is that adjacency in a source is not identity. Two reports from the same
+narrator about the same day are still two reports, and folding them into one node would
+lose the citation a reader needs to check either one. The opposite error — the same report
+entered twice under two numbers — is what the natural key actually guards against, and
+nothing here trips it.
+
 ## Outstanding
 
 - **`ahmad:1/368` is a dangling node.** The Musnad Ahmad ref is cited in the
@@ -296,18 +344,18 @@ the same few days" is not the test; "narrates this event" is.
   mismatch. That is the honest state: it has no source behind it and never did.
   `arrival-well-shura` has simply never had one.
 - **Volume.** M1's targets are ≥10 events, ≥25 hadith refs, ≥10 tafsir passages and ≥60
-  links. Current: **10 / 14 / 10 / 33** (32 submitted to `unreviewed`, 1 held at `draft`).
-  Events and tafsir passages have reached their targets. Hadith refs are at 14 of 25 and
-  links at 33 of 60 — both still well under.
+  links. Current: **10 / 16 / 10 / 35** (34 submitted to `unreviewed`, 1 held at `draft`).
+  Events and tafsir passages have reached their targets. Hadith refs are at 16 of 25 and
+  links at 35 of 60 — both still well under.
 
-  The link count is the records that reach the database. `links.json` holds 34 objects: the
-  33 above plus the `_seedFixture` record, which fails validation by design and is never
+  The link count is the records that reach the database. `links.json` holds 36 objects: the
+  35 above plus the `_seedFixture` record, which fails validation by design and is never
   seeded.
 
-  Three `bukhari:3976` edges were authored on the way to this number and two of them were
-  withdrawn before it landed — see the content-mismatch note above. Volume is not the target
-  these files optimise for, and an edge removed for pointing at the wrong event is progress
-  on the one that is.
+  These counts have gone down as well as up. Three `bukhari:3976` edges were authored and
+  two withdrawn as content mismatches — see the note above. Volume is not the target these
+  files optimise for, and an edge removed for pointing at the wrong event is progress on the
+  one that is.
 
 ## Holding an edge at `draft`: `_needsScholarReview`
 

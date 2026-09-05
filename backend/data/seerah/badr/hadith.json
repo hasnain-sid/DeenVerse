@@ -211,5 +211,35 @@
     ],
     "gloss": "Abd al-Rahman ibn Awf's account of two young men of the Ansar, each of whom asked him separately to point Abu Jahl out, each having bound himself to kill the man or die in the attempt. Once shown him they went at him together and brought him down.",
     "matnArabicExcerpt": null
+  },
+  {
+    "collection": "bukhari",
+    "number": "3008",
+    "hadeethencId": null,
+    "sunnahComUrl": "https://sunnah.com/bukhari:3008",
+    "gradings": [
+      {
+        "grade": "sahih",
+        "grader": "Bukhari (by inclusion)",
+        "source": "Sahih al-Bukhari, Kitab al-Jihad wa's-Siyar"
+      }
+    ],
+    "gloss": "Among the captives taken at Badr was al-Abbas, who had no shirt. The Prophet looked for one that would fit him and found that a shirt of Abdullah ibn Ubayy served, so it was given to him; afterwards the Prophet gave Abdullah a shirt of his own in return for it.",
+    "matnArabicExcerpt": null
+  },
+  {
+    "collection": "bukhari",
+    "number": "3956",
+    "hadeethencId": null,
+    "sunnahComUrl": "https://sunnah.com/bukhari:3956",
+    "gradings": [
+      {
+        "grade": "sahih",
+        "grader": "Bukhari (by inclusion)",
+        "source": "Sahih al-Bukhari, Kitab al-Maghazi"
+      }
+    ],
+    "gloss": "Al-Bara reports that he was among those held too young to fight at Badr and was turned back, and gives the make-up of the force that did fight: a little over sixty of the Emigrants, and a little over two hundred and forty-nine of the Ansar.",
+    "matnArabicExcerpt": null
   }
 ]
