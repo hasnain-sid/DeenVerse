@@ -207,21 +207,58 @@ have. Neither is a claim about scholarly review — `unreviewed` means exactly w
 
 - `_seedFixture` records fail validation by design and never reach the database at all.
 - `_needsScholarReview` records do reach it, but the seed script holds them at `draft`.
-  `8:17 -[references]-> battle-of-badr` is the live example: eleven link records name
-  `battle-of-badr` and only ten of them are backing.
+  `8:17 -[references]-> battle-of-badr` is the live example: twelve link records name
+  `battle-of-badr` and only eleven of them are backing.
 
-Applied to the data as it stands, the rule gives six `unreviewed` — `reluctant-departure`,
+Applied to the data as it stands, the rule gives seven `unreviewed` — `reluctant-departure`,
 `arish-shelter`, `dua-for-reinforcement`, `battle-of-badr`, `spoils-dispute`,
-`captives-deliberation` — and four `draft`: `water-carriers-reconnaissance`,
-`arrival-well-shura`, `martyrs-burial` and `return-to-madinah`. Those four are exactly the
-four dangling events below, which is not a coincidence: with no edges at all, they cannot
-have a non-`draft` one.
+`captives-deliberation`, `return-to-madinah` — and three `draft`:
+`water-carriers-reconnaissance`, `arrival-well-shura` and `martyrs-burial`. Those three are
+exactly the three dangling events below, which is not a coincidence: with no edges at all,
+they cannot have a non-`draft` one.
 
 **Re-check this in any batch that adds or removes an edge**, because nothing checks it for
 you. An event that gains its first non-`draft` edge moves to `unreviewed` in the same batch
-that adds the edge. The rule does not run backwards: a state above `unreviewed` was set by a
-human deciding something, and an edge going away is not grounds for undoing that
-automatically.
+that adds the edge. The rule does not run backwards on its own: a state above `unreviewed`
+was set by a human deciding something, and an edge going away is not grounds for undoing
+that automatically.
+
+**A correction is the exception, and it has been used once.** When an edge is removed because
+it should never have existed, the state it produced goes with it — the promotion rested on a
+claim that turned out to be false, so leaving the event `unreviewed` would preserve a
+conclusion whose only evidence has been withdrawn. `martyrs-burial` was demoted
+`unreviewed` -> `draft` on exactly this ground when its `bukhari:3976` edge was removed (see
+below). That is different from an edge being superseded, retired or re-versioned in the
+ordinary course, where the guard above applies and the state stands.
+
+### `bukhari:3976` was attached to two wrong events before the right one
+
+Worth keeping because the edge that was wrong looked exactly like the edges that are right.
+
+`bukhari:3976` narrates the aftermath at Badr: the slain Quraysh leaders cast into a well
+and addressed by the Prophet, and then — in the same report — his mount being saddled and
+the departure. It was first entered on two edges, `martyrs-burial` and `battle-of-badr`.
+Both were wrong, and differently wrong:
+
+- **`martyrs-burial`** is the burial of the **Muslim** dead. The report is about the
+  **Quraysh** dead. Different act, different people; the report says nothing about the
+  fourteen buried at the battlefield. An argument was available that it attested the
+  three-day *frame* the event sits in rather than the burial itself — that argument was made
+  and it was wrong. `attested_by` says the event stands or falls on whether the report is
+  sound (`utils/knowledgeDomain.js`), and a report that never mentions the act cannot carry
+  that weight, however well it fits the calendar around it.
+- **`battle-of-badr`** is the fighting and its outcome. The report is entirely aftermath —
+  it begins after the fighting has stopped. Closer, but still not what the event is.
+
+Both edges are removed. The report now sits on **`return-to-madinah`**, which its own text
+supports directly: the mount ordered saddled and the departure from Badr is the start of the
+return journey.
+
+The general lesson is the one the graph is built to enforce. Nothing in an edge's own fields
+records *scope* — `sahih`, `established`, no disagreement flag looks identical whether the
+report is squarely on the event or merely nearby in time. Only the endpoints say what is
+being claimed, so the endpoints are where a content mismatch has to be caught. "Related to
+the same few days" is not the test; "narrates this event" is.
 
 ## Outstanding
 
@@ -243,26 +280,34 @@ automatically.
   `source.work`, so it was given its own `attested_by` edge from `battle-of-badr` in the
   same batch, and never dangled at all. `bukhari:3953` is the same rule applied again: it
   arrived with both its `attested_by` edges in the same batch.
-- **Four events carry no edges yet.** `water-carriers-reconnaissance`,
-  `arrival-well-shura`, `martyrs-burial` and `return-to-madinah` were entered as events in
-  their own right, with no `links.json` entry and no hadith ref behind them, so a
-  dangling-node check reports them alongside `ahmad:1/368` — **five in total**. This is
-  deliberate and is the one case where dangling is the *intended* interim state: inventing
-  a `source.work` string to hang an edge on would fabricate provenance, which is worse than
-  an unreachable node. All four sit at `review.state` `draft` — the rule above, not a
-  coincidence — so none is published while it waits. Citable backing is a later round.
+- **Three events carry no edges yet.** `water-carriers-reconnaissance`,
+  `arrival-well-shura` and `martyrs-burial` were entered as events in their own right,
+  with no `links.json` entry and no hadith ref behind them, so a dangling-node check
+  reports them alongside `ahmad:1/368` — **four in total**. This is deliberate and is the
+  one case where dangling is the *intended* interim state: inventing a `source.work` string
+  to hang an edge on would fabricate provenance, which is worse than an unreachable node.
+  All three sit at `review.state` `draft` — the rule above, not a coincidence — so none is
+  published while it waits. Citable backing is a later round.
 
-  `arish-shelter` was on this list and has left it — `bukhari:3953` is entered and the
-  `attested_by` edge exists, so the event is reachable. `arrival-well-shura` stays: it has
-  no backing of any kind, and the two were never one case.
+  `arish-shelter` was on this list and has left it, when `bukhari:3953` and its
+  `attested_by` edge arrived. `return-to-madinah` has just left it the same way, on
+  `bukhari:3976`. **`martyrs-burial` has gone the other way** — it left the list on a
+  `bukhari:3976` edge and is back on it now that the edge has been removed as a content
+  mismatch. That is the honest state: it has no source behind it and never did.
+  `arrival-well-shura` has simply never had one.
 - **Volume.** M1's targets are ≥10 events, ≥25 hadith refs, ≥10 tafsir passages and ≥60
-  links. Current: **10 / 12 / 10 / 31** (30 submitted to `unreviewed`, 1 held at `draft`).
-  Events and tafsir passages have reached their targets. Hadith refs are at 12 of 25 and
-  links at 31 of 60 — both still well under.
+  links. Current: **10 / 14 / 10 / 33** (32 submitted to `unreviewed`, 1 held at `draft`).
+  Events and tafsir passages have reached their targets. Hadith refs are at 14 of 25 and
+  links at 33 of 60 — both still well under.
 
-  The link count is the records that reach the database. `links.json` holds 32 objects: the
-  31 above plus the `_seedFixture` record, which fails validation by design and is never
+  The link count is the records that reach the database. `links.json` holds 34 objects: the
+  33 above plus the `_seedFixture` record, which fails validation by design and is never
   seeded.
+
+  Three `bukhari:3976` edges were authored on the way to this number and two of them were
+  withdrawn before it landed — see the content-mismatch note above. Volume is not the target
+  these files optimise for, and an edge removed for pointing at the wrong event is progress
+  on the one that is.
 
 ## Holding an edge at `draft`: `_needsScholarReview`
 

@@ -181,5 +181,35 @@
     ],
     "gloss": "The Prophet asked who would go and find out what had become of Abu Jahl. Ibn Mas'ud found him fallen and dying, brought down by two young men of the Ansar, the sons of Afra.",
     "matnArabicExcerpt": null
+  },
+  {
+    "collection": "bukhari",
+    "number": "3976",
+    "hadeethencId": null,
+    "sunnahComUrl": "https://sunnah.com/bukhari:3976",
+    "gradings": [
+      {
+        "grade": "sahih",
+        "grader": "Bukhari (by inclusion)",
+        "source": "Sahih al-Bukhari, Kitab al-Maghazi"
+      }
+    ],
+    "gloss": "After three days at Badr the Prophet had the bodies of the slain Quraysh leaders thrown into a well, then stood over it and addressed them by name, asking whether they had found what their Lord promised to be true. Told by a companion that he was calling out to the dead, he answered that they heard him no less than the living did, but could return no reply.",
+    "matnArabicExcerpt": null
+  },
+  {
+    "collection": "bukhari",
+    "number": "3988",
+    "hadeethencId": null,
+    "sunnahComUrl": "https://sunnah.com/bukhari:3988",
+    "gradings": [
+      {
+        "grade": "sahih",
+        "grader": "Bukhari (by inclusion)",
+        "source": "Sahih al-Bukhari, Kitab al-Maghazi"
+      }
+    ],
+    "gloss": "Abd al-Rahman ibn Awf's account of two young men of the Ansar, each of whom asked him separately to point Abu Jahl out, each having bound himself to kill the man or die in the attempt. Once shown him they went at him together and brought him down.",
+    "matnArabicExcerpt": null
   }
 ]
