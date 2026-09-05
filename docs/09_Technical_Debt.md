@@ -76,6 +76,34 @@ The codebase has a visible seam between v2-era code (courses onward) and legacy 
 - **Dead CI deploy pipeline** (#16) — S3/CloudFront jobs keyed to a deleted branch, misleading anyone reading the workflow.
 - **Tracker trust**: the Tick workflow has marked uncommitted work "done" (see [13_Git_History_Summary.md](13_Git_History_Summary.md)); 17 stale tasks pollute the queue.
 - **No OpenAPI docs** (#27).
+- **`seedSeerah.js` crashes instead of exiting on a no-op run.** Re-running the seed against an
+  already-seeded database prints its full report, disconnects cleanly, and then dies inside
+  `process.exit` with `Assertion failed: !(handle->flags & UV_HANDLE_CLOSING), file src\win\async.c,
+  line 94` and exit code **3221226505** (`0xC0000409` — Windows' generic fast-fail, not a real buffer
+  overrun). Only the no-op run crashes: the first run against an empty database inserts everything
+  and exits `0`.
+
+  **It is pre-existing, not caused by any data batch.** Verified by stashing the working batch and
+  running three consecutive seeds at `4c09010`: `0, 3221226505, 3221226505`, identical to the result
+  with the batch applied. Observed on Node v24.19.0 / Windows 11 against `mongodb-memory-server`;
+  **not yet checked against Atlas**, so whether it is Windows-only or driver-agnostic is open.
+
+  **Why it matters: it silently undoes `ceb224f`.** That commit made the exit code load-bearing on
+  purpose — the script exits non-zero unless the run failed in exactly the way the `_seedFixture`
+  records say it should, so that a broken validator or a swallowed failure report fails a pipeline
+  instead of only printing. A CI step that runs the seed twice, or runs it against an environment
+  that is already seeded, now gets a non-zero exit that has nothing to do with the data — and it
+  gets it directly underneath a report saying everything is fine. That is the exact failure shape
+  `ceb224f` was written to prevent, arriving from the other direction.
+
+  Nothing seeded is at risk: the crash is at process teardown, after `mongoose.disconnect()` has
+  returned and after the final `console.log`. It is an exit-path defect, not a data one.
+
+  **Not diagnosed and deliberately not fixed here** — it was found by a data-only batch and fixing
+  tooling was out of that scope. Starting points when it is picked up: the `quranService` /
+  `quran-meta` import is module-level and conditional on `--offline`, so it runs even on a seed that
+  never fetches an ayah; and `process.exit` racing libuv handle close is the usual cause of this
+  particular assertion. Reproduce with any second consecutive run.
 
 ## Theme 6: Code-shape debt
 
