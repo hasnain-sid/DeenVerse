@@ -19,24 +19,27 @@ Month and day are absent wherever they were not sourced, rather than guessed.
 
 ### `tafsir.json` — summaries, not excerpts
 
-The ten passages cover 8:1, 8:5, 8:9, 8:17, 8:65 and 8:67 across two works: Ibn Kathir on
-all six verses, al-Jalalayn on four of them. Every `summary` is original prose describing
-what the named work says about that ayah — not a translation and not a quotation of either
-work.
+The eleven passages cover 8:1, 8:5, 8:9, 8:17, 8:65, 8:67 and 22:19 across two works: Ibn
+Kathir on all seven verses, al-Jalalayn on four of them. Every `summary` is original prose
+describing what the named work says about that ayah — not a translation and not a quotation
+of either work.
 
-`externalUrl` and `arabicExcerpt` are `null` on all ten. No licensed source for the Arabic
+`externalUrl` and `arabicExcerpt` are `null` on all eleven. No licensed source for the Arabic
 was available for these passages, and §3.5 is explicit that the field stays null rather than
 carrying text from a restricted origin; an `externalUrl` was likewise not supplied, and a
 plausible-looking one is not something to infer.
 
-**Two verses carry Ibn Kathir alone, and the gap means something different in each case.**
-Four verses carry both works; 8:1 and 8:65 carry only Ibn Kathir.
+**Three verses carry Ibn Kathir alone, and the gap does not mean the same thing in each
+case.** Four verses carry both works; 8:1, 8:65 and 22:19 carry only Ibn Kathir.
 
 - **8:1** — no distinct al-Jalalayn passage was confirmed to exist. That asymmetry is the
   record of a research result, not an oversight to be tidied up by writing one.
 - **8:65** — a Jalalayn passage was neither specified nor looked for. Nothing is claimed
   about whether one exists. If one is confirmed later it belongs here; this absence is a
   gap in coverage, not a finding.
+- **22:19** — the same as 8:65, and for the same reason: the passage entered here was the
+  Ibn Kathir one, and no Jalalayn counterpart was specified or searched for. Not a finding
+  either way.
 
 Keeping the two apart matters, because "we checked and there is none" and "we did not
 check" look identical in the data and are not the same statement.
@@ -48,6 +51,13 @@ combat) and `2:249` (Talut's river crossing, tied to the size of the Muslim forc
 expected rather than a data error — Badr-related reports legitimately cite verses from
 elsewhere in the Qur'an, and the graph keys ayah endpoints by verse key alone, so nothing
 constrains an edge to one surah.
+
+`tafsir.json` is no longer al-Anfal-only either: `22:19` now carries an Ibn Kathir passage
+and its `explained_by` edge, which is what every other linked ayah already had. That was a
+completeness gap rather than a new claim — `22:19` was already in the graph on its
+`revealed_concerning` edge to `battle-of-badr`, so this adds tafsir backing to an ayah the
+graph held, and reaches no further. `2:249` is now the one linked ayah with no tafsir
+passage behind it.
 
 ### `narrativeOrder` is chronological, and is a curatorial call
 
@@ -138,7 +148,7 @@ restatements of the fields that were, pending author sign-off:
 
 | Field | What is there now |
 |---|---|
-| `links[].source.locator` | `"on <verseKey>"` — positional only, adds no citation. Two exceptions: the `8:17` link, whose locator carries the volume/page citation, and the ten `explained_by` links, where `"on <verseKey>"` *is* the citation because it matches the locator of the passage being cited |
+| `links[].source.locator` | `"on <verseKey>"` — positional only, adds no citation. Two exceptions: the `8:17` link, whose locator carries the volume/page citation, and the eleven `explained_by` links, where `"on <verseKey>"` *is* the citation because it matches the locator of the passage being cited |
 | `links[].grading.basis` | a one-line restatement of `source.work` + `grading.label` |
 
 ### `8:17` — entered, ungraded, and blocked
@@ -182,7 +192,7 @@ That is exactly the relation the enum defines for `ayah → tafsirPassage`, and 
 The two edges say different things and both are wanted: one that the ayah refers to the
 battle, one that a named tafsir explains the ayah.
 
-This is the same shape as the other nine `explained_by` edges, and it is the pattern to
+This is the same shape as the other ten `explained_by` edges, and it is the pattern to
 repeat. **A `source.work` that names a work is a citation, not a connection** — the same
 rule the dangling-node note below states from the other direction.
 
@@ -344,12 +354,13 @@ nothing here trips it.
   mismatch. That is the honest state: it has no source behind it and never did.
   `arrival-well-shura` has simply never had one.
 - **Volume.** M1's targets are ≥10 events, ≥25 hadith refs, ≥10 tafsir passages and ≥60
-  links. Current: **10 / 17 / 10 / 36** (35 submitted to `unreviewed`, 1 held at `draft`).
-  Events and tafsir passages have reached their targets. Hadith refs are at 17 of 25 and
-  links at 36 of 60 — both still well under.
+  links. Current: **10 / 17 / 11 / 37** (36 submitted to `unreviewed`, 1 held at `draft`).
+  Events are at their target and tafsir passages are now one past theirs — the M1 figures
+  are floors, not quotas, so a passage that closes a real gap is not held back to keep a
+  number tidy. Hadith refs are at 17 of 25 and links at 37 of 60 — both still well under.
 
-  The link count is the records that reach the database. `links.json` holds 37 objects: the
-  36 above plus the `_seedFixture` record, which fails validation by design and is never
+  The link count is the records that reach the database. `links.json` holds 38 objects: the
+  37 above plus the `_seedFixture` record, which fails validation by design and is never
   seeded.
 
   These counts have gone down as well as up. Three `bukhari:3976` edges were authored and

@@ -560,6 +560,22 @@
     "disagreement": { "flag": false, "summary": "" }
   },
   {
+    "from": { "type": "ayah", "ref": "22:19" },
+    "to": { "type": "tafsirPassage", "ref": "ibn-kathir:22:19" },
+    "relation": "explained_by",
+    "source": {
+      "work": "Ibn Kathir's tafsir on 22:19",
+      "locator": "on 22:19",
+      "url": null
+    },
+    "grading": {
+      "label": "textual",
+      "basis": "Named attribution in a classical tafsir work; not a transmitted chain-based report."
+    },
+    "confidence": "established",
+    "disagreement": { "flag": false, "summary": "" }
+  },
+  {
     "_needsScholarReview": true,
     "_note": "NEEDS_SCHOLAR_REVIEW — BLOCKED, DO NOT SUBMIT. The isnad behind this edge has not been verified by a human scholar. `_needsScholarReview` is honoured by seedSeerah.js, which holds the edge at review.state `draft` instead of submitting it to `unreviewed`, so it is not published and not queued to any reviewer. Remove the flag only after a scholar has verified the chain of the Musnad Ahmad report (hadith.json, ahmad:1/368) — and regrade `grading.label` at the same time if the verification warrants it.",
     "from": { "type": "ayah", "ref": "8:17" },
