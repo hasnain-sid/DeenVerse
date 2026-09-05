@@ -89,9 +89,12 @@ is what submits the edge — that is the whole point of the flag.
   `attested_by` edges from `battle-of-badr` and are reachable. That was the ordinary fix,
   available to them because both are sahih by inclusion; `ahmad:1/368` cannot take it while
   its isnad is unverified. **A citation in `source.work` never makes a node reachable** —
-  if you add a hadith ref and cite it only there, expect it to dangle.
+  if you add a hadith ref and cite it only there, expect it to dangle. `muslim:1901` is the
+  rule applied on the way in rather than after the fact: the `8:65` link names it in
+  `source.work`, so it was given its own `attested_by` edge from `battle-of-badr` in the
+  same batch, and never dangled at all.
 - **Volume.** M1's targets are ≥10 events, ≥25 hadith refs, ≥10 tafsir passages and ≥60
-  links. Current: 5 / 7 / 9 / 23 (22 submitted to `unreviewed`, 1 held at `draft`). The
+  links. Current: 5 / 9 / 9 / 26 (25 submitted to `unreviewed`, 1 held at `draft`). The
   tafsir axis is one passage short of its target; events, hadith and links are all still
   well under.
 

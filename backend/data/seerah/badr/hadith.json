@@ -106,5 +106,35 @@
     ],
     "gloss": "Sa'd ibn Abi Waqqas's own account: he took a sword from what was captured at Badr and asked to keep it, was told to put it back, and was granted it only after the ruling on the spoils came down.",
     "matnArabicExcerpt": null
+  },
+  {
+    "collection": "bukhari",
+    "number": "3952",
+    "hadeethencId": null,
+    "sunnahComUrl": "https://sunnah.com/bukhari:3952",
+    "gradings": [
+      {
+        "grade": "sahih",
+        "grader": "Bukhari (by inclusion)",
+        "source": "Sahih al-Bukhari, Kitab al-Tafsir"
+      }
+    ],
+    "gloss": "Miqdad's declaration before the battle that the Muslims would not hold back as the Israelites had told Musa to do, but would fight at the Prophet's side. The Prophet's face is described as showing his pleasure at the words.",
+    "matnArabicExcerpt": null
+  },
+  {
+    "collection": "muslim",
+    "number": "1901",
+    "hadeethencId": null,
+    "sunnahComUrl": "https://sunnah.com/muslim:1901",
+    "gradings": [
+      {
+        "grade": "sahih",
+        "grader": "Muslim (by inclusion)",
+        "source": "Sahih Muslim, Kitab al-Imara"
+      }
+    ],
+    "gloss": "Umayr ibn al-Humam, hearing that paradise is as wide as the heavens and the earth, threw away the dates still in his hand as too long a thing to wait for, went forward into the fighting, and was killed.",
+    "matnArabicExcerpt": null
   }
 ]
