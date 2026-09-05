@@ -1,10 +1,7 @@
 # Badr seed data
 
-`events.json`, `hadith.json` and `links.json` hold **human-verified content**, entered from
-a specification supplied by the project owner. They are no longer placeholders.
-
-`tafsir.json` **still holds fictional placeholder records** and was not part of that
-specification. See "Outstanding" below.
+All four files hold **human-verified content**, entered from specifications supplied by the
+project owner. None of them holds placeholders.
 
 ## Provenance and what is still missing
 
@@ -13,6 +10,21 @@ source. Most datings carry year only (`Ibn Hisham, Sira`, 2 AH) — month and da
 sourced for them and are deliberately absent rather than guessed. Two events now carry a
 supplied day: `reluctant-departure` (12 Ramadan 2 AH) and `battle-of-badr`
 (17 Ramadan 2 AH).
+
+### `tafsir.json` — summaries, not excerpts
+
+The nine passages cover 8:1, 8:5, 8:9, 8:17 and 8:67 across two works: Ibn Kathir on all
+five verses, al-Jalalayn on four of them. Every `summary` is original prose describing what
+the named work says about that ayah — not a translation and not a quotation of either work.
+
+`externalUrl` and `arabicExcerpt` are `null` on all nine. No licensed source for the Arabic
+was available for these passages, and §3.5 is explicit that the field stays null rather than
+carrying text from a restricted origin; an `externalUrl` was likewise not supplied, and a
+plausible-looking one is not something to infer.
+
+**There is deliberately no al-Jalalayn passage on 8:1.** Four verses carry both works and
+8:1 carries only Ibn Kathir. That asymmetry is the record of a research result — no distinct
+Jalalayn passage on 8:1 was confirmed — not an oversight to be tidied up by writing one.
 
 ### `narrativeOrder` is chronological, and is a curatorial call
 
@@ -33,7 +45,7 @@ restatements of the fields that were, pending author sign-off:
 
 | Field | What is there now |
 |---|---|
-| `links[].source.locator` | `"on <verseKey>"` — positional only, adds no citation (the `8:17` link is the exception: its locator carries the volume/page citation) |
+| `links[].source.locator` | `"on <verseKey>"` — positional only, adds no citation. Two exceptions: the `8:17` link, whose locator carries the volume/page citation, and the nine `explained_by` links, where `"on <verseKey>"` *is* the citation because it matches the locator of the passage being cited |
 | `links[].grading.basis` | a one-line restatement of `source.work` + `grading.label` |
 
 ### `8:17` — entered, ungraded, and blocked
@@ -56,9 +68,6 @@ is what submits the edge — that is the whole point of the flag.
 
 ## Outstanding
 
-- **`tafsir.json` is empty (`[]`).** No verified tafsir content has been supplied, and the
-  fictional placeholders that used to sit here are gone. Nothing in `links.json` references
-  a `tafsirPassage`.
 - **`ahmad:1/368` is a dangling node.** The Musnad Ahmad ref is cited in the `8:17` link's
   `source.work`, but `source.work` is a string, not an edge — nothing points *at* the node,
   so a dangling-node check reports it. The fix is an `attested_by` edge from
@@ -67,7 +76,9 @@ is what submits the edge — that is the whole point of the flag.
   unreachable from the graph, which is also what keeps it out of the UI: `HadithRef` has
   no `review.state` of its own, so unreachability is its only visibility gate.
 - **Volume.** M1's targets are ≥10 events, ≥25 hadith refs, ≥10 tafsir passages and ≥60
-  links. Current: 5 / 2 / 0 / 7 (6 published, 1 held at `draft`).
+  links. Current: 5 / 2 / 9 / 16 (15 submitted to `unreviewed`, 1 held at `draft`). The
+  tafsir axis is now one passage short of its target rather than empty; events, hadith and
+  links are all still well under.
 
 ## Holding an edge at `draft`: `_needsScholarReview`
 

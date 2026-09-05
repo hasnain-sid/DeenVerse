@@ -96,6 +96,150 @@
     "disagreement": { "flag": false, "summary": "" }
   },
   {
+    "from": { "type": "ayah", "ref": "8:1" },
+    "to": { "type": "tafsirPassage", "ref": "ibn-kathir:8:1" },
+    "relation": "explained_by",
+    "source": {
+      "work": "Tafsir Ibn Kathir on 8:1",
+      "locator": "on 8:1",
+      "url": null
+    },
+    "grading": {
+      "label": "textual",
+      "basis": "Named attribution in a classical tafsir work; not a transmitted chain-based report."
+    },
+    "confidence": "established",
+    "disagreement": { "flag": false, "summary": "" }
+  },
+  {
+    "from": { "type": "ayah", "ref": "8:5" },
+    "to": { "type": "tafsirPassage", "ref": "ibn-kathir:8:5" },
+    "relation": "explained_by",
+    "source": {
+      "work": "Tafsir Ibn Kathir on 8:5",
+      "locator": "on 8:5",
+      "url": null
+    },
+    "grading": {
+      "label": "textual",
+      "basis": "Named attribution in a classical tafsir work; not a transmitted chain-based report."
+    },
+    "confidence": "established",
+    "disagreement": { "flag": false, "summary": "" }
+  },
+  {
+    "from": { "type": "ayah", "ref": "8:5" },
+    "to": { "type": "tafsirPassage", "ref": "jalalayn:8:5" },
+    "relation": "explained_by",
+    "source": {
+      "work": "Tafsir al-Jalalayn on 8:5",
+      "locator": "on 8:5",
+      "url": null
+    },
+    "grading": {
+      "label": "textual",
+      "basis": "Named attribution in a classical tafsir work; not a transmitted chain-based report."
+    },
+    "confidence": "established",
+    "disagreement": { "flag": false, "summary": "" }
+  },
+  {
+    "from": { "type": "ayah", "ref": "8:9" },
+    "to": { "type": "tafsirPassage", "ref": "ibn-kathir:8:9" },
+    "relation": "explained_by",
+    "source": {
+      "work": "Tafsir Ibn Kathir on 8:9",
+      "locator": "on 8:9",
+      "url": null
+    },
+    "grading": {
+      "label": "textual",
+      "basis": "Named attribution in a classical tafsir work; not a transmitted chain-based report."
+    },
+    "confidence": "established",
+    "disagreement": { "flag": false, "summary": "" }
+  },
+  {
+    "from": { "type": "ayah", "ref": "8:9" },
+    "to": { "type": "tafsirPassage", "ref": "jalalayn:8:9" },
+    "relation": "explained_by",
+    "source": {
+      "work": "Tafsir al-Jalalayn on 8:9",
+      "locator": "on 8:9",
+      "url": null
+    },
+    "grading": {
+      "label": "textual",
+      "basis": "Named attribution in a classical tafsir work; not a transmitted chain-based report."
+    },
+    "confidence": "established",
+    "disagreement": { "flag": false, "summary": "" }
+  },
+  {
+    "from": { "type": "ayah", "ref": "8:17" },
+    "to": { "type": "tafsirPassage", "ref": "ibn-kathir:8:17" },
+    "relation": "explained_by",
+    "source": {
+      "work": "Tafsir Ibn Kathir on 8:17",
+      "locator": "on 8:17",
+      "url": null
+    },
+    "grading": {
+      "label": "textual",
+      "basis": "Named attribution in a classical tafsir work; not a transmitted chain-based report."
+    },
+    "confidence": "established",
+    "disagreement": { "flag": false, "summary": "" }
+  },
+  {
+    "from": { "type": "ayah", "ref": "8:17" },
+    "to": { "type": "tafsirPassage", "ref": "jalalayn:8:17" },
+    "relation": "explained_by",
+    "source": {
+      "work": "Tafsir al-Jalalayn on 8:17",
+      "locator": "on 8:17",
+      "url": null
+    },
+    "grading": {
+      "label": "textual",
+      "basis": "Named attribution in a classical tafsir work; not a transmitted chain-based report."
+    },
+    "confidence": "established",
+    "disagreement": { "flag": false, "summary": "" }
+  },
+  {
+    "from": { "type": "ayah", "ref": "8:67" },
+    "to": { "type": "tafsirPassage", "ref": "ibn-kathir:8:67" },
+    "relation": "explained_by",
+    "source": {
+      "work": "Tafsir Ibn Kathir on 8:67",
+      "locator": "on 8:67",
+      "url": null
+    },
+    "grading": {
+      "label": "textual",
+      "basis": "Named attribution in a classical tafsir work; not a transmitted chain-based report."
+    },
+    "confidence": "established",
+    "disagreement": { "flag": false, "summary": "" }
+  },
+  {
+    "from": { "type": "ayah", "ref": "8:67" },
+    "to": { "type": "tafsirPassage", "ref": "jalalayn:8:67" },
+    "relation": "explained_by",
+    "source": {
+      "work": "Tafsir al-Jalalayn on 8:67",
+      "locator": "on 8:67",
+      "url": null
+    },
+    "grading": {
+      "label": "textual",
+      "basis": "Named attribution in a classical tafsir work; not a transmitted chain-based report."
+    },
+    "confidence": "established",
+    "disagreement": { "flag": false, "summary": "" }
+  },
+  {
     "_needsScholarReview": true,
     "_note": "NEEDS_SCHOLAR_REVIEW — BLOCKED, DO NOT SUBMIT. The isnad behind this edge has not been verified by a human scholar. `_needsScholarReview` is honoured by seedSeerah.js, which holds the edge at review.state `draft` instead of submitting it to `unreviewed`, so it is not published and not queued to any reviewer. Remove the flag only after a scholar has verified the chain of the Musnad Ahmad report (hadith.json, ahmad:1/368) — and regrade `grading.label` at the same time if the verification warrants it.",
     "from": { "type": "ayah", "ref": "8:17" },
