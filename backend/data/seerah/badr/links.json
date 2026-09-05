@@ -448,6 +448,38 @@
     "disagreement": { "flag": false, "summary": "" }
   },
   {
+    "from": { "type": "seerahEvent", "ref": "battle-of-badr" },
+    "to": { "type": "hadithRef", "ref": "bukhari:3992" },
+    "relation": "attested_by",
+    "source": {
+      "work": "Sahih al-Bukhari 3992",
+      "locator": "hadith 3992",
+      "url": null
+    },
+    "grading": {
+      "label": "sahih",
+      "basis": "Reported in Sahih al-Bukhari 3992; sahih by inclusion."
+    },
+    "confidence": "established",
+    "disagreement": { "flag": false, "summary": "" }
+  },
+  {
+    "from": { "type": "seerahEvent", "ref": "battle-of-badr" },
+    "to": { "type": "hadithRef", "ref": "bukhari:3962" },
+    "relation": "attested_by",
+    "source": {
+      "work": "Sahih al-Bukhari 3962",
+      "locator": "hadith 3962",
+      "url": null
+    },
+    "grading": {
+      "label": "sahih",
+      "basis": "Reported in Sahih al-Bukhari 3962; sahih by inclusion."
+    },
+    "confidence": "established",
+    "disagreement": { "flag": false, "summary": "" }
+  },
+  {
     "_needsScholarReview": true,
     "_note": "NEEDS_SCHOLAR_REVIEW — BLOCKED, DO NOT SUBMIT. The isnad behind this edge has not been verified by a human scholar. `_needsScholarReview` is honoured by seedSeerah.js, which holds the edge at review.state `draft` instead of submitting it to `unreviewed`, so it is not published and not queued to any reviewer. Remove the flag only after a scholar has verified the chain of the Musnad Ahmad report (hadith.json, ahmad:1/368) — and regrade `grading.label` at the same time if the verification warrants it.",
     "from": { "type": "ayah", "ref": "8:17" },

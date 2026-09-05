@@ -151,5 +151,35 @@
     ],
     "gloss": "The Prophet, in the shelter on the day of Badr, called on Allah for the help that had been promised him, until Abu Bakr told him that this was enough of his pleading. He then came out saying that the gathered host would be routed and would turn their backs — words later understood to answer to 54:45.",
     "matnArabicExcerpt": null
+  },
+  {
+    "collection": "bukhari",
+    "number": "3992",
+    "hadeethencId": null,
+    "sunnahComUrl": "https://sunnah.com/bukhari:3992",
+    "gradings": [
+      {
+        "grade": "sahih",
+        "grader": "Bukhari (by inclusion)",
+        "source": "Sahih al-Bukhari, Kitab al-Maghazi"
+      }
+    ],
+    "gloss": "Gabriel asked the Prophet how the men who had fought at Badr were rated among the Muslims. Told that they were counted among the best of them, he answered that the angels who were present at Badr stood in that same rank.",
+    "matnArabicExcerpt": null
+  },
+  {
+    "collection": "bukhari",
+    "number": "3962",
+    "hadeethencId": null,
+    "sunnahComUrl": "https://sunnah.com/bukhari:3962",
+    "gradings": [
+      {
+        "grade": "sahih",
+        "grader": "Bukhari (by inclusion)",
+        "source": "Sahih al-Bukhari, Kitab al-Maghazi"
+      }
+    ],
+    "gloss": "The Prophet asked who would go and find out what had become of Abu Jahl. Ibn Mas'ud found him fallen and dying, brought down by two young men of the Ansar, the sons of Afra.",
+    "matnArabicExcerpt": null
   }
 ]
