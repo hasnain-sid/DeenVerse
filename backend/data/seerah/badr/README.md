@@ -36,17 +36,43 @@ constrains an edge to one surah.
 
 ### `narrativeOrder` is chronological, and is a curatorial call
 
-`narrativeOrder` runs 1-5 in the order the events happened, so the segment reads straight
-through: `reluctant-departure` (1), `dua-for-reinforcement` (2), `battle-of-badr` (3),
-`spoils-dispute` (4), `captives-deliberation` (5). The array in `events.json` is kept in the
-same order so the file cannot drift from the field. The schema comment is worth keeping in
-view - this is "curatorial, not a historical claim".
+`narrativeOrder` runs 1-7 in the order the events happened, so the segment reads straight
+through: `reluctant-departure` (1), `arrival-well-shura` (2), `arish-shelter` (3),
+`dua-for-reinforcement` (4), `battle-of-badr` (5), `spoils-dispute` (6),
+`captives-deliberation` (7). The array in `events.json` is kept in the same order so the
+file cannot drift from the field. The schema comment is worth keeping in view - this is
+"curatorial, not a historical claim".
 
-Only one placement needed a judgement. `dua-for-reinforcement` sits **before**
-`battle-of-badr`, not after: the supplication and the answer of Q 8:9 come while the outcome
-is still open, and `battle-of-badr` is the entry that carries the outcome ("The day ended in
-victory"). Placing the supplication after it would put an event after its own resolution.
-Its own `dating` carries year only, so the field is doing the ordering here, not the date.
+Three placements needed thought. One is settled by its own dating, one by a transmitted
+report, and one is a curatorial reading that no source decides.
+
+`arrival-well-shura` (16 Ramadan) falls between `reluctant-departure` (12 Ramadan) and
+`battle-of-badr` (17 Ramadan) on its own dating. No judgement needed.
+
+`dua-for-reinforcement` sits **before** `battle-of-badr`, not after: the supplication and
+the answer of Q 8:9 come while the outcome is still open, and `battle-of-badr` is the entry
+that carries the outcome ("The day ended in victory"). Placing the supplication after it
+would put an event after its own resolution. Its own `dating` carries year only, so the
+field is doing the ordering here, not the date.
+
+`arish-shelter` sits **before** `dua-for-reinforcement`, and this one is settled by
+evidence rather than by judgement. A report in Sahih al-Bukhari's Kitab al-Maghazi, narrated
+by Ibn 'Abbas and tied to Q 54:45, has the Prophet make the supplication and then *come out*
+— `fa-kharaja`. Coming out presupposes being inside: the wording only works if there was
+already a structure around him when he prayed. So the shelter stood before the supplication
+was made in it, and the order follows from the report rather than from a reading of what the
+two entries are.
+
+This also settles what an earlier draft of this file explicitly declined to claim, that the
+supplication was made from inside the shelter. It is claimed now, and it is what the
+ordering rests on.
+
+**The report is not yet in the graph, and its number is not confirmed.** The citation trail
+is Bukhari, Kitab al-Maghazi, Ibn 'Abbas, referencing 54:45 — but no edition-stable hadith
+number has been verified, so there is deliberately no `hadith.json` record and no
+`attested_by` edge for it. The reasoning lives here as prose until a number is confirmed;
+**do not guess one** to make the edge enterable. Entering the ref and linking it to
+`arish-shelter` is a later round.
 
 Two schema-required fields were not in the supplied specification and hold minimal
 restatements of the fields that were, pending author sign-off:
@@ -76,7 +102,7 @@ is what submits the edge — that is the whole point of the flag.
 
 ## Outstanding
 
-- **`ahmad:1/368` is a dangling node — the only one.** The Musnad Ahmad ref is cited in the
+- **`ahmad:1/368` is a dangling node.** The Musnad Ahmad ref is cited in the
   `8:17` link's `source.work`, but `source.work` is a string, not an edge — nothing points
   *at* the node, so a dangling-node check reports it. The fix is an `attested_by` edge from
   `battle-of-badr` to it, which was not authored because the edge would carry the same
@@ -93,8 +119,15 @@ is what submits the edge — that is the whole point of the flag.
   rule applied on the way in rather than after the fact: the `8:65` link names it in
   `source.work`, so it was given its own `attested_by` edge from `battle-of-badr` in the
   same batch, and never dangled at all.
+- **`arrival-well-shura` and `arish-shelter` carry no edges yet.** Both were entered as
+  events in their own right, with no `links.json` entry and no hadith ref behind them, so a
+  dangling-node check reports them alongside `ahmad:1/368` — three in total. This is
+  deliberate and is the one case where dangling is the *intended* interim state: inventing
+  a `source.work` string to hang an edge on would fabricate provenance, which is worse than
+  an unreachable node. Both sit at `review.state` `draft`, so neither is published while it
+  waits. Citable backing is a later round.
 - **Volume.** M1's targets are ≥10 events, ≥25 hadith refs, ≥10 tafsir passages and ≥60
-  links. Current: 5 / 9 / 9 / 26 (25 submitted to `unreviewed`, 1 held at `draft`). The
+  links. Current: 7 / 9 / 9 / 26 (25 submitted to `unreviewed`, 1 held at `draft`). The
   tafsir axis is one passage short of its target; events, hadith and links are all still
   well under.
 

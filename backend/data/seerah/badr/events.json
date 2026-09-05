@@ -19,6 +19,48 @@
     "review": { "state": "draft" }
   },
   {
+    "slug": "arrival-well-shura",
+    "title": "Arrival at Badr and Hubab's counsel on the wells",
+    "titleArabic": "",
+    "segment": "badr",
+    "dating": [
+      {
+        "source": "Ibn Hisham, Sira",
+        "hijriYear": 2,
+        "hijriMonth": 9,
+        "hijriDay": 16
+      }
+    ],
+    "narrativeOrder": 2,
+    "summary": "The Muslims reached Badr and made camp. Hubab ibn al-Mundhir asked the Prophet whether the ground had been fixed for him by revelation or was his own judgement of the position; told that it was a matter of tactics, he proposed moving to take the wells nearest the enemy. The Prophet acted on the counsel over his own initial choice of ground.",
+    "participants": [
+      "Hubab ibn al-Mundhir"
+    ],
+    "places": [],
+    "review": { "state": "draft" }
+  },
+  {
+    "slug": "arish-shelter",
+    "title": "Building the Prophet's command shelter",
+    "titleArabic": "",
+    "segment": "badr",
+    "dating": [
+      {
+        "source": "Ibn Hisham, Sira",
+        "hijriYear": 2,
+        "hijriMonth": 9,
+        "note": "day uncertain — sources place this the evening before or the morning of the battle itself; do not assert a specific hijriDay"
+      }
+    ],
+    "narrativeOrder": 3,
+    "summary": "Sa'd ibn Mu'adh proposed building a shelter of palm branches to serve as a protected command post for the Prophet, set apart from the fighting. His reasoning was that if the day went against the Muslims, the Prophet would be able to withdraw safely to Madinah. A guard of the Ansar was posted around it.",
+    "participants": [
+      "Sa'd ibn Mu'adh"
+    ],
+    "places": [],
+    "review": { "state": "draft" }
+  },
+  {
     "slug": "dua-for-reinforcement",
     "title": "The Prophet's supplication and the promise of angels",
     "titleArabic": "",
@@ -29,7 +71,7 @@
         "hijriYear": 2
       }
     ],
-    "narrativeOrder": 2,
+    "narrativeOrder": 4,
     "summary": "Facing a force considerably larger than his own, the Prophet prayed for help. A promise of reinforcement by angels followed his supplication.",
     "participants": [],
     "places": [],
@@ -48,7 +90,7 @@
         "hijriDay": 17
       }
     ],
-    "narrativeOrder": 3,
+    "narrativeOrder": 5,
     "summary": "The Muslim and Quraysh forces met in battle at Badr and fought there. The day ended in victory for the Muslims.",
     "participants": [],
     "places": [],
@@ -65,7 +107,7 @@
         "hijriYear": 2
       }
     ],
-    "narrativeOrder": 4,
+    "narrativeOrder": 6,
     "summary": "Once the fighting at Badr was over, those who had taken part disagreed about how the captured goods should be shared out among them. The disagreement stood unsettled until a ruling was given on the matter.",
     "participants": [],
     "places": [],
@@ -82,7 +124,7 @@
         "hijriYear": 2
       }
     ],
-    "narrativeOrder": 5,
+    "narrativeOrder": 7,
     "summary": "Abu Bakr and Umar differed over what should be done with the prisoners taken at Badr, one holding that they should be ransomed and the other that they should be put to death. The Prophet decided the matter.",
     "participants": [],
     "places": [],
