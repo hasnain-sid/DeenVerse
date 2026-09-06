@@ -33,9 +33,7 @@
   },
   "dependencies": {
     "axios": "^1.7.7",
-    "zod": "^4.3.6"
-  },
-  "devDependencies": {
+    "zod": "^4.3.6",
     "typescript": "^5.6.3"
   }
 }
