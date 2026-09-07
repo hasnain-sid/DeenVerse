@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon index.js",
+    "build:shared": "npm run build --workspace=@deenverse/shared --prefix ..",
     "start": "node index.js",
     "test": "node ../node_modules/jest/bin/jest.js"
   },
@@ -16,6 +17,7 @@
     "@aws-sdk/client-s3": "^3.992.0",
     "@aws-sdk/client-ses": "^3.992.0",
     "@aws-sdk/s3-request-presigner": "^3.992.0",
+    "@deenverse/shared": "*",
     "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
