@@ -1,10 +1,10 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { Home, Search, Bookmark, Users, Newspaper, Bell, Radio, BookOpen, BookHeart, MessageCircle, User, GraduationCap, Moon, Sparkles, ChevronDown, Globe, ShieldCheck, CalendarDays, ScrollText } from 'lucide-react';
+import { Home, Search, Bookmark, Users, Newspaper, Bell, Radio, BookOpen, BookHeart, MessageCircle, User, GraduationCap, Moon, Sparkles, Globe, ShieldCheck, CalendarDays, ScrollText } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useUIStore } from '@/stores/uiStore';
 import { useUnreadCount } from '@/features/notifications/useNotifications';
 import { useChatUnreadCount } from '@/features/messages/useChat';
-import { useState } from 'react';
+import { badgeFor } from './Sidebar';
 import { useAuthStore } from '@/stores/authStore';
 
 // Bottom nav is restricted to core items
@@ -44,7 +44,7 @@ const extendedNavGroups = [
   },
   {
     title: 'Learning',
-    items: ['Learn Quran', 'Quran by Topic', 'Iman Boost', 'Ruhani Space', 'Hadith', 'Classrooms', 'Global Courses', 'Courses'],
+    items: ['Learn Quran', 'Quran by Topic', 'Iman Boost', 'Ruhani Space', 'Hadith', 'Seerah', 'Classrooms', 'Global Courses', 'Courses'],
   },
   {
     title: 'Community',
@@ -60,15 +60,6 @@ export function MobileNav() {
   const unreadCount = unreadData?.count ?? 0;
   const { data: chatUnreadData } = useChatUnreadCount();
   const chatUnreadCount = chatUnreadData?.count ?? 0;
-  const [expandedGroups, setExpandedGroups] = useState<string[]>(['Main', 'Learning']);
-
-  const toggleGroup = (groupTitle: string) => {
-    setExpandedGroups((current) =>
-      current.includes(groupTitle)
-        ? current.filter((name) => name !== groupTitle)
-        : [...current, groupTitle]
-    );
-  };
 
   return (
     <>
@@ -120,61 +111,47 @@ export function MobileNav() {
               <span className="text-base font-semibold">DeenVerse</span>
             </div>
 
-            <nav className="space-y-2">
+            {/* Flat sections — same shape as the desktop sidebar, nothing to expand */}
+            <nav className="space-y-5">
               {extendedNavGroups.map((group) => {
-                const isExpanded = expandedGroups.includes(group.title);
                 const groupItems = extendedNav.filter((item) => (group.items as readonly string[]).includes(item.name));
 
                 return (
-                  <div key={group.title} className="rounded-lg border bg-card">
-                    <button
-                      type="button"
-                      onClick={() => toggleGroup(group.title)}
-                      className="flex w-full items-center justify-between px-3 py-2 text-left text-sm font-medium"
-                    >
-                      <span>{group.title}</span>
-                      <ChevronDown
-                        className={cn(
-                          'h-4 w-4 text-muted-foreground transition-transform',
-                          isExpanded && 'rotate-180'
-                        )}
-                      />
-                    </button>
+                  <div key={group.title}>
+                    <p className="px-3 pb-1 text-[11px] font-medium uppercase tracking-wider text-muted-foreground/60">
+                      {group.title}
+                    </p>
+                    <div className="space-y-0.5">
+                      {groupItems.map((item) => {
+                        const isActive = location.pathname === item.href;
+                        const badge = badgeFor(item.name, unreadCount, chatUnreadCount);
 
-                    {isExpanded && (
-                      <div className="space-y-1 border-t px-2 py-2">
-                        {groupItems.map((item) => {
-                          const isActive = location.pathname === item.href;
-
-                          return (
-                            <NavLink
-                              key={item.name}
-                              to={item.href}
-                              onClick={() => setMobileNavOpen(false)}
-                              className={cn(
-                                'flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors relative',
-                                isActive
-                                  ? 'bg-primary/10 text-primary'
-                                  : 'text-muted-foreground hover:bg-secondary hover:text-foreground'
-                              )}
-                            >
-                              <item.icon className="h-5 w-5" />
-                              {item.name}
-                              {item.name === 'Notifications' && unreadCount > 0 && (
-                                <span className="absolute right-3 flex h-5 min-w-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground px-1.5">
-                                  {unreadCount > 9 ? '9+' : unreadCount}
-                                </span>
-                              )}
-                              {item.name === 'Messages' && chatUnreadCount > 0 && (
-                                <span className="absolute right-3 flex h-5 min-w-5 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground px-1.5">
-                                  {chatUnreadCount > 9 ? '9+' : chatUnreadCount}
-                                </span>
-                              )}
-                            </NavLink>
-                          );
-                        })}
-                      </div>
-                    )}
+                        return (
+                          <NavLink
+                            key={item.name}
+                            to={item.href}
+                            onClick={() => setMobileNavOpen(false)}
+                            className={cn(
+                              'relative flex items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-colors',
+                              isActive
+                                ? 'bg-secondary font-medium text-foreground'
+                                : 'text-muted-foreground hover:bg-secondary/60 hover:text-foreground'
+                            )}
+                          >
+                            {isActive && (
+                              <span className="absolute left-0 top-1/2 h-4 w-0.5 -translate-y-1/2 rounded-r-full bg-primary" />
+                            )}
+                            <item.icon className="h-[18px] w-[18px] shrink-0" />
+                            <span className="truncate">{item.name}</span>
+                            {badge > 0 && (
+                              <span className="ml-auto flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1.5 text-[10px] font-bold text-primary-foreground">
+                                {badge > 99 ? '99+' : badge}
+                              </span>
+                            )}
+                          </NavLink>
+                        );
+                      })}
+                    </div>
                   </div>
                 );
               })}
