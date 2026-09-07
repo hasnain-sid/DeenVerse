@@ -27,6 +27,7 @@ import {
   CreditCard,
   TrendingUp,
   CalendarDays,
+  ScrollText,
   Video,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -50,6 +51,7 @@ const navigation = [
   { name: 'Iman Boost', href: '/iman-boost', icon: Sparkles },
   { name: 'Ruhani Space', href: '/ruhani', icon: Moon },
   { name: 'Hadith', href: '/hadith', icon: BookOpen },
+  { name: 'Seerah', href: '/seerah', icon: ScrollText },
   { name: 'Classrooms', href: '/classrooms', icon: CalendarDays },
   { name: 'Global Courses', href: '/global-courses', icon: Globe },
   { name: 'Courses', href: '/courses', icon: BookOpen },

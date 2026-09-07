@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { Home, Search, Bookmark, Users, Newspaper, Bell, Radio, BookOpen, BookHeart, MessageCircle, User, GraduationCap, Moon, Sparkles, ChevronDown, Globe, ShieldCheck, CalendarDays } from 'lucide-react';
+import { Home, Search, Bookmark, Users, Newspaper, Bell, Radio, BookOpen, BookHeart, MessageCircle, User, GraduationCap, Moon, Sparkles, ChevronDown, Globe, ShieldCheck, CalendarDays, ScrollText } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useUIStore } from '@/stores/uiStore';
 import { useUnreadCount } from '@/features/notifications/useNotifications';
@@ -25,6 +25,7 @@ const extendedNav = [
   { name: 'Iman Boost', href: '/iman-boost', icon: Sparkles },
   { name: 'Ruhani Space', href: '/ruhani', icon: Moon },
   { name: 'Hadith', href: '/hadith', icon: BookOpen },
+  { name: 'Seerah', href: '/seerah', icon: ScrollText },
   { name: 'Classrooms', href: '/classrooms', icon: CalendarDays },
   { name: 'Global Courses', href: '/global-courses', icon: Globe },
   { name: 'Courses', href: '/courses', icon: BookOpen },

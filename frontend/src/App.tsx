@@ -85,6 +85,12 @@ const QuranReaderPage = lazy(() =>
 const ImanBoostPage = lazy(() =>
   import('@/features/iman-boost').then((m) => ({ default: m.ImanBoostPage }))
 );
+const SeerahPage = lazy(() =>
+  import('@/features/seerah/SeerahPage').then((m) => ({ default: m.SeerahPage }))
+);
+const SeerahEventPage = lazy(() =>
+  import('@/features/seerah/EventDetailPage').then((m) => ({ default: m.EventDetailPage }))
+);
 const QuranTopicsPage = lazy(() =>
   import('@/features/quran-topics/QuranTopicsPage').then((m) => ({ default: m.QuranTopicsPage }))
 );
@@ -329,6 +335,8 @@ export default function App() {
                   <Route path="/learn-quran" element={<LearnQuranHub />} />
                   <Route path="/quran-reader" element={<QuranReaderPage />} />
                   <Route path="/daily-learning" element={<DailyLearningPage />} />
+                  <Route path="/seerah" element={<SeerahPage />} />
+                  <Route path="/seerah/:slug" element={<SeerahEventPage />} />
                   <Route path="/quran-topics" element={<QuranTopicsPage />} />
                   <Route path="/quran-topics/mood/:moodId" element={<MoodDetailPage />} />
                   <Route path="/quran-topics/:slug" element={<TopicDetailPage />} />
